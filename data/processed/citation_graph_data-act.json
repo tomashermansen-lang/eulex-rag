@@ -1,0 +1,2364 @@
+{
+  "schema_version": "citation_graph:v1",
+  "corpus_id": "data-act",
+  "generated_at": "2026-01-28T16:51:01.530758+00:00",
+  "nodes": {
+    "114": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "2": {
+      "type": "article",
+      "title": "Definitioner",
+      "chapter": "I",
+      "roles": [
+        "definitions",
+        "scope",
+        "obligations",
+        "enforcement"
+      ],
+      "mention_count": 4
+    },
+    "6": {
+      "type": "article",
+      "title": "Forpligtelser for tredjeparter, der modtager data efter anmodning fra brugeren",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "prohibitions"
+      ],
+      "mention_count": 9
+    },
+    "9": {
+      "type": "article",
+      "title": "Godtgørelse for at stille data til rådighed",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "exemptions"
+      ],
+      "mention_count": 4
+    },
+    "5": {
+      "type": "article",
+      "title": "Brugerens ret til at dele data med tredjeparter",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "rights",
+        "exemptions",
+        "prohibitions",
+        "enforcement",
+        "procedures"
+      ],
+      "mention_count": 18
+    },
+    "4": {
+      "type": "article",
+      "title": "Brugeres og dataindehaveres rettigheder og forpligtelser for så vidt angår at tilgå og anvende produktdata og relaterede tjenestedata og stille dem til rådighed",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "rights",
+        "procedures",
+        "exemptions",
+        "prohibitions"
+      ],
+      "mention_count": 12
+    },
+    "12": {
+      "type": "article",
+      "title": "Omfanget af forpligtelser for dataindehavere, der er forpligtede i henhold til EU-retten til at stille data til rådighed",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "prohibitions"
+      ],
+      "mention_count": 1
+    },
+    "26": {
+      "type": "article",
+      "title": "Oplysningspligt for udbydere af databehandlingstjenester",
+      "chapter": "VI",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "20": {
+      "type": "article",
+      "title": "Godtgørelse i tilfælde af et ekstraordinært behov",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "rights",
+        "exemptions",
+        "procedures"
+      ],
+      "mention_count": 4
+    },
+    "17": {
+      "type": "article",
+      "title": "Anmodninger om at få stillet data til rådighed",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "procedures",
+        "rights",
+        "enforcement",
+        "prohibitions"
+      ],
+      "mention_count": 4
+    },
+    "3": {
+      "type": "article",
+      "title": "Forpligtelse til at gøre produktdata og relaterede tjenestedata tilgængelige for brugeren",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "rights"
+      ],
+      "mention_count": 5
+    },
+    "ANNEX:II": {
+      "type": "annex",
+      "mention_count": 3
+    },
+    "7": {
+      "type": "article",
+      "title": "Omfanget af forpligtelser vedrørende datadeling mellem virksomheder og forbrugere og mellem virksomheder",
+      "chapter": "II",
+      "roles": [
+        "exemptions",
+        "obligations",
+        "rights"
+      ],
+      "mention_count": 2
+    },
+    "290": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "101": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "42": {
+      "type": "article",
+      "title": "EDIB's rolle",
+      "chapter": "IX",
+      "roles": [
+        "obligations",
+        "enforcement"
+      ],
+      "mention_count": 4
+    },
+    "1": {
+      "type": "article",
+      "title": "Genstand og anvendelsesområde",
+      "chapter": "I",
+      "roles": [
+        "obligations",
+        "rights",
+        "scope",
+        "definitions",
+        "exemptions"
+      ]
+    },
+    "15": {
+      "type": "article",
+      "title": "Ekstraordinært behov for at anvende data",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "exemptions"
+      ],
+      "mention_count": 10
+    },
+    "23": {
+      "type": "article",
+      "title": "Fjernelse af hindringer for effektive skift",
+      "chapter": "VI",
+      "roles": [
+        "obligations",
+        "rights"
+      ],
+      "mention_count": 9
+    },
+    "37": {
+      "type": "article",
+      "title": "Kompetente myndigheder og datakoordinatorer",
+      "chapter": "IX",
+      "roles": [
+        "obligations",
+        "enforcement",
+        "scope",
+        "prohibitions",
+        "procedures"
+      ],
+      "mention_count": 19
+    },
+    "10": {
+      "type": "article",
+      "title": "Tvistbilæggelse",
+      "chapter": "III",
+      "roles": [
+        "rights",
+        "procedures",
+        "obligations",
+        "prohibitions"
+      ],
+      "mention_count": 8
+    },
+    "8": {
+      "type": "article",
+      "title": "Betingelser, hvorunder dataindehavere stiller data til rådighed for datamodtagere",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "rights",
+        "prohibitions",
+        "exemptions"
+      ],
+      "mention_count": 1
+    },
+    "22": {
+      "type": "article",
+      "title": "Gensidig bistand og grænseoverskridende samarbejde",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "prohibitions",
+        "procedures"
+      ],
+      "mention_count": 3
+    },
+    "13": {
+      "type": "article",
+      "title": "Urimelige aftalevilkår, der ensidigt pålægges en anden virksomhed",
+      "chapter": "IV",
+      "roles": [
+        "obligations",
+        "rights",
+        "prohibitions",
+        "exemptions"
+      ],
+      "mention_count": 2
+    },
+    "11": {
+      "type": "article",
+      "title": "Tekniske beskyttelsesforanstaltninger om uautoriseret anvendelse eller videregivelse af data",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "prohibitions",
+        "rights"
+      ]
+    },
+    "14": {
+      "type": "article",
+      "title": "Forpligtelse til at stille data til rådighed på grundlag af et ekstraordinært behov",
+      "chapter": "V",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "16": {
+      "type": "article",
+      "title": "Sammenhæng med andre forpligtelser til at stille data til rådighed for offentlige myndigheder, Kommissionen, Den Europæiske Centralbank og EU-organer",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "exemptions"
+      ]
+    },
+    "18": {
+      "type": "article",
+      "title": "Efterkommelse af anmodninger om data",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "exemptions",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "19": {
+      "type": "article",
+      "title": "Offentlige myndigheders, Kommissionens, Den Europæiske Centralbanks og EU-organers forpligtelser",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "rights",
+        "prohibitions"
+      ],
+      "mention_count": 5
+    },
+    "40": {
+      "type": "article",
+      "title": "Sanktioner",
+      "chapter": "IX",
+      "roles": [
+        "obligations",
+        "enforcement"
+      ],
+      "mention_count": 2
+    },
+    "21": {
+      "type": "article",
+      "title": "Deling af data, der er indhentet i forbindelse med et ekstraordinært behov, med forskningsinstitutioner eller statistiske kontorer",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "rights",
+        "scope",
+        "prohibitions",
+        "exemptions",
+        "procedures"
+      ],
+      "mention_count": 1
+    },
+    "25": {
+      "type": "article",
+      "title": "Aftalevilkår i forbindelse med skift",
+      "chapter": "VI",
+      "roles": [
+        "obligations",
+        "rights",
+        "exemptions"
+      ],
+      "mention_count": 4
+    },
+    "24": {
+      "type": "article",
+      "title": "Omfang af de tekniske forpligtelser",
+      "chapter": "VI",
+      "roles": [
+        "obligations",
+        "scope"
+      ],
+      "mention_count": 1
+    },
+    "30": {
+      "type": "article",
+      "title": "Tekniske aspekter af skift",
+      "chapter": "VI",
+      "roles": [
+        "obligations",
+        "prohibitions"
+      ],
+      "mention_count": 6
+    },
+    "29": {
+      "type": "article",
+      "title": "Gradvis fjernelse af skiftegebyrer",
+      "chapter": "VI",
+      "roles": [
+        "obligations",
+        "prohibitions",
+        "enforcement"
+      ],
+      "mention_count": 8
+    },
+    "27": {
+      "type": "article",
+      "title": "Forpligtelse til god tro",
+      "chapter": "VI",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "28": {
+      "type": "article",
+      "title": "Kontraktlige gennemsigtighedsforpligtelser vedrørende international adgang og overførsel",
+      "chapter": "VI",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "45": {
+      "type": "article",
+      "title": "Udøvelse af de delegerede beføjelser",
+      "chapter": "XI",
+      "roles": [
+        "obligations",
+        "scope",
+        "enforcement",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "35": {
+      "type": "article",
+      "title": "Interoperabilitet mellem databehandlingstjenester",
+      "chapter": "VIII",
+      "roles": [
+        "obligations",
+        "definitions",
+        "procedures"
+      ],
+      "mention_count": 3
+    },
+    "31": {
+      "type": "article",
+      "title": "Særlig ordning for visse databehandlingstjenester",
+      "chapter": "VI",
+      "roles": [
+        "exemptions",
+        "obligations"
+      ]
+    },
+    "32": {
+      "type": "article",
+      "title": "International statslig adgang og overførsel",
+      "chapter": "VII",
+      "roles": [
+        "obligations",
+        "prohibitions",
+        "rights",
+        "procedures",
+        "exemptions"
+      ]
+    },
+    "33": {
+      "type": "article",
+      "title": "Væsentlige krav vedrørende interoperabilitet mellem data, mellem datadelingsmekanismer og -tjenester og mellem fælles europæiske dataområder",
+      "chapter": "VIII",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 4
+    },
+    "46": {
+      "type": "article",
+      "title": "Udvalgsprocedure",
+      "chapter": "XI",
+      "roles": [
+        "procedures"
+      ],
+      "mention_count": 3
+    },
+    "34": {
+      "type": "article",
+      "title": "Interoperabilitet med henblik på parallel anvendelse af databehandlingstjenester",
+      "chapter": "VIII",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "36": {
+      "type": "article",
+      "title": "Væsentlige krav vedrørende intelligente kontrakter med henblik på gennemførelse af aftaler om datadeling",
+      "chapter": "VIII",
+      "roles": [
+        "obligations",
+        "rights",
+        "classification",
+        "procedures"
+      ],
+      "mention_count": 1
+    },
+    "62": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "38": {
+      "type": "article",
+      "title": "Ret til at indgive klage",
+      "chapter": "IX",
+      "roles": [
+        "rights",
+        "procedures",
+        "obligations"
+      ]
+    },
+    "39": {
+      "type": "article",
+      "title": "Ret til effektive retsmidler",
+      "chapter": "IX",
+      "roles": [
+        "rights",
+        "procedures"
+      ]
+    },
+    "83": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "66": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "41": {
+      "type": "article",
+      "title": "Model for aftalevilkår og standardkontraktbestemmelser",
+      "chapter": "IX",
+      "roles": [
+        "obligations",
+        "rights"
+      ]
+    },
+    "43": {
+      "type": "article",
+      "title": "Databaser med visse data",
+      "chapter": "X",
+      "roles": [
+        "exemptions"
+      ]
+    },
+    "44": {
+      "type": "article",
+      "title": "Andre EU-retsakter, hvorved rettigheder og forpligtelser vedrørende adgang til og anvendelse af data reguleres",
+      "chapter": "XI",
+      "roles": [
+        "obligations",
+        "exemptions",
+        "scope"
+      ]
+    },
+    "47": {
+      "type": "article",
+      "title": "Ændring af forordning (EU) 2017/2394",
+      "chapter": "XI",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    },
+    "48": {
+      "type": "article",
+      "title": "Ændring af direktiv (EU) 2020/1828",
+      "chapter": "XI",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    },
+    "ANNEX:I": {
+      "type": "annex",
+      "mention_count": 1
+    },
+    "49": {
+      "type": "article",
+      "title": "Evaluering og revision",
+      "chapter": "XI",
+      "roles": [
+        "obligations",
+        "procedures",
+        "rights",
+        "enforcement"
+      ]
+    },
+    "50": {
+      "type": "article",
+      "title": "Ikrafttræden og anvendelse",
+      "chapter": "XI",
+      "roles": [
+        "obligations",
+        "enforcement",
+        "exemptions",
+        "rights",
+        "classification",
+        "scope"
+      ]
+    }
+  },
+  "edges": [
+    {
+      "source": "1",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "2",
+      "target": "4",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "2",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "3",
+      "target": "37",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "4",
+      "target": "37",
+      "type": "cites",
+      "count": 5,
+      "weight": 0.8333
+    },
+    {
+      "source": "4",
+      "target": "10",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "4",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "4",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "4",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "8",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "20",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "37",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "5",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "6",
+      "target": "5",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "6",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "6",
+      "target": "22",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "7",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "7",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "8",
+      "target": "5",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "8",
+      "target": "13",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "8",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "9",
+      "target": "42",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "10",
+      "target": "4",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "5",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "11",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "11",
+      "target": "5",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "6",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "12",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "17",
+      "target": "14",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "17",
+      "target": "15",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "17",
+      "target": "18",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "17",
+      "target": "40",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "17",
+      "target": "19",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "17",
+      "target": "37",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "17",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "18",
+      "target": "17",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "18",
+      "target": "19",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "18",
+      "target": "37",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "19",
+      "target": "14",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "19",
+      "target": "21",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "19",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "20",
+      "target": "15",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "20",
+      "target": "37",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "21",
+      "target": "17",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "21",
+      "target": "19",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "21",
+      "target": "37",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "22",
+      "target": "37",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "22",
+      "target": "17",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "30",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "25",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "24",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "24",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "25",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "25",
+      "target": "29",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "26",
+      "target": "25",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "29",
+      "target": "45",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "30",
+      "target": "27",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "30",
+      "target": "35",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "30",
+      "target": "26",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "31",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "31",
+      "target": "30",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "31",
+      "target": "29",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "32",
+      "target": "42",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "33",
+      "target": "45",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "33",
+      "target": "42",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "33",
+      "target": "10",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "33",
+      "target": "46",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "33",
+      "target": "22",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "33",
+      "target": "30",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "34",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "34",
+      "target": "30",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "34",
+      "target": "25",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "35",
+      "target": "30",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "35",
+      "target": "ANNEX:II",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "35",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "35",
+      "target": "37",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "35",
+      "target": "46",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "36",
+      "target": "10",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "36",
+      "target": "46",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "36",
+      "target": "22",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "62",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "23",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "37",
+      "target": "29",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "40",
+      "target": "83",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "40",
+      "target": "66",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "42",
+      "target": "36",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "42",
+      "target": "33",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "42",
+      "target": "29",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "42",
+      "target": "35",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "43",
+      "target": "7",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "43",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "45",
+      "target": "33",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "45",
+      "target": "29",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "46",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "48",
+      "target": "ANNEX:I",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "18",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "29",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "13",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "25",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "37",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "49",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "50",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "6",
+      "type": "co-occurrence",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "5",
+      "target": "9",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "6",
+      "target": "9",
+      "type": "co-occurrence",
+      "count": 4,
+      "weight": 0.6667
+    },
+    {
+      "source": "10",
+      "target": "37",
+      "type": "co-occurrence",
+      "count": 3,
+      "weight": 0.5
+    },
+    {
+      "source": "4",
+      "target": "5",
+      "type": "co-occurrence",
+      "count": 6,
+      "weight": 1.0
+    },
+    {
+      "source": "15",
+      "target": "19",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "37",
+      "target": "40",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "17",
+      "target": "19",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "25",
+      "target": "30",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "23",
+      "target": "29",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "23",
+      "target": "30",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "46",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.3333
+    },
+    {
+      "source": "29",
+      "target": "33",
+      "type": "co-occurrence",
+      "count": 4,
+      "weight": 0.6667
+    },
+    {
+      "source": "1",
+      "target": "2",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "3",
+      "target": "4",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "3",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "3",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "3",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "4",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "4",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "4",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "5",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "6",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "10",
+      "target": "11",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "10",
+      "target": "12",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "10",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "10",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "11",
+      "target": "12",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "11",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "11",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "12",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "12",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "8",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "13",
+      "target": "50",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "16",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "17",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "18",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "19",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "14",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "15",
+      "target": "16",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "15",
+      "target": "17",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "15",
+      "target": "18",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "15",
+      "target": "19",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "15",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "15",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "15",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "16",
+      "target": "17",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "16",
+      "target": "18",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "16",
+      "target": "19",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "16",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "16",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "16",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "17",
+      "target": "18",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "17",
+      "target": "19",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "17",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "17",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "17",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "18",
+      "target": "19",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "18",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "18",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "18",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "19",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "19",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "19",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "20",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "20",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "21",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "24",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "25",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "26",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "27",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "28",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "29",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "23",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "24",
+      "target": "25",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "24",
+      "target": "26",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "24",
+      "target": "27",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "24",
+      "target": "28",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "24",
+      "target": "29",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "24",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "24",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "25",
+      "target": "26",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "25",
+      "target": "27",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "25",
+      "target": "28",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "25",
+      "target": "29",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "25",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "25",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "26",
+      "target": "27",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "26",
+      "target": "28",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "26",
+      "target": "29",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "26",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "26",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "27",
+      "target": "28",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "27",
+      "target": "29",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "27",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "27",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "28",
+      "target": "29",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "28",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "28",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "29",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "29",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "30",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "33",
+      "target": "34",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "33",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "33",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "34",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "34",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "35",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "37",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "38",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "38",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "38",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "38",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "39",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "39",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "39",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "40",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "40",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "41",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "44",
+      "target": "45",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "44",
+      "target": "46",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "44",
+      "target": "47",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "44",
+      "target": "48",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "44",
+      "target": "49",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "45",
+      "target": "46",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "45",
+      "target": "47",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "45",
+      "target": "48",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "45",
+      "target": "49",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "46",
+      "target": "47",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "46",
+      "target": "48",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "46",
+      "target": "49",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "47",
+      "target": "48",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "47",
+      "target": "49",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    },
+    {
+      "source": "48",
+      "target": "49",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.1667
+    }
+  ]
+}

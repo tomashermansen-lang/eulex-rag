@@ -1,0 +1,16 @@
+[run]
+source = src
+branch = True
+omit =
+    src/**/types.py
+    src/**/constants.py
+    src/**/__init__.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    raise NotImplementedError
+    if TYPE_CHECKING:
+# Prevent regression (revised target: 60-65%)
+fail_under = 55
+show_missing = True

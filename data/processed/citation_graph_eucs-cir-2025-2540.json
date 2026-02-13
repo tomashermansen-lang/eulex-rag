@@ -1,0 +1,262 @@
+{
+  "schema_version": "citation_graph:v1",
+  "corpus_id": "eucs-cir-2025-2540",
+  "generated_at": "2026-02-04T10:16:00.225985+00:00",
+  "nodes": {
+    "59": {
+      "type": "article",
+      "mention_count": 9
+    },
+    "56": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "3": {
+      "type": "article",
+      "title": "Kriterier for sammensætning af peerreviewholdet",
+      "roles": [
+        "obligations",
+        "classification",
+        "procedures"
+      ],
+      "mention_count": 1
+    },
+    "66": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "1": {
+      "type": "article",
+      "title": "Tidsplan, hyppighed og omkostninger i forbindelse med peerreviews",
+      "roles": [
+        "obligations",
+        "procedures"
+      ]
+    },
+    "ANNEX:I": {
+      "type": "annex",
+      "title": "Tidsplan for nationale cybersikkerhedscertificeringsmyndigheder, der er underlagt peerreview",
+      "roles": [
+        "classification"
+      ],
+      "mention_count": 5
+    },
+    "62": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "58": {
+      "type": "article",
+      "mention_count": 4
+    },
+    "50": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "2": {
+      "type": "article",
+      "title": "Rotationsordning for peerreviewende nationale cybersikkerhedscertificeringsmyndigheder",
+      "roles": [
+        "procedures",
+        "obligations",
+        "scope"
+      ],
+      "mention_count": 1
+    },
+    "4": {
+      "type": "article",
+      "title": "Peerreviewmetode",
+      "roles": [
+        "classification",
+        "obligations",
+        "procedures"
+      ]
+    },
+    "ANNEX:II": {
+      "type": "annex",
+      "title": "Peerreviewmetode",
+      "roles": [
+        "classification",
+        "obligations",
+        "enforcement",
+        "procedures"
+      ],
+      "mention_count": 1
+    },
+    "5": {
+      "type": "article",
+      "title": "Peerreviewrapport",
+      "roles": [
+        "procedures",
+        "obligations"
+      ],
+      "mention_count": 4
+    },
+    "6": {
+      "type": "article",
+      "title": "Fortrolighed",
+      "roles": [
+        "prohibitions",
+        "obligations"
+      ]
+    },
+    "7": {
+      "type": "article",
+      "title": "Kapacitetsopbygning",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "8": {
+      "type": "article",
+      "title": "Ikrafttræden",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ]
+    },
+    "63": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "53": {
+      "type": "article",
+      "mention_count": 1
+    }
+  },
+  "edges": [
+    {
+      "source": "1",
+      "target": "ANNEX:I",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.75
+    },
+    {
+      "source": "1",
+      "target": "62",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "1",
+      "target": "58",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "1",
+      "target": "50",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "1",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "2",
+      "target": "59",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "2",
+      "target": "ANNEX:I",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.5
+    },
+    {
+      "source": "4",
+      "target": "59",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "4",
+      "target": "ANNEX:II",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "4",
+      "target": "5",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.5
+    },
+    {
+      "source": "4",
+      "target": "58",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "5",
+      "target": "59",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "5",
+      "target": "50",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "6",
+      "target": "5",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.5
+    },
+    {
+      "source": "ANNEX:II",
+      "target": "59",
+      "type": "cites",
+      "count": 4,
+      "weight": 1.0
+    },
+    {
+      "source": "ANNEX:II",
+      "target": "58",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.5
+    },
+    {
+      "source": "ANNEX:II",
+      "target": "63",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "ANNEX:II",
+      "target": "53",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "ANNEX:II",
+      "target": "56",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    }
+  ]
+}

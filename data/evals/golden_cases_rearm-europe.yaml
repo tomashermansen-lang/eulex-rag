@@ -1,0 +1,201 @@
+- id: rearm-europe-01-retrieval-dual-use
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad er formålet med at støtte dual use-projekter i forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester retrieval af specifik information om dual use-projekter.
+- id: rearm-europe-02-retrieval-AI-fabrikker
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke typer fabrikker nævnes i forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester retrieval af information om AI-fabrikker og AI-gigafabrikker fra artikel 1.
+- id: rearm-europe-03-retrieval-strategisk-afhængighed
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad skal teknologier bidrage til ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester retrieval af information om teknologiers formål fra artikel 1.
+- id: rearm-europe-04-retrieval-Cef-mål
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad er de generelle mål med CEF ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester retrieval af information om CEF's mål.
+- id: rearm-europe-05-faithfulness-tilbagebetalinger
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: manual
+  prompt: Hvad gælder for tilbagebetalinger ifølge forordningen om blandet finansiering?
+  expected:
+    must_include_any_of: []
+    must_include_any_of_2: []
+    must_include_all_of:
+    - article:2
+    must_not_include_any_of: []
+    contract_check: false
+    min_citations: null
+    max_citations: null
+    behavior: answer
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    notes: Tester om svaret er korrekt baseret på kildeteksten om tilbagebetalinger.
+- id: rearm-europe-06-faithfulness-deltagelse-tredjelande
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvem kan deltage i fonden ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:3
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt baseret på kildeteksten om deltagelse.
+- id: rearm-europe-07-relevancy-udvikling-af-teknologier
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvilke aspekter skal teknologier bidrage til ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er relevant i forhold til teknologiers bidrag.
+- id: rearm-europe-08-relevancy-Cef-samarbejde
+  profile: LEGAL
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvad skal CEF lette ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er relevant i forhold til CEF's formål.
+- id: rearm-europe-09-abstention-uden-for-scope
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er forordningens holdning til miljøbeskyttelse?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester systemets evne til at afstå fra at svare på spørgsmål uden for lovens scope.
+- id: rearm-europe-10-abstention-om-privatliv
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvordan håndterer forordningen privatlivets fred?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester systemets evne til at afstå fra at svare på spørgsmål uden for lovens scope.
+- id: rearm-europe-11-robustness-AI-fabrikker-omformulering
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvilke fabrikker fokuseres der på i lovgivningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester robusthed ved omformulering af spørgsmål om AI-fabrikker.
+- id: rearm-europe-12-robustness-strategisk-afhængighed-omformulering
+  profile: LEGAL
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad skal teknologierne bidrage til at reducere ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester robusthed ved omformulering af spørgsmål om strategisk afhængighed.
+- id: rearm-europe-13-multi_hop-dual-use-og-AI
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvordan understøtter forordningen dual use-projekter og AI-fabrikker?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler.
+- id: rearm-europe-14-multi_hop-Cef-og-strategisk-afhængighed
+  profile: LEGAL
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvordan relaterer CEF's mål sig til at mindske strategisk afhængighed?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    - article:5
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler.

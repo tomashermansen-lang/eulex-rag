@@ -1,0 +1,219 @@
+- id: reg-sandkasser-01-retrieval-definitioner
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad forstås der ved "projekt" i denne forordning?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet finder den specifikke definition af 'projekt' i artikel
+      1.
+- id: reg-sandkasser-02-retrieval-almindelige-bestemmelser
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad er kravene for at oprette en reguleringsmæssig sandkasse for interoperabilitet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet finder de specifikke krav i artikel 2.
+- id: reg-sandkasser-03-retrieval-centralt-kontaktpunkt
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvem udpeger kontaktpunktet for kommunikationen med Kommissionen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet identificerer koordinatorernes rolle i artikel 4.
+- id: reg-sandkasser-04-retrieval-gennemsigtighed
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad skal Kommissionens grænseflade om reguleringsmæssige sandkasser indeholde?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde oplysninger om kravene til gennemsigtighed
+      i artikel 6.
+- id: reg-sandkasser-05-faithfulness-nyhed
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvilke betingelser skal være opfyldt for at forny en reguleringsmæssig sandkasse?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:7
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er korrekt baseret på artikel 7, der beskriver betingelserne
+      for fornyelse.
+- id: reg-sandkasser-06-faithfulness-afslutning
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvornår afsluttes en reguleringsmæssig sandkasse for interoperabilitet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret kan verificeres mod artikel 8, der angiver afslutningsbetingelser.
+- id: reg-sandkasser-07-faithfulness-rapporteringsforpligtelser
+  profile: ENGINEERING
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvilke emner skal dækkes i den periodiske rapportering fra koordinatorerne?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er korrekt i forhold til artikel 13 om rapporteringsforpligtelser.
+- id: reg-sandkasser-08-relevancy-deltagere
+  profile: LEGAL
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvad skal deltagere i en reguleringsmæssig sandkasse for interoperabilitet
+    bidrage med?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:11
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret dækker deltagernes forpligtelser i artikel 11.
+- id: reg-sandkasser-09-relevancy-risikostyring
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvad indebærer risikostyringsprocessen for en reguleringsmæssig sandkasse?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er relevant for risikostyring i artikel 12.
+- id: reg-sandkasser-10-abstention-udenfor-scope
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er konsekvenserne af at bryde en kontrakt, der ikke er relateret til
+    reguleringsmæssige sandkasser?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester at systemet nægter at svare på spørgsmål uden for lovens scope.
+- id: reg-sandkasser-11-abstention-ikke-dækket-emne
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvordan kan man klage over en beslutning truffet af en offentlig myndighed?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester at systemet undlader at svare på spørgsmål, der ikke er dækket af
+      forordningen.
+- id: reg-sandkasser-12-robustness-omformulering
+  profile: LEGAL
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er kravene for at etablere en sandkasse for interoperabilitet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere en omformulering af spørgsmålet om
+      kravene.
+- id: reg-sandkasser-13-robustness-stavefejl
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er de generelle rettigheder for koordinatorer i sandkassen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:9
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets robusthed over for stavefejl i spørgsmålet.
+- id: reg-sandkasser-14-multi_hop-deltagelse
+  profile: LEGAL
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke kriterier skal være opfyldt for deltagelse i en reguleringsmæssig
+    sandkasse, og hvordan kan man ansøge?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:10
+    - article:3
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra artikel 3 og 10.
+- id: reg-sandkasser-15-multi_hop-afslutning-af-projekt
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvad skal der til for at afslutte et projekt i en reguleringsmæssig sandkasse,
+    og hvilke betingelser gælder for afslutning af sandkassen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    - article:15
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at syntetisere oplysninger fra artikel 8 og 15.

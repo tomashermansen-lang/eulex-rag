@@ -1,0 +1,448 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+:root {
+  /* Subtle blue - softer than standard Apple blue for less visual noise */
+  --apple-blue: #4A90D9;
+  --apple-blue-hover: #5A9FE8;
+}
+
+body {
+  @apply bg-apple-gray-50 text-apple-gray-700 dark:bg-apple-gray-700 dark:text-apple-gray-50;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-apple-gray-200 dark:bg-apple-gray-500 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-apple-gray-300 dark:bg-apple-gray-400;
+}
+
+/* Custom component styles */
+@layer components {
+  /* Primary button */
+  .btn-primary {
+    @apply px-4 py-2 bg-apple-blue text-white font-medium rounded-xl
+           hover:bg-apple-blue-hover transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-apple-blue focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply px-4 py-2 bg-apple-gray-100 text-apple-gray-700 font-medium rounded-xl
+           hover:bg-apple-gray-200 transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-apple-gray-300 focus:ring-offset-2
+           dark:bg-apple-gray-600 dark:text-apple-gray-100 dark:hover:bg-apple-gray-500;
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    @apply px-3 py-1.5 text-apple-gray-400 font-medium rounded-lg
+           hover:bg-apple-gray-100 hover:text-apple-gray-600 transition-colors duration-200
+           dark:hover:bg-apple-gray-600 dark:hover:text-apple-gray-200;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full px-4 py-3 bg-white border border-apple-gray-200 rounded-xl
+           placeholder-apple-gray-300 text-apple-gray-700
+           focus:outline-none focus:ring-2 focus:ring-apple-blue focus:border-apple-blue
+           dark:bg-apple-gray-600 dark:border-apple-gray-500 dark:text-white
+           dark:placeholder-apple-gray-400 dark:focus:border-apple-blue;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-2xl shadow-apple p-4
+           dark:bg-apple-gray-600 dark:shadow-none dark:border dark:border-apple-gray-500;
+  }
+
+  /* Chat bubble - user */
+  .chat-bubble-user {
+    @apply bg-apple-blue text-white rounded-2xl rounded-br-md px-4 py-3
+           shadow-sm max-w-[85%] ml-auto;
+  }
+
+  /* Chat bubble - assistant */
+  .chat-bubble-assistant {
+    @apply bg-white border border-apple-gray-100 rounded-2xl rounded-bl-md px-4 py-3
+           shadow-apple max-w-[85%]
+           dark:bg-apple-gray-600 dark:border-apple-gray-500;
+  }
+
+  /* Citation link */
+  .citation-link {
+    @apply text-apple-blue font-semibold cursor-pointer hover:underline
+           transition-colors duration-150;
+  }
+
+  /* Suggestion chip */
+  .suggestion-chip {
+    @apply inline-flex items-center px-4 py-2 bg-apple-gray-100 text-apple-gray-600
+           rounded-full text-sm font-medium cursor-pointer
+           hover:bg-apple-gray-200 transition-all duration-200
+           dark:bg-apple-gray-500 dark:text-apple-gray-100 dark:hover:bg-apple-gray-400;
+  }
+
+  /* Source expander */
+  .source-expander {
+    @apply border border-apple-gray-100 rounded-xl overflow-hidden
+           transition-all duration-200
+           dark:border-apple-gray-500;
+  }
+
+  .source-expander-header {
+    @apply flex items-center justify-between px-4 py-3 bg-apple-gray-50
+           cursor-pointer hover:bg-apple-gray-100 transition-colors duration-150
+           dark:bg-apple-gray-600 dark:hover:bg-apple-gray-500;
+  }
+
+  .source-expander-content {
+    @apply px-4 py-3 bg-white text-sm text-apple-gray-500
+           dark:bg-apple-gray-600 dark:text-apple-gray-300;
+  }
+}
+
+/* Apple-style typing indicator */
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 0;
+}
+
+.typing-indicator .dot {
+  width: 6px;
+  height: 6px;
+  @apply bg-apple-gray-400;
+  border-radius: 50%;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+
+.typing-indicator .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-indicator .dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Legal response typography */
+.chat-bubble-assistant .prose p {
+  @apply mb-3 leading-relaxed;
+}
+
+/* Style section headers (1. Retsgrundlag, 2. Juridisk analyse, etc.) */
+.chat-bubble-assistant .prose p:first-of-type,
+.chat-bubble-assistant .prose p:has(+ p:first-of-type) {
+  @apply mb-2;
+}
+
+/* Bold standalone lines that look like headers */
+.legal-header {
+  @apply font-semibold text-apple-gray-700 dark:text-apple-gray-100 text-base mt-4 mb-2 block;
+}
+
+/* First header doesn't need top margin */
+.legal-header:first-of-type {
+  @apply mt-0;
+}
+
+/* Target highlight for citations */
+.reference-anchor:target,
+.citation-highlight {
+  @apply bg-apple-blue/10 rounded-lg;
+  animation: highlight-fade 2s ease-out;
+}
+
+@keyframes highlight-fade {
+  0% { background-color: rgba(74, 144, 217, 0.2); }
+  100% { background-color: rgba(74, 144, 217, 0.05); }
+}
+
+/* =================================================================
+   Three Panel Layout - Sidebar + Chat + Sources (automatic 1/3 each)
+   ================================================================= */
+
+.three-panel-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sidebar-panel {
+  overflow-y: auto;
+  overflow-x: hidden;
+  @apply bg-white dark:bg-apple-gray-600;
+  @apply border-r border-apple-gray-100 dark:border-apple-gray-500;
+}
+
+.chat-panel {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.sources-sidepanel {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  @apply border-l border-apple-gray-100 dark:border-apple-gray-500;
+  @apply bg-apple-gray-50/50 dark:bg-apple-gray-700/50;
+}
+
+/* Responsive: Collapse to 2 columns on medium screens (<1400px) */
+@media (max-width: 1400px) {
+  .three-panel-layout {
+    grid-template-columns: 1fr 2fr;
+  }
+
+  .sources-sidepanel {
+    display: none;
+  }
+}
+
+/* Responsive: Collapse to single column on narrow screens (<900px) */
+@media (max-width: 900px) {
+  .three-panel-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar-panel {
+    display: none;
+  }
+}
+
+/* Legacy: Split panel (2-column) for backward compatibility */
+.split-panel-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* =================================================================
+   Source Highlight Animation (Apple Design)
+   ================================================================= */
+
+@keyframes source-highlight {
+  0% {
+    background-color: rgba(74, 144, 217, 0.25);
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.3);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.source-highlight-active {
+  animation: source-highlight 2s ease-out forwards;
+  @apply rounded-xl;
+}
+
+/* =================================================================
+   Source Selection Ring (Apple Style - Persistent)
+   ================================================================= */
+
+.source-item-selected {
+  box-shadow: 0 0 0 3px #007AFF;
+  @apply rounded-xl;
+}
+
+.dark .source-item-selected {
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.8);
+}
+
+/* =================================================================
+   Message Source Group - Alignment in Sidepanel
+   ================================================================= */
+
+.message-source-group {
+  @apply py-4 px-4;
+  @apply border-b border-apple-gray-100 dark:border-apple-gray-600;
+}
+
+.message-source-group:last-child {
+  @apply border-b-0;
+}
+
+.message-source-group-header {
+  @apply text-xs font-medium text-apple-gray-400 dark:text-apple-gray-400 mb-3;
+  @apply uppercase tracking-wide;
+}
+
+/* Cited vs non-cited sources styling */
+.source-item-cited {
+  @apply border-l-2 border-apple-blue;
+}
+
+.source-item-badge {
+  @apply text-[10px] font-semibold uppercase tracking-wider;
+  @apply px-1.5 py-0.5 rounded;
+  @apply bg-apple-blue/10 text-apple-blue;
+}
+
+/* =================================================================
+   Bottom Sheet (Apple Design - Responsive Fallback)
+   ================================================================= */
+
+.bottom-sheet {
+  /* iOS-style safe area padding */
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Floating sources button - only visible on narrow screens */
+.sources-fab {
+  @apply fixed bottom-24 right-4 z-30;
+  @apply flex items-center gap-2 px-4 py-3;
+  @apply bg-apple-blue text-white font-medium rounded-full;
+  @apply shadow-lg hover:shadow-xl transition-shadow;
+  @apply hidden; /* Hidden by default */
+}
+
+@media (max-width: 1400px) {
+  .sources-fab {
+    @apply flex; /* Show on narrow screens */
+  }
+}
+
+/* Bottom sheet content styling */
+.bottom-sheet-sources {
+  @apply px-4 py-2;
+}
+
+/* =================================================================
+   Apple HIG Range Slider
+   macOS-style: thin rounded track, circular thumb with shadow
+   ================================================================= */
+
+/* Track styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: #D2D2D7;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  --slider-track: #D2D2D7;
+  --slider-fill: #0071E3;
+}
+
+.dark input[type="range"] {
+  --slider-track: #424245;
+  --slider-fill: #0071E3;
+}
+
+/* Filled track (WebKit) */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+/* Thumb (WebKit) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 0.5px 1px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+  margin-top: -8px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow:
+    0 0.5px 2px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.08);
+  box-shadow:
+    0 0.5px 2px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 3px rgba(0, 113, 227, 0.3),
+    0 0.5px 1px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Thumb (Firefox) */
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 0.5px 1px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  box-shadow:
+    0 0.5px 2px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Firefox track fill */
+input[type="range"]::-moz-range-progress {
+  height: 4px;
+  background: #0071E3;
+  border-radius: 2px;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: #D2D2D7;
+  border-radius: 2px;
+}
+
+.dark input[type="range"]::-moz-range-track {
+  background: #424245;
+}

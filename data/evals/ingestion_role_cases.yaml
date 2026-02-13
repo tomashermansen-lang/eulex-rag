@@ -1,0 +1,104 @@
+# Golden cases for role classification validation
+# Used by src/eval/ingestion_eval_runner.py to compare keyword vs LLM role detection
+#
+# Role definitions:
+#   - scope: Defines what/who the law applies to
+#   - definitions: Defines terms and concepts
+#   - classification: Categorizes entities (e.g., high-risk)
+#   - obligations: Describes requirements and duties
+#   - enforcement: Sanctions, penalties, oversight
+#
+# NOTE: These cases define SEMANTICALLY CORRECT roles, not what keywords detect.
+# LLM should match these; keywords may have lower scores due to limitations.
+
+# =============================================================================
+# AI Act Golden Cases
+# =============================================================================
+
+# Article 2 - Scope (anvendelsesområde)
+# LLM may also detect 'obligations' because it lists WHO must comply
+- id: ai-act-art2-scope
+  corpus_id: ai-act
+  location: article:2
+  chunk_id: chunk:v1/ai-act/locv1chapteriarticle2/247/2b9e4baa9696
+  text_snippet: "Denne forordning finder anvendelse på..."
+  expected_roles:
+    - scope
+  notes: "Art. 2 stk. 1 definerer hvem forordningen gælder for"
+
+# Article 3 - Definitions (definitioner)
+- id: ai-act-art3-definitions
+  corpus_id: ai-act
+  location: article:3
+  chunk_id: chunk:v1/ai-act/locv1chapteriarticle3/259/15f8a413c4d0
+  text_snippet: "I denne forordning forstås ved..."
+  expected_roles:
+    - definitions
+  notes: "Art. 3 indeholder alle definitioner"
+
+# Article 6 - Classification (klassificering)
+# LLM correctly detects both classification (what is high-risk) and obligations (what to do)
+- id: ai-act-art6-classification
+  corpus_id: ai-act
+  location: article:6
+  chunk_id: chunk:v1/ai-act/locv1chapteriiisection1article6/287/fb48c17b9692
+  text_snippet: "betragtes AI-systemet som højrisiko..."
+  expected_roles:
+    - classification
+  notes: "Art. 6 definerer højrisiko-klassificering"
+
+# Article 9 - Obligations (risikostyring)
+# Semantically correct: this article describes OBLIGATIONS (what providers must do)
+# Keywords miss this but LLM catches it correctly
+- id: ai-act-art9-obligations
+  corpus_id: ai-act
+  location: article:9
+  chunk_id: null
+  text_snippet: "risikostyringssystem"
+  expected_roles:
+    - obligations
+  notes: |
+    Art. 9 describes OBLIGATIONS (risk management system requirements).
+    Keywords incorrectly detect 'classification' due to 'højrisiko' mention.
+    LLM correctly identifies this as an obligations article.
+
+# Article 99 - Enforcement (sanktioner)
+- id: ai-act-art99-enforcement
+  corpus_id: ai-act
+  location: article:99
+  chunk_id: chunk:v1/ai-act/locv1chapterxiiarticle99/758/477d536da45d
+  text_snippet: "regler om sanktioner og andre håndhævelsesforanstaltninger"
+  expected_roles:
+    - enforcement
+  notes: "Art. 99 beskriver sanktioner"
+
+# Annex III punkt 5 - Classification (financial services) - CRITICAL CASE
+# This is the case that keywords may miss but LLM should catch
+- id: ai-act-annex3-punkt5-classification
+  corpus_id: ai-act
+  location: annex:iii/annex_point:5
+  chunk_id: chunk:v1/ai-act/locv1annexiiiannexpoint5/836/e010f4e33d55
+  text_snippet: "kreditværdighed eller fastslå deres kreditvurdering"
+  expected_roles:
+    - classification
+  notes: |
+    CRITICAL: Bilag III punkt 5 litra b omhandler kreditvurdering som højrisiko.
+    This is a CLASSIFICATION article (lists high-risk use cases).
+    LLM should understand semantically that this IS a classification provision.
+
+# =============================================================================
+# Test for role combinations
+# =============================================================================
+
+# Article 2 stk. 2 - classification reference within scope
+# LLM may detect 'obligations' because it describes what applies to high-risk systems
+- id: ai-act-art2-stk2-combo
+  corpus_id: ai-act
+  location: article:2
+  chunk_id: chunk:v1/ai-act/locv1chapteriarticle2/248/9012392f0a30
+  text_snippet: "AI-systemer, der er klassificeret som højrisiko"
+  expected_roles:
+    - classification
+  notes: |
+    Art. 2 stk. 2 references classification (high-risk systems).
+    Primary role is classification. Scope is secondary context.

@@ -1,0 +1,146 @@
+{
+  "dora": {
+    "LEGAL": [
+      "Hvilke finansielle enheder er omfattet af DORA?",
+      "Hvad er ansvarsfordelingen ved outsourcing til cloud-udbydere?",
+      "Hvornår skal tilsynsmyndigheden underrettes om IKT-hændelser?"
+    ],
+    "ENGINEERING": [
+      "Hvad er kravene til IKT-risikostyring?",
+      "Hvad er tidsfristen for hændelsesrapportering?",
+      "Hvad kræves af kritiske tredjepartsudbydere?"
+    ]
+  },
+  "gdpr": {
+    "LEGAL": [
+      "Hvad er de lovlige grundlag for behandling af persondata?",
+      "Hvornår har en borger ret til at få slettet sine data?",
+      "Hvad kræves for at et samtykke er gyldigt?"
+    ],
+    "ENGINEERING": [
+      "Hvad skal en konsekvensanalyse (DPIA) indeholde?",
+      "Hvad er kravene til behandlingssikkerhed?",
+      "Hvad skal en databehandleraftale indeholde?"
+    ]
+  },
+  "data-act": {
+    "LEGAL": [
+      "Hvilke forpligtelser har dataindehavere i forhold til at stille data til rådighed for brugerne, og hvordan kan de sikre, at disse forpligtelser overholdes?",
+      "Hvordan kan brugere sikre deres ret til at dele data med tredjeparter, og hvilke betingelser skal være opfyldt for at gøre dette lovligt?",
+      "Hvilke konsekvenser kan der være for virksomheder, der pålægger urimelige aftalevilkår om adgang til data, og hvordan kan sådanne vilkår anfægtes?"
+    ],
+    "ENGINEERING": [
+      "Hvilke tekniske foranstaltninger skal implementeres for at sikre, at produktdata og relaterede tjenestedata er tilgængelige for brugerne på en sikker måde?",
+      "Hvordan kan virksomheder sikre, at de opfylder kravene til datadeling med tredjeparter, herunder de tekniske aspekter ved dataoverførsel?",
+      "Hvilke procedurer skal være på plads for at lette skift mellem udbydere af databehandlingstjenester, og hvilke tekniske begrænsninger skal tages i betragtning?"
+    ]
+  },
+  "elan": {
+    "LEGAL": [
+      "Hvilke forpligtelser har de nationale udstedende myndigheder i forhold til at generere og overføre dokumenter til ELAN?",
+      "Hvilke konsekvenser kan der være, hvis dokumenter ikke registreres korrekt i ELAN, især i tilfælde af systemets utilgængelighed?",
+      "Hvordan håndteres personoplysninger i ELAN, og hvilke juridiske krav skal overholdes ved behandling af disse oplysninger?"
+    ],
+    "ENGINEERING": [
+      "Hvilke tekniske krav skal være opfyldt for at sikre korrekt integration af nationale systemer med ELAN?",
+      "Hvordan skal de nationale udstedende myndigheder forberede sig på at generere dokumenter i ELAN, når systemet bliver tilgængeligt?",
+      "Hvad er de nødvendige skridt for at sikre, at dokumenter genereret under systemets nedetid bliver korrekt registreret i ELAN, når systemet er tilbage online?"
+    ]
+  },
+  "ai-act": {
+    "LEGAL": [
+      "Hvilke forpligtelser har udbydere af højrisiko-AI-systemer for at sikre overholdelse af lovgivningen?",
+      "Hvad er konsekvenserne for udbydere, der ikke overholder kravene til højrisiko-AI-systemer?",
+      "Hvordan kan idriftsættere af højrisiko-AI-systemer sikre, at de overholder de grundlæggende rettigheder i deres anvendelse?"
+    ],
+    "ENGINEERING": [
+      "Hvordan kan udviklere sikre, at deres højrisiko-AI-systemer opfylder kravene til nøjagtighed og robusthed?",
+      "Hvilke tekniske foranstaltninger skal implementeres for at muliggøre automatisk registrering af hændelser i højrisiko-AI-systemer?",
+      "Hvilke kvalitetskriterier skal datasæt opfylde for at kunne træne højrisiko-AI-systemer korrekt?"
+    ]
+  },
+  "reg-sandkasser": {
+    "LEGAL": [
+      "Hvilke krav skal opfyldes for at oprette en reguleringsmæssig sandkasse for interoperabilitet?",
+      "Hvilke rettigheder og forpligtelser har koordinatorerne for en reguleringsmæssig sandkasse i forhold til deltagere?",
+      "Hvad er proceduren for at afslutte en reguleringsmæssig sandkasse, og hvilke betingelser skal være opfyldt?"
+    ],
+    "ENGINEERING": [
+      "Hvordan kan deltagere sikre, at deres projekter opfylder kravene til en reguleringsmæssig sandkasse for interoperabilitet?",
+      "Hvilke tekniske mekanismer skal implementeres for at sikre gennemsigtighed i driften af en reguleringsmæssig sandkasse?",
+      "Hvordan bør risikostyringsprocessen designes for at overholde kravene i forbindelse med en reguleringsmæssig sandkasse?"
+    ]
+  },
+  "rearm-europe": {
+    "LEGAL": [
+      "Hvordan defineres støtte til dual use-projekter i denne forordning, og hvilke juridiske forpligtelser pålægger det medlemsstaterne?",
+      "Hvilke konsekvenser kan der være for medlemsstater, der ikke overholder bestemmelserne om tilbagebetalinger i forbindelse med forsvarsrelaterede investeringer?",
+      "Hvilke kriterier skal opfyldes for at et tredjeland kan deltage i fonden til støtte for disruptive forsvarsteknologier?"
+    ],
+    "ENGINEERING": [
+      "Hvilke tekniske standarder skal opfyldes for at sikre, at dual use-projekter bidrager til samfundets modstandsdygtighed?",
+      "Hvordan kan medlemsstaterne implementere kravene til at mindske strategisk afhængighed og sårbarhed i udviklingen af forsvarsteknologier?",
+      "Hvilke processer skal etableres for at sikre korrekt tilbagebetaling af forskud og indtægter i forbindelse med forsvarsrelaterede investeringer?"
+    ]
+  },
+  "cyberrobusthed": {
+    "LEGAL": [
+      "Hvilke specifikke cybersikkerhedskrav skal produkter med digitale elementer opfylde for at kunne gøres tilgængelige på markedet?",
+      "Hvordan kan medlemsstaterne indføre yderligere cybersikkerhedskrav ved offentlige indkøb af produkter med digitale elementer?",
+      "Hvilke forpligtelser har fabrikanten i forhold til rapportering af sårbarheder i deres produkter med digitale elementer?"
+    ],
+    "ENGINEERING": [
+      "Hvilke tekniske foranstaltninger skal implementeres for at sikre, at produkter med digitale elementer opfylder de væsentlige cybersikkerhedskrav?",
+      "Hvordan kan virksomheder sikre korrekt installation og vedligeholdelse af produkter med digitale elementer for at overholde lovgivningen?",
+      "Hvilke procedurer skal følges for at dokumentere overensstemmelse med de harmoniserede standarder for cybersikkerhed?"
+    ]
+  },
+  "nis2-cir-2024-2690": {
+    "LEGAL": [
+      "Hvilke forpligtelser har DNS-tjenesteudbydere i forhold til håndtering af væsentlige hændelser?",
+      "Hvordan defineres en væsentlig hændelse for udbydere af cloudcomputingtjenester, og hvilke konsekvenser kan det have for dem?",
+      "Er der undtagelser for visse typer hændelser, der ikke betragtes som væsentlige under denne forordning?"
+    ],
+    "ENGINEERING": [
+      "Hvilke tekniske foranstaltninger skal implementeres for at opfylde kravene til cybersikkerhedsrisikostyring for datacentertjenester?",
+      "Hvordan kan udbydere af indholdsleveringsnetværk overvåge og rapportere om tilgængeligheden af deres tjenester for at opfylde lovgivningens krav?",
+      "Hvilke metodologiske tilgange anbefales til at identificere og håndtere tilbagevendende hændelser i cybersikkerhed?"
+    ]
+  },
+  "nis2-dir-2022-2555": {
+    "LEGAL": [
+      "Hvilke forpligtelser har medlemsstaterne i forhold til at vedtage nationale cybersikkerhedsstrategier?",
+      "Hvordan kan medlemsstaterne sikre, at deres nationale bestemmelser om cybersikkerhed er i overensstemmelse med EU-retten?",
+      "Hvilke sanktioner kan pålægges enheder, der ikke overholder kravene til rapportering af cybersikkerhedshændelser?"
+    ],
+    "ENGINEERING": [
+      "Hvilke tekniske foranstaltninger skal væsentlige enheder implementere for at styre cybersikkerhedsrisici?",
+      "Hvordan kan CSIRT'erne sikre tilgængeligheden af deres kommunikationskanaler i tilfælde af cybersikkerhedshændelser?",
+      "Hvilke standarder og tekniske specifikationer anbefales for at sikre overholdelse af cybersikkerhedskravene?"
+    ]
+  },
+  "eucs-dr-2024-1366": {
+    "LEGAL": [
+      "Hvordan defineres enheder med stor indvirkning i forhold til deres cybersikkerhedsmæssige forpligtelser?",
+      "Hvilke sanktioner kan pålægges, hvis enheder ikke overholder de fastsatte cybersikkerhedskrav?",
+      "Hvilke procedurer skal følges for at anmode om undtagelser fra minimumscybersikkerhedskontroller?"
+    ],
+    "ENGINEERING": [
+      "Hvilke specifikke minimumscybersikkerhedskontroller skal implementeres af TSO'er og DSO'er?",
+      "Hvordan skal cybersikkerhedsrisikovurderinger udføres på enhedsniveau for at sikre compliance?",
+      "Hvilke metoder anbefales til at udarbejde planer for afbødning af cybersikkerhedsrisici på regionalt plan?"
+    ]
+  },
+  "eucs-cir-2025-2540": {
+    "LEGAL": [
+      "Hvilke forpligtelser har de nationale cybersikkerhedscertificeringsmyndigheder i forbindelse med tidsplanen for peerreviews?",
+      "Hvordan sikres fortroligheden af de data, der indsamles under peerreviewprocessen, og hvilke sanktioner kan der være for brud på denne fortrolighed?",
+      "Hvad er konsekvenserne, hvis en medlemsstat ikke overholder kravene til sammensætningen af peerreviewholdet?"
+    ],
+    "ENGINEERING": [
+      "Hvilke tekniske foranstaltninger skal implementeres for at sikre, at peerreviewene gennemføres i overensstemmelse med den fastlagte tidsplan?",
+      "Hvordan kan nationale cybersikkerhedscertificeringsmyndigheder effektivt indsamle og analysere data i forbindelse med peerreviewmetoden?",
+      "Hvilke systemer skal være på plads for at dokumentere og rapportere resultaterne af peerreviewene inden for den angivne tidsramme?"
+    ]
+  }
+}

@@ -1,0 +1,576 @@
+- id: dora-01-governance-and-organisation
+  profile: LEGAL
+  prompt: 'Efter DORA-forordningen: Hvilke overordnede krav stilles til governance og organisering for at styre IKT-risiko?
+    Vær eksplicit om antagelser.'
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 5 (forvaltning og organisation).
+- id: dora-02-ict-risk-management-framework
+  profile: ENGINEERING
+  prompt: Hvad kræver DORA om en ramme for IKT-risikostyring (ICT risk management framework), og hvordan skal den være dokumenteret?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    rerank_matrix: true
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 6 (ramme for IKT-risikostyring).
+- id: dora-03-detection-mechanisms
+  profile: ENGINEERING
+  prompt: 'Efter DORA: hvilke mekanismer skal vi have for at detektere anormale aktiviteter og IKT-relaterede hændelser?'
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:10
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 10 (detektion).
+- id: dora-04-incident-management-process
+  profile: ENGINEERING
+  prompt: Hvad kræver DORA om processen for styring af IKT-relaterede hændelser (incident management), inkl. detektere, styre
+    og indberette?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:17
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 17 (proces for styring af IKT-relaterede hændelser).
+- id: dora-05-reporting-major-ict-incidents
+  profile: LEGAL
+  prompt: Hvad kræver DORA om indberetning af større IKT-relaterede hændelser, og til hvem?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:19
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 19 (indberetning af større IKT-relaterede hændelser).
+- id: dora-06-resilience-testing-program
+  profile: ENGINEERING
+  prompt: Opsummér de generelle krav i DORA til gennemførelse af test af digital operationel modstandsdygtighed (resilience
+    testing).
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:24
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 24 (generelle krav til test).
+- id: dora-07-tlpt-advanced-testing
+  profile: ENGINEERING
+  prompt: Hvad er TLPT (threat-led penetration testing) i DORA-kontekst, og hvilke overordnede krav gælder for avancerede
+    tests?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:26
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 26 (avancerede tests baseret på TLPT).
+- id: dora-08-ict-third-party-risk-principles
+  profile: LEGAL
+  prompt: Hvilke generelle principper fastsætter DORA for styring af IKT-tredjepartsrisiko (ICT third-party risk) som en del
+    af IKT-risikostyringen?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:28
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 28 (generelle principper for IKT-tredjepartsrisiko).
+- id: dora-09-key-contractual-provisions
+  profile: ENGINEERING
+  prompt: 'Når vi outsourcer IKT-tjenester: hvilke centrale kontraktbestemmelser forventer DORA typisk at en aftale indeholder?'
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:30
+    must_not_include_any_of: []
+    notes: Bør forankres i artikel 30 (centrale kontraktbestemmelser).
+- id: dora-10-ambiguous-compliance
+  profile: LEGAL
+  prompt: Er vi DORA-compliant? Svar ja eller nej.
+  test_types:
+  - retrieval
+  - abstention
+  - robustness
+  origin: auto
+  expected:
+    behavior: abstain
+    allow_empty_references: true
+    must_have_article_support_for_normative: true
+    must_include_any_of: []
+    must_not_include_any_of: []
+    notes: 'Abstain case: Tests that system correctly refuses to answer impossible compliance questions. Evaluated with AbstentionScorer
+      instead of faithfulness (per UAEval4RAG best practices).'
+- id: dora-11-ict-third-party-contract-citations
+  profile: ENGINEERING
+  prompt: 'En finansiel virksomhed outsourcer en kritisk IT-drift/Cloud-platform til en ekstern leverandør.
+
+    Vurder audit-sikkert:
+
+    1) Om DORA finder anvendelse og hvad der forstås ved relevante begreber (anvendelsesområde/definitioner).
+
+    2) Centrale krav til ICT third-party risk management (leverandørstyring/outsourcing).
+
+    3) Krav til rapportering af større ICT-relaterede hændelser til myndighederne.'
+  test_types:
+  - retrieval
+  - multi_hop
+  - faithfulness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    - article:3
+    must_include_all_of:
+    - article:28
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    rerank_matrix: true
+    min_citations: 3
+    max_citations: 8
+    notes: 'MULTI-CONCEPT CASE: Realistisk bred bruger-prompt. Tester scope + third-party risk. Incident-koncept dækkes af
+      dora-29 (fokuseret) - prompt-instruktion håndterer transparens om manglende kilder.'
+- id: dora-12-contract-first-ict-risk-management-framework
+  profile: ENGINEERING
+  prompt: Hvilke minimumskrav stiller DORA til et ICT risk management framework, og hvordan dokumenterer vi det audit-sikkert?
+  test_types:
+  - retrieval
+  - faithfulness
+  origin: auto
+  expected:
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    rerank_matrix: true
+    notes: 'Contract-first: kræver bracket citations [n] og forankring i artikel 6 (ICT risk management framework).'
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+- id: dora-13-contract-first-incident-management
+  profile: ENGINEERING
+  prompt: Opsummér DORA-kravene til incident management og indberetning på et overordnet niveau, og hvordan vi kan operationalisere
+    det i processer/runbooks.
+  test_types:
+  - retrieval
+  - faithfulness
+  origin: auto
+  expected:
+    must_include_any_of:
+    - article:17
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    notes: 'Contract-first: kræver bracket citations [n] og forankring i artikel 17 (incident management).'
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+- id: dora-14-multi-concept-incident-reporting
+  profile: ENGINEERING
+  prompt: Hvordan hænger DORA's krav til incident management sammen med indberetningskravene? Beskriv processen fra detektion
+    til rapportering.
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:17
+    must_include_all_of:
+    - article:19
+    rerank_matrix: true
+    notes: 'Multi-concept: incident management (art. 17) + reporting (art. 19).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-15-multi-concept-testing-tlpt
+  profile: ENGINEERING
+  prompt: Hvad er forskellen mellem almindelig resilience testing og TLPT (threat-led penetration testing) efter DORA, og
+    hvornår kræves hver type?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:24
+    - article:25
+    must_include_all_of:
+    - article:26
+    rerank_matrix: true
+    notes: 'Multi-concept: resilience testing (art. 24-25) + TLPT (art. 26).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-16-multi-concept-thirdparty-contracts
+  profile: ENGINEERING
+  prompt: Hvilke krav stiller DORA til både risikostyring af IKT-tredjepartsudbydere og de kontraktuelle bestemmelser med
+    disse leverandører?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:28
+    must_include_all_of:
+    - article:30
+    rerank_matrix: true
+    notes: 'Multi-concept: third-party risk (art. 28) + contractual provisions (art. 30).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-17-edge-specific-article
+  profile: LEGAL
+  prompt: Hvad kræver DORA artikel 5, stk. 2 vedrørende ledelsesorganets ansvar for IKT-risikostyring?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:5
+    notes: 'Edge case: Specifik artikel-/stk-reference.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-18-edge-definition-lookup
+  profile: LEGAL
+  prompt: Hvad er definitionen af 'IKT-relateret hændelse' og 'større IKT-relateret hændelse' efter DORA artikel 3?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:3
+    notes: 'Edge case: Definition lookup i artikel 3.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-19-edge-scope
+  profile: LEGAL
+  prompt: Hvilke typer finansielle enheder er omfattet af DORA, og hvem er undtaget ifølge artikel 2?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:2
+    notes: 'Edge case: Scope og undtagelser (art. 2).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-20-edge-timeline
+  profile: LEGAL
+  prompt: Hvornår skal en større IKT-hændelse indberettes efter DORA, og hvad er tidsfristerne for de forskellige rapporter?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:19
+    notes: 'Edge case: Timeline for incident reporting.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-21-edge-critical-third-party
+  profile: LEGAL
+  prompt: Hvordan udpeges en kritisk IKT-tredjepartsudbyder efter DORA, og hvilke særlige krav gælder for dem?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:31
+    - article:33
+    notes: 'Edge case: Critical third-party designation (art. 31, 33).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-22-adversarial-negation
+  profile: LEGAL
+  prompt: Hvad kræver DORA IKKE af mindre finansielle enheder? Beskriv proportionalitetsprincippet og undtagelser.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:4
+    notes: 'Adversarial: Negation - proportionality principle.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-23-adversarial-hypothetical
+  profile: ENGINEERING
+  prompt: Hvis en kritisk IKT-leverandør går ned og forårsager driftsforstyrrelser - hvad er vores forpligtelser og potentielle
+    sanktioner efter DORA?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:17
+    - article:28
+    - article:50
+    notes: 'Adversarial: Hypothetical vendor outage + obligations.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-24-adversarial-ambiguous
+  profile: LEGAL
+  prompt: Er en cloud-baseret betalingsgateway en 'kritisk IKT-tredjepartsudbyder'? Analyser kriterierne.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:31
+    notes: 'Adversarial: Ambiguous case - critical third-party criteria.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-25-concentration-risk
+  profile: ENGINEERING
+  prompt: Hvad kræver DORA vedrørende koncentrationsrisiko ved brug af IKT-tredjepartsudbydere?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:29
+    notes: Concentration risk (art. 29).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-26-information-sharing
+  profile: LEGAL
+  prompt: Hvilke regler har DORA for informationsdeling om cybertrusler mellem finansielle enheder?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:45
+    notes: Information sharing (art. 45).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-27-competent-authorities
+  profile: LEGAL
+  prompt: Hvilke beføjelser har tilsynsmyndighederne efter DORA, og hvordan koordineres tilsynet på EU-niveau?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:46
+    - article:47
+    notes: Competent authorities and supervision (art. 46-47).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-28-business-continuity
+  profile: ENGINEERING
+  prompt: Hvad kræver DORA vedrørende forretningskontinuitet og katastrofeberedskab for IKT-systemer?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:11
+    - article:12
+    notes: Business continuity and disaster recovery (art. 11-12).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-29-incident-reporting-focused
+  profile: ENGINEERING
+  prompt: Hvad er kravene til rapportering af større ICT-relaterede hændelser til myndighederne under DORA? Hvornår skal der
+    rapporteres, til hvem, og med hvilken information?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:17
+    - article:19
+    notes: 'FOKUSERET CASE: Tester specifikt incident reporting (art. 17-19). Tilføjet som komplement til dora-11 der er en
+      bred multi-concept case.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: dora-30-scope-application
+  profile: LEGAL
+  prompt: Hvem er omfattet af DORA-forordningen? Hvilke typer finansielle enheder og tjenesteudbydere?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:2
+    notes: Scope er defineret i artikel 2.
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+    semantic_requirements:
+      primary_articles:
+      - article:2
+      supporting_articles:
+      - article:3
+      - article:1
+      exclude_from_primary:
+      - article:28
+      - article:64
+- id: dora-31-proportionality
+  profile: LEGAL
+  prompt: Hvordan anvendes proportionalitetsprincippet i DORA? Gælder de samme krav for små og store finansielle enheder?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:4
+    notes: Proportionalitet er artikel 4.
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+    semantic_requirements:
+      primary_articles:
+      - article:4
+      supporting_articles:
+      - article:2
+      exclude_from_primary:
+      - article:28
+      - article:64
+- id: dora-32-third-party-risk-management
+  profile: LEGAL
+  prompt: Hvad kræver DORA vedrørende styring af IKT-tredjepartsrisiko, og hvad skal kontrakterne indeholde?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:28
+    - article:30
+    notes: Tredjepartsrisiko er artikler 28-30.
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+    semantic_requirements:
+      primary_articles:
+      - article:28
+      - article:30
+      supporting_articles:
+      - article:29
+      exclude_from_primary:
+      - article:6
+      - article:64
+- id: dora-33-critical-ict-providers
+  profile: LEGAL
+  prompt: Hvad er en kritisk IKT-tredjepartsudbyder efter DORA, og hvordan identificeres og overvåges de?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:31
+    - article:33
+    notes: Kritiske IKT-udbydere er artikler 31-44.
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+    semantic_requirements:
+      primary_articles:
+      - article:31
+      - article:33
+      supporting_articles:
+      - article:28
+      exclude_from_primary:
+      - article:6
+      - article:2
+- id: dora-34-information-sharing
+  profile: LEGAL
+  prompt: Hvad siger DORA om informationsudveksling vedrørende cybertrusler mellem finansielle enheder?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:45
+    notes: Informationsudveksling er artikel 45.
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+    semantic_requirements:
+      primary_articles:
+      - article:45
+      supporting_articles: []
+      exclude_from_primary:
+      - article:6
+      - article:28
+- id: dora-35-ict-protection-measures
+  profile: ENGINEERING
+  prompt: Hvilke IKT-sikkerhedsforanstaltninger og beskyttelseskrav stiller DORA?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:9
+    notes: Beskyttelse og forebyggelse er artikel 9.
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+    semantic_requirements:
+      primary_articles:
+      - article:9
+      supporting_articles:
+      - article:8
+      exclude_from_primary:
+      - article:28
+      - article:64

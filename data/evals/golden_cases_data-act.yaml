@@ -1,0 +1,144 @@
+- id: data-act-01-baseline-tilgængelighed
+  profile: LEGAL
+  prompt: Hvilke regler gælder for tilgængelighed af produktdata for brugeren af et forbundet produkt?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:3
+    must_not_include_any_of: []
+    notes: '[baseline] Artikel 3 omhandler specifikt tilgængeligheden af produktdata.'
+- id: data-act-02-baseline-brugerretter
+  profile: LEGAL
+  prompt: Hvilke rettigheder har brugeren til at dele data med tredjeparter?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    must_not_include_any_of: []
+    notes: '[baseline] Artikel 5 beskriver brugerens ret til at dele data.'
+- id: data-act-03-ambiguous-dataindehaver
+  profile: ENGINEERING
+  prompt: Hvilke forpligtelser har dataindehavere i forhold til at stille data til rådighed for datamodtagere?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    - article:9
+    must_not_include_any_of: []
+    notes: '[ambiguous] Både artikel 8 og artikel 9 omhandler forpligtelser i relation til datadeling.'
+- id: data-act-04-ambiguous-offentlige-myndigheder
+  profile: LEGAL
+  prompt: Hvilke betingelser gælder for offentlige myndigheder, når de anmoder om data?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:14
+    - article:17
+    must_not_include_any_of: []
+    notes: '[ambiguous] Artikel 14 og artikel 17 beskriver betingelserne for anmodning om data fra offentlige myndigheder.'
+- id: data-act-05-negative-urimelige-aftaler
+  profile: LEGAL
+  prompt: Hvilke bestemmelser gælder for urimelige aftalevilkår i forbindelse med dataadgang?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    must_not_include_any_of:
+    - article:2
+    notes: '[negative] Artikel 2 omhandler definitioner og er ikke relevant for urimelige aftaler.'
+- id: data-act-06-negative-sanktioner
+  profile: ENGINEERING
+  prompt: Hvad er konsekvenserne ved ikke at overholde forpligtelserne i Data Act?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:10
+    must_not_include_any_of:
+    - article:11
+    notes: '[negative] Artikel 11 omhandler tekniske beskyttelsesforanstaltninger og er ikke relevant for sanktioner.'
+- id: data-act-07-multi-article-datadeling
+  profile: ENGINEERING
+  prompt: Hvordan skal dataindehavere håndtere anmodninger om datadeling fra brugere og tredjeparter?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    - article:5
+    - article:6
+    must_not_include_any_of: []
+    notes: '[multi] Artikel 4, 5 og 6 beskriver alle aspekter af datadeling og brugernes rettigheder.'
+- id: data-act-08-multi-article-offentlige-myndigheder
+  profile: LEGAL
+  prompt: Hvilke forpligtelser har offentlige myndigheder, når de anmoder om data under ekstraordinære forhold?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:14
+    - article:15
+    - article:19
+    must_not_include_any_of: []
+    notes: '[multi] Artikel 14, 15 og 19 dækker forpligtelserne for offentlige myndigheder ved anmodning om data.'
+- id: data-act-09-baseline-definitioner
+  profile: LEGAL
+  prompt: Hvad forstås der ved 'metadata' i forbindelse med Data Act?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    must_not_include_any_of: []
+    notes: '[baseline] Artikel 2 indeholder definitionen af metadata.'
+- id: data-act-10-ambiguous-tekniske-foranstaltninger
+  profile: ENGINEERING
+  prompt: Hvilke tekniske foranstaltninger kan dataindehavere anvende for at beskytte data mod uautoriseret adgang?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:11
+    - article:24
+    must_not_include_any_of: []
+    notes: '[ambiguous] Artikel 11 og artikel 24 omhandler tekniske foranstaltninger og beskyttelse af data.'

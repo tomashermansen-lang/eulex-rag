@@ -1,0 +1,292 @@
+{
+  "schema_version": "citation_graph:v1",
+  "corpus_id": "elan",
+  "generated_at": "2026-01-30T08:16:45.287698+00:00",
+  "nodes": {
+    "223": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "ANNEX:I": {
+      "type": "annex",
+      "mention_count": 2
+    },
+    "42": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "6": {
+      "type": "article",
+      "title": "Overgangsperiode",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "1": {
+      "type": "article",
+      "title": "Genstand",
+      "roles": [
+        "obligations",
+        "procedures",
+        "exemptions",
+        "rights",
+        "classification",
+        "scope"
+      ],
+      "mention_count": 6
+    },
+    "31": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "9": {
+      "type": "article",
+      "title": "Toldkontrol af dokumenter, der er genereret, mens ELAN var utilgængeligt",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 3
+    },
+    "ANNEX:II": {
+      "type": "annex",
+      "mention_count": 1
+    },
+    "4": {
+      "type": "article",
+      "title": "Udstedelse af dokumenter og gyldighedskontroller",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 3
+    },
+    "2": {
+      "type": "article",
+      "title": "Definitioner",
+      "roles": [
+        "definitions",
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "3": {
+      "type": "article",
+      "title": "Dokumenternes format",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 4
+    },
+    "5": {
+      "type": "article",
+      "title": "Behandling af personoplysninger",
+      "roles": [
+        "obligations",
+        "rights"
+      ]
+    },
+    "10": {
+      "type": "article",
+      "title": "Registrering i ELAN af dokumenter, der er genereret, mens ELAN var utilgængeligt",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 1
+    },
+    "7": {
+      "type": "article",
+      "title": "Information om planlagt vedligeholdelsesarbejde",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "8": {
+      "type": "article",
+      "title": "Dokumenter, der er genereret under vedligeholdelse eller ikkeplanlagt utilgængelighed af ELAN",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 3
+    },
+    "11": {
+      "type": "article",
+      "title": "Toldkontrol af dokumenter, der findes i ELAN, mens ELAN er utilgængeligt",
+      "roles": [
+        "obligations",
+        "procedures"
+      ]
+    },
+    "12": {
+      "type": "article",
+      "title": "Midlertidig utilgængelighed af EU CSW-CERTEX",
+      "roles": [
+        "obligations",
+        "procedures"
+      ]
+    },
+    "13": {
+      "type": "article",
+      "title": "Behandlinger af dokumenter, som findes i ELAN, mens ELAN er utilgængeligt",
+      "roles": [
+        "obligations",
+        "procedures"
+      ]
+    },
+    "14": {
+      "type": "article",
+      "title": "Ikrafttræden og anvendelse",
+      "roles": [
+        "obligations",
+        "exemptions",
+        "procedures",
+        "rights"
+      ]
+    }
+  },
+  "edges": [
+    {
+      "source": "1",
+      "target": "31",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "1",
+      "target": "ANNEX:II",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "1",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "1",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "2",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "2",
+      "target": "1",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "2",
+      "target": "3",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "5",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "6",
+      "target": "1",
+      "type": "cites",
+      "count": 4,
+      "weight": 1.0
+    },
+    {
+      "source": "6",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "6",
+      "target": "ANNEX:I",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "6",
+      "target": "2",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.5
+    },
+    {
+      "source": "9",
+      "target": "8",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.5
+    },
+    {
+      "source": "9",
+      "target": "1",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "10",
+      "target": "8",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "10",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "11",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "11",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    },
+    {
+      "source": "14",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.25
+    }
+  ]
+}

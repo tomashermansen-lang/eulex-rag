@@ -1,0 +1,210 @@
+# EuLex RAG Framework Configuration
+# All settings in one place. Secrets belong in .env file.
+
+# =============================================================================
+# OpenAI / LLM Settings
+# =============================================================================
+openai:
+  chat_model: "gpt-4o-mini"
+  ##chat_model: "gpt-5.2" ##For PRODUCTION USE THIS MODEL
+  embedding_model: "text-embedding-3-large"
+  temperature: 0.0
+  timeout_secs: 120
+  max_retries: 3
+
+# Model capabilities - defines how to call different model families
+model_capabilities:
+  # Models that use reasoning parameter instead of temperature
+  reasoning_models:
+    - "gpt-5"
+    - "gpt-5-mini"
+    - "gpt-5-nano"
+    - "gpt-5-pro"
+    - "gpt-5.1"
+    - "gpt-5.2"
+  reasoning_effort: "low"  # low | medium | high
+  # Models that don't support temperature at all
+  no_temperature_models:
+    - "o1"
+    - "o1-mini"
+    - "o1-preview"
+    - "o3"
+    - "o3-mini"
+    - "o4-mini"
+
+# =============================================================================
+# RAG Pipeline Settings
+# =============================================================================
+rag:
+  # Retrieval pool size - candidates to fetch before reranking
+  retrieval_pool_size: 50
+
+  # Maximum chunks to include in LLM context
+  max_context_legal: 20       # LEGAL profile
+  max_context_engineering: 15 # ENGINEERING profile
+
+  # Distance-based abstain guardrails
+  max_distance: 1.25           # Soft threshold - triggers low-evidence warning
+  hard_max_distance: 1.3       # Hard threshold - abstains if best result exceeds this
+
+  # Hybrid Rerank: Combined scoring with 4 factors
+  # score = α*vec_sim + β*bm25 + γ*citation + δ*role
+  # All weights should sum to 1.0
+  hybrid_vec_k: 30            # vector candidates to rerank
+
+  # Ranking weights (must sum to 1.0)
+  ranking_weights:
+    alpha_vec: 0.25           # Vector similarity weight
+    beta_bm25: 0.25           # BM25 lexical match weight
+    gamma_cite: 0.35          # Citation graph boost weight (high for legal cross-refs)
+    delta_role: 0.15          # Role alignment weight (query intent matching)
+
+  # Default corpus id (empty = auto-discover from first HTML)
+  default_corpus: ""
+
+  # Sibling Chunk Expansion - retrieves adjacent chunks with same location_id
+  sibling_expansion:
+    enabled: true
+    max_siblings: 2           # additional chunks to fetch per location (before + after)
+
+  # Context Positioning ("Sandwich" pattern)
+  # Addresses "Lost in the Middle" problem by placing most relevant chunks at start/end
+  context_positioning: "sandwich"   # "sandwich" | "relevance" | "none"
+
+# =============================================================================
+# Cross-Law Synthesis Settings (Multi-Corpus Retrieval)
+# =============================================================================
+cross_law:
+  # RRF (Reciprocal Rank Fusion) parameters
+  rrf_k: 60                         # Smoothing constant (60 is standard, robust across systems)
+  merged_pool_size: 100             # Max chunks after fusing results from all corpora
+
+  # Per-corpus retrieval limits
+  per_corpus_pool_size: 50          # Retrieval pool size per corpus
+
+  # Latency targets (informational, not enforced)
+  # Single-law queries: ~2.2s (unchanged from current)
+  # Cross-law queries: ≤3.3s target (parallel retrieval helps)
+
+  # Default corpus scope (can be overridden per-request)
+  default_scope: "single"           # "single" | "explicit" | "all"
+
+  # Fail-closed guardrails
+  comparison_min_corpora: 2         # Comparison requires evidence from at least 2 corpora
+  require_multi_corpus_evidence: true  # Cross-law queries must cite multiple corpora
+
+  # Eval quality: synthesis mode distribution for case generation
+  synthesis_distribution:
+    comparison: 0.5
+    discovery: 0.3
+    aggregation: 0.2
+
+  # Eval quality: difficulty distribution for case generation
+  difficulty_distribution:
+    easy: 0.3
+    medium: 0.5
+    hard: 0.2
+
+  # Eval quality: thresholds
+  corpus_coverage_threshold: 0.8      # Discovery mode pass threshold (other modes use 100%)
+
+# =============================================================================
+# Embedding Enrichment (LLM-generated context, search terms, and roles)
+# =============================================================================
+embedding_enrichment:
+  enabled: true               # Enable LLM-based enrichment (requires re-ingestion)
+  model: "gpt-4o-mini"        # Model for generating enrichments
+  max_terms: 5                # Max search terms per chunk
+  cache_enabled: true         # Cache results to avoid re-generation
+  max_concurrent: 10          # Parallel LLM calls (~10x speedup)
+  batch_size: 50              # Progress logging interval
+
+# =============================================================================
+# Citation Expansion (Graph-based retrieval augmentation)
+# =============================================================================
+citation_expansion:
+  enabled: true
+  max_expansion: 30           # related articles to inject per query (30 to include punkt-level nodes)
+  seed_limit: 20              # seed articles for graph expansion
+  retrieved_boost_limit: 25   # top retrieved chunks to extract articles from for anchor boosting
+  min_weight: 0.01            # minimum citation weight (0.0-1.0) - lowered to include punkt-level nodes (e.g., ANNEX:III:5)
+  bump_bonus: 0.15            # bonus for injected anchors
+
+  # Score floor protection for high-confidence hits
+  floor_threshold: 0.85
+  floor_boost: 0.5
+
+# =============================================================================
+# Evaluation Settings
+# =============================================================================
+eval:
+  default_concurrency: 5      # default parallel eval workers, set to 1 with wise judge and 5 with standard judge
+
+  # Model escalation: retry failed cases with a more capable model
+  # Balances cost efficiency (cheap primary) with quality (capable fallback)
+  model_escalation:
+    enabled: true
+    max_primary_retries: 3    # Retries with primary model before escalating
+    fallback_model: "gpt-5.2" # More capable model for difficult cases
+    escalation_alert_threshold: 0.10  # Warn if >10% of cases escalate (may indicate prompt issues)
+
+  # LLM-as-judge settings
+  llm_judge:
+    # Use gpt-4o-mini for faster evaluation (can switch to gpt-4o for higher accuracy)
+    model: "gpt-4o-mini"
+    faithfulness_threshold: 0.75
+    relevancy_threshold: 0.75
+    claim_batch_size: 3
+    max_context_chars: 16000
+    cache_enabled: true
+
+# =============================================================================
+# AI Law Discovery (Corpus Discovery Classifier)
+# =============================================================================
+discovery:
+  enabled: true                  # Master toggle; false = "discover" scope rejected
+  probe_top_k: 10               # Chunks per corpus in discovery probe
+  auto_threshold: 0.75          # Confidence >= this: proceed automatically
+  suggest_threshold: 0.65       # Confidence >= this: proceed with caveat
+  ambiguity_margin: 0.10        # LLM disambiguation when top-2 gap < this
+  max_corpora: 5                # Cap on discovered corpora per query
+  llm_disambiguation: true      # Enable Stage 3
+  disambiguation_model: null    # null = use default chat_model
+  max_suggest_corpora: 2        # If more than N corpora pass suggest but none AUTO, ABSTAIN (vague query guard)
+  scoring_weights:
+    w_similarity: 0.50          # Average similarity weight
+    w_best: 0.50                # Best hit similarity weight
+  templates:
+    auto_da: "Baseret på dit spørgsmål har jeg fundet relevante bestemmelser i {law_names}."
+    suggest_da: "Dit spørgsmål kan relatere sig til {law_names}. Svaret kan være ufuldstændigt."
+    abstain_da: "Kan ikke med sikkerhed identificere den relevante lovgivning."
+
+# =============================================================================
+# Performance Tuning
+# =============================================================================
+performance:
+  max_retrieval_workers: 16     # ThreadPoolExecutor workers for multi-corpus retrieval
+  max_llm_concurrency: 5       # Semaphore cap for concurrent LLM calls
+  retrieval_timeout_secs: 3.0   # Per-corpus timeout in multi-corpus retrieval
+  async_enabled: true           # Enable pipeline overlap + async client
+  connection_pool_size: 100     # AsyncOpenAI max_connections
+  keepalive_connections: 50     # AsyncOpenAI keepalive_connections
+
+# =============================================================================
+# Metrics Dashboard Settings
+# =============================================================================
+dashboard:
+  trend_window: 5              # Number of historical runs for trend calculation
+  trend_threshold: 2           # Percentage-point threshold for trend direction
+  health_thresholds: [95, 80, 60]  # 4-tier: green ≥95, yellow ≥80, orange ≥60, red <60
+  ai_analysis_model: "gpt-4o"  # Model for AI-powered metrics analysis
+  max_runs_scan: 50            # Max run files to scan per data source (performance cap)
+
+# =============================================================================
+# File Paths (relative to repo root)
+# =============================================================================
+paths:
+  docs_path: "data/sample_docs"
+  vector_store_path: "data/vector_store"
+  raw_html_dir: "data/raw"
+  processed_dir: "data/processed"

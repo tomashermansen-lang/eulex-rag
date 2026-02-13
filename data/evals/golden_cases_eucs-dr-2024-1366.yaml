@@ -1,0 +1,219 @@
+- id: eucs-dr-2024-1366-01-retrieval-om-cybersikkerhed
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad er formålet med denne forordning?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den relevante artikel, der beskriver formålet
+      med forordningen.
+- id: eucs-dr-2024-1366-02-retrieval-anvendelsesomraade
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke enheder er omfattet af forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan identificere den artikel, der specificerer anvendelsesområdet.
+- id: eucs-dr-2024-1366-03-retrieval-krav-til-myndigheder
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvornår skal medlemsstaterne udpege en kompetent myndighed?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den relevante artikel, der angiver tidsrammen
+      for udpegelse af myndigheder.
+- id: eucs-dr-2024-1366-04-retrieval-omkostninger
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke omkostninger skal vurderes af de nationale regulerende myndigheder?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:11
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den artikel, der beskriver omkostningerne
+      forbundet med forordningen.
+- id: eucs-dr-2024-1366-05-faithfulness-cybersikkerhed
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad er minimumskravene til cybersikkerhed ifølge denne forordning?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:29
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er korrekt og baseret på den specifikke artikel om minimumskrav.
+- id: eucs-dr-2024-1366-06-faithfulness-risikostyring
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad skal enheder med stor indvirkning gøre for at håndtere cybersikkerhedsrisici?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:26
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er grundlagt i den relevante artikel om risikostyring.
+- id: eucs-dr-2024-1366-07-faithfulness-rapportering
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvornår skal enheder med stor indvirkning rapportere om deres risikovurdering?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:27
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret kan verificeres mod den specifikke artikel om rapportering.
+- id: eucs-dr-2024-1366-08-relevancy-udpegelse
+  profile: LEGAL
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvilken proces skal følges for at udpege enheder med stor indvirkning?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:24
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er relevant og dækker den specifikke proces for udpegelse.
+- id: eucs-dr-2024-1366-09-relevancy-samarbejde
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvordan skal de kompetente myndigheder samarbejde for at opfylde forpligtelserne
+    i forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret dækker samarbejdet mellem myndighederne.
+- id: eucs-dr-2024-1366-10-abstention-ikke-relevant
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er forordningens holdning til cybersikkerhed i sundhedssektoren?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester at systemet nægter at svare på spørgsmål uden for forordningens
+      scope.
+- id: eucs-dr-2024-1366-11-abstention-uden-for-scope
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er forordningens holdning til cybersikkerhed i transportsektoren?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester at systemet nægter at svare på spørgsmål uden for forordningens
+      scope.
+- id: eucs-dr-2024-1366-12-robustness-omformulering
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er de krav, som enheder med stor indflydelse skal overholde?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:26
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere omformulering af spørgsmål.
+- id: eucs-dr-2024-1366-13-robustness-stavefejl
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er minimums kravene til cybersikkerhed?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:29
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere stavefejl i spørgsmål.
+- id: eucs-dr-2024-1366-14-multi_hop-krav-og-samarbejde
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke krav er der til cybersikkerhed, og hvordan skal myndighederne samarbejde
+    om disse?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    - article:29
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler.
+- id: eucs-dr-2024-1366-15-multi_hop-rapportering-og-risikostyring
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvad er rapporteringskravene for enheder med stor indflydelse, og hvordan
+    skal de håndtere cybersikkerhedsrisici?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:26
+    - article:27
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at integrere information fra forskellige artikler
+      om rapportering og risikostyring.

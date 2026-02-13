@@ -1,0 +1,222 @@
+- id: nis2-cir-2024-2690-01-retrieval-væsentlige_hændelser
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad definerer en væsentlig hændelse i forhold til de relevante enheder?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:3
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke definition af væsentlige hændelser.
+- id: nis2-cir-2024-2690-02-retrieval-tekniske_krav
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke tekniske krav gælder for relevante enheder ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde de tekniske og metodologiske krav.
+- id: nis2-cir-2024-2690-03-retrieval-dns_hændelser
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke kriterier gælder for væsentlige hændelser for DNS-tjenesteudbydere?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde kriterierne for væsentlige hændelser specifikt
+      for DNS-tjenesteudbydere.
+- id: nis2-cir-2024-2690-04-retrieval-cloud_hændelser
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad betragtes som en væsentlig hændelse for udbydere af cloudcomputingtjenester?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:7
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde kriterierne for væsentlige hændelser for cloudcomputingtjenester.
+- id: nis2-cir-2024-2690-05-faithfulness-væsentlige_hændelser
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad er minimumsbeløbet for økonomiske tab, der gør en hændelse væsentlig?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:3
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret kan verificeres mod den specifikke artikel.
+- id: nis2-cir-2024-2690-06-faithfulness-tilbagevendende_hændelser
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvilke kriterier skal være opfyldt for at betragte tilbagevendende hændelser
+    som én væsentlig hændelse?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt baseret på de specificerede kriterier.
+- id: nis2-cir-2024-2690-07-faithfulness-hændelser_for_topdomænenavneadministratorer
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad er kriterierne for væsentlige hændelser for topdomænenavneadministratorer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret kan verificeres mod de relevante kriterier.
+- id: nis2-cir-2024-2690-08-relevancy-tilgængelighed
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvordan påvirker utilgængelighed af en tjeneste dens klassificering som
+    væsentlig hændelse?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    - article:7
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er direkte relateret til spørgsmålet om utilgængelighed.
+- id: nis2-cir-2024-2690-09-relevancy-hændelser_for_sikkerhedstjenester
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvilke kriterier gælder for væsentlige hændelser for udbydere af administrerede
+    sikkerhedstjenester?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:10
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret dækker kriterierne for sikkerhedstjenester.
+- id: nis2-cir-2024-2690-10-abstention-ikke_relevante_spørgsmål
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er straffen for overtrædelse af cybersikkerhedslovgivningen?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester systemets evne til at nægte at svare på et spørgsmål uden for lovens
+      scope.
+- id: nis2-cir-2024-2690-11-abstention-omfanget_af_loven
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er de specifikke krav til fysiske sikkerhedsforanstaltninger?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester systemets evne til at nægte at svare på spørgsmål, der ikke er dækket
+      af loven.
+- id: nis2-cir-2024-2690-12-robustness-hændelser_varianter
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er kriterierne for en hændelse, der er væsentlig for en cloudtjenesteudbyder?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:7
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere varianter af spørgsmålet.
+- id: nis2-cir-2024-2690-13-robustness-hændelser_differentiering
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er forskellen mellem væsentlige hændelser for datacentertjenester og
+    indholdsleveringsnetværk?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    - article:9
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at skelne mellem kriterierne for forskellige
+      tjenesteudbydere.
+- id: nis2-cir-2024-2690-14-multi_hop-hændelser_for_forskellige_tjenester
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke kriterier gælder for væsentlige hændelser for både onlinemarkedspladser
+    og sociale netværkstjenester?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:11
+    - article:13
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler.
+- id: nis2-cir-2024-2690-15-multi_hop-hændelser_for_tillidstjenester
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvad er kriterierne for væsentlige hændelser for tillidstjenesteudbydere
+    og administrerede tjenester?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:14
+    - article:10
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at syntetisere information fra forskellige kilder.

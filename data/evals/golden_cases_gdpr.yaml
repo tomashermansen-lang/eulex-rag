@@ -1,0 +1,432 @@
+- id: gdpr-01-lawful-basis-overview
+  profile: LEGAL
+  prompt: Forklar forskellen på behandlingsgrundlag, samtykke og legitim interesse efter GDPR på et overordnet niveau.
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    notes: Bør være forankret i artikel 6 (behandlingsgrundlag).
+- id: gdpr-02-consent-requirements
+  profile: LEGAL
+  prompt: Hvilke krav stiller GDPR til gyldigt samtykke, og hvornår kan samtykke trækkes tilbage?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:7
+    must_not_include_any_of: []
+    notes: Bør forankre samtykkekrav i artikel 7.
+- id: gdpr-03-right-of-access
+  profile: LEGAL
+  prompt: Opsummér indsigtsretten efter GDPR og hvilken information der skal gives.
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:15
+    must_not_include_any_of: []
+    notes: Bør være forankret i artikel 15.
+- id: gdpr-04-right-to-erasure
+  profile: LEGAL
+  prompt: Hvornår gælder retten til sletning efter GDPR, og hvad er de typiske undtagelser?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:17
+    must_not_include_any_of: []
+    notes: Bør være forankret i artikel 17.
+- id: gdpr-05-transparency-information
+  profile: LEGAL
+  prompt: Hvilke oplysninger skal gives til den registrerede, når personoplysninger indsamles direkte?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    must_not_include_any_of: []
+    notes: Bør være forankret i artikel 13.
+- id: gdpr-06-indirect-collection-information
+  profile: LEGAL
+  prompt: Hvilke oplysninger skal gives, når personoplysninger indsamles indirekte (ikke fra den registrerede)?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:14
+    must_not_include_any_of: []
+    notes: Bør være forankret i artikel 14.
+- id: gdpr-07-records-of-processing
+  profile: ENGINEERING
+  prompt: Skal vi føre fortegnelser over behandlingsaktiviteter (ROPA) efter GDPR, og hvad skal de indeholde?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:30
+    must_not_include_any_of: []
+    notes: Bør forankre ROPA/fortegnelser i artikel 30.
+- id: gdpr-08-dpia-when-required
+  profile: ENGINEERING
+  prompt: Hvornår kræves en DPIA efter GDPR, og hvad er minimumselementerne?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:35
+    must_not_include_any_of: []
+    notes: Bør forankre DPIA i artikel 35.
+- id: gdpr-09-security-of-processing
+  profile: ENGINEERING
+  prompt: Hvad kræver GDPR i forhold til behandlingssikkerhed?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:32
+    must_not_include_any_of: []
+    notes: Bør forankre sikkerhedskrav i artikel 32.
+- id: gdpr-10-ambiguous-out-of-scope
+  profile: LEGAL
+  prompt: Er vi GDPR-compliant? Svar ja eller nej.
+  test_types:
+  - retrieval
+  - abstention
+  - robustness
+  origin: auto
+  expected:
+    behavior: abstain
+    allow_empty_references: true
+    must_have_article_support_for_normative: true
+    must_include_any_of: []
+    must_not_include_any_of: []
+    notes: 'Abstain case: Tests that system correctly refuses to answer impossible compliance questions. Evaluated with AbstentionScorer
+      instead of faithfulness (per UAEval4RAG best practices).'
+- id: gdpr-11-recruitment-screening-contract-citations
+  profile: ENGINEERING
+  prompt: 'En dansk virksomhed bruger et AI-baseret rekrutteringsværktøj til screening af jobansøgere (CV, tests, ranking).
+
+    Vurder audit-sikkert:
+
+    1) Om GDPR finder anvendelse (behandling af personoplysninger / anvendelsesområde).
+
+    2) Hvilke behandlingsgrundlag der realistisk kan bruges (Artikel 6).
+
+    3) Hvis samtykke anvendes: krav til gyldigt samtykke (Artikel 7).
+
+    4) Oplysningspligt over for ansøgere (Artikel 13 eller 14 – vælg den relevante).'
+  test_types:
+  - retrieval
+  - multi_hop
+  - faithfulness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_include_all_of:
+    - article:7
+    must_include_any_of_2:
+    - article:13
+    - article:14
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    rerank_matrix: true
+    min_citations: 3
+    max_citations: 8
+    notes: 'TDD-case for ENGINEERING contract: vi forventer bracket citations [n]. Skal forankre behandlingsgrundlag i artikel
+      6 og samtykke i artikel 7. Oplysningspligt bør forankres i artikel 13/14. Må gerne fail-closed til MISSING_REF hvis
+      ikke audit-sikkert.'
+- id: gdpr-12-contract-first-security-of-processing
+  profile: ENGINEERING
+  prompt: Hvad kræver GDPR om sikkerhed i behandlingen, og hvordan oversætter vi det til konkrete tekniske og organisatoriske
+    foranstaltninger?
+  test_types:
+  - retrieval
+  - faithfulness
+  origin: auto
+  expected:
+    must_include_any_of:
+    - article:32
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    rerank_matrix: true
+    notes: 'Contract-first: kræver bracket citations [n] og forankring i artikel 32 (security of processing).'
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+- id: gdpr-13-contract-first-ropa
+  profile: ENGINEERING
+  prompt: Vi skal etablere en ROPA/fortegnelse over behandlingsaktiviteter. Hvad er minimumsindholdet efter GDPR, og hvordan
+    kan vi dokumentere det på en audit-sikker måde?
+  test_types:
+  - retrieval
+  - faithfulness
+  origin: auto
+  expected:
+    must_include_any_of:
+    - article:30
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    notes: 'Contract-first: kræver bracket citations [n] og forankring i artikel 30 (records of processing).'
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+- id: gdpr-14-multi-concept-consent-transparency
+  profile: LEGAL
+  prompt: 'Når vi baserer behandling på samtykke: Hvilke krav stiller GDPR til både selve samtykket og til den information
+    vi skal give den registrerede?'
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:7
+    must_include_all_of:
+    - article:13
+    rerank_matrix: true
+    notes: 'Multi-concept: consent (art. 7) + transparency (art. 13).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-15-multi-concept-rights-erasure-restriction
+  profile: LEGAL
+  prompt: En registreret anmoder om sletning, men vi mener vi har legitim interesse i at beholde data. Hvordan håndterer vi
+    konflikten mellem retten til sletning og begrænsning?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:17
+    must_include_all_of:
+    - article:18
+    rerank_matrix: true
+    notes: 'Multi-concept: erasure (art. 17) + restriction (art. 18).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-16-multi-concept-dpia-consultation
+  profile: ENGINEERING
+  prompt: Hvornår kræves en konsekvensanalyse (DPIA), og i hvilke tilfælde skal vi konsultere tilsynsmyndigheden bagefter?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:35
+    must_include_all_of:
+    - article:36
+    rerank_matrix: true
+    notes: 'Multi-concept: DPIA (art. 35) + prior consultation (art. 36).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-17-edge-specific-article
+  profile: LEGAL
+  prompt: Hvad kræver GDPR artikel 17, stk. 3 vedrørende undtagelser fra retten til sletning?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:17
+    notes: 'Edge case: Specifik artikel-/stk-reference.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-18-edge-definition-lookup
+  profile: LEGAL
+  prompt: Hvad er definitionen af 'personoplysninger' og 'behandling' efter GDPR artikel 4?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:4
+    notes: 'Edge case: Definition lookup i artikel 4.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-19-edge-scope-territorial
+  profile: LEGAL
+  prompt: Hvornår gælder GDPR for virksomheder uden for EU? Forklar det territoriale anvendelsesområde i artikel 3.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:3
+    notes: 'Edge case: Territorial scope (art. 3).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-20-edge-lawful-basis-list
+  profile: LEGAL
+  prompt: List alle seks behandlingsgrundlag i GDPR artikel 6, stk. 1.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:6
+    notes: 'Edge case: Komplet liste af lawful bases.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-21-edge-special-categories
+  profile: LEGAL
+  prompt: Hvilke kategorier af personoplysninger er 'særlige kategorier' efter artikel 9, og hvad kræves for at behandle dem?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:9
+    notes: 'Edge case: Special categories of data (art. 9).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-22-adversarial-negation
+  profile: LEGAL
+  prompt: Hvad kræver GDPR IKKE af dataansvarlige med færre end 250 ansatte? Beskriv undtagelserne.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:30
+    notes: 'Adversarial: Negation - SME exceptions.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-23-adversarial-hypothetical
+  profile: ENGINEERING
+  prompt: Hvis vi opdager et databrud mandag morgen, men først indberetter det fredag - hvad er konsekvenserne efter GDPR?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:33
+    - article:83
+    notes: 'Adversarial: Hypothetical breach notification delay + sanctions.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-24-adversarial-ambiguous
+  profile: LEGAL
+  prompt: Er IP-adresser personoplysninger? Argumenter for begge sider baseret på GDPR og retspraksis.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:4
+    notes: 'Adversarial: Ambiguous case - IP addresses as personal data.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-25-transfer-mechanisms
+  profile: LEGAL
+  prompt: Hvilke mekanismer tillader GDPR for overførsel af personoplysninger til tredjelande?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:45
+    - article:46
+    - article:49
+    notes: International transfers (Chapter V).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-26-dpo-requirements
+  profile: ENGINEERING
+  prompt: Hvornår skal en organisation udpege en databeskyttelsesrådgiver (DPO), og hvad er DPO'ens opgaver?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:37
+    - article:38
+    - article:39
+    notes: DPO requirements (art. 37-39).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-27-breach-notification
+  profile: ENGINEERING
+  prompt: Hvad er kravene til anmeldelse af brud på persondatasikkerheden efter GDPR, og hvornår skal den registrerede også
+    underrettes?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:33
+    must_include_all_of:
+    - article:34
+    rerank_matrix: true
+    notes: Breach notification (art. 33) + communication to data subject (art. 34).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: gdpr-28-processor-obligations
+  profile: ENGINEERING
+  prompt: Hvilke forpligtelser har en databehandler efter GDPR, og hvad skal en databehandleraftale indeholde?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:28
+    notes: Processor obligations (art. 28).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []

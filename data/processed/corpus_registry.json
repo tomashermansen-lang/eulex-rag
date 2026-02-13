@@ -1,0 +1,114 @@
+{
+  "ai_act": {
+    "aliases": [
+      "ai act",
+      "ai loven",
+      "ai-loven",
+      "ai forordningen",
+      "ai-act",
+      "ai-forordningen",
+      "artificial intelligence act",
+      "eu 2024/1689",
+      "eu ai act",
+      "forordning (eu) 2024/1689",
+      "ai_act",
+      "forordning om kunstig intelligens (ai-act)"
+    ],
+    "display_name": "Forordning om kunstig intelligens (AI-ACT)"
+  },
+  "cyberrobusthed": {
+    "aliases": [
+      "forordning om cybersikkerhed (eu-cyber)",
+      "cyberrobusthed"
+    ],
+    "display_name": "Forordning om cybersikkerhed (EU-CYBER)"
+  },
+  "data_act": {
+    "aliases": [
+      "data act",
+      "data_act",
+      "data-act"
+    ],
+    "display_name": "Data Act"
+  },
+  "dora": {
+    "aliases": [
+      "dora",
+      "digital operational resilience act",
+      "eu 2022/2554",
+      "forordning (eu) 2022/2554"
+    ],
+    "display_name": "DORA"
+  },
+  "elan": {
+    "aliases": [
+      "landbrugsdata (elan)",
+      "elan"
+    ],
+    "display_name": "landbrugsdata (ELAN)"
+  },
+  "eucs_cir_2025_2540": {
+    "aliases": [
+      "forordning om peer reviews (eucs-cir-2025-2540)",
+      "eucs_cir_2025_2540",
+      "eucs cir 2025 2540",
+      "eucs-cir-2025-2540"
+    ],
+    "display_name": "Forordning om peer reviews (EUCS-CIR-2025-2540)"
+  },
+  "eucs_dr_2024_1366": {
+    "aliases": [
+      "forordning om cybersikkerhed i grænseoverskridende elektricitetsstrømme (eucs-dr-2024-1366)",
+      "eucs_dr_2024_1366",
+      "eucs dr 2024 1366",
+      "eucs-dr-2024-1366",
+      "forordning om cybersikkerhedsmæssige aspekter af grænseoverskridende elektricitetsstrømme (eucs-dr-2024-1366)"
+    ],
+    "display_name": "Forordning om cybersikkerhedsmæssige aspekter af grænseoverskridende elektricitetsstrømme (EUCS-DR-2024-1366)"
+  },
+  "gdpr": {
+    "aliases": [
+      "persondataforordningen (gdpr)",
+      "gdpr"
+    ],
+    "display_name": "Persondataforordningen (GDPR)"
+  },
+  "nis2_cir_2024_2690": {
+    "aliases": [
+      "forordning om cybersikkerhedsrisikostyring (nis2-cir)",
+      "nis2_cir_2024_2690",
+      "nis2 cir 2024 2690",
+      "nis2-cir-2024-2690"
+    ],
+    "display_name": "Forordning om cybersikkerhedsrisikostyring (NIS2-CIR)"
+  },
+  "nis2_dir_2022_2555": {
+    "aliases": [
+      "direktiv om cybersikkerhed (nis2)",
+      "nis2_dir_2022_2555",
+      "nis2 dir 2022 2555",
+      "nis2-dir-2022-2555"
+    ],
+    "display_name": "Direktiv om cybersikkerhed (NIS2)"
+  },
+  "rearm_europe": {
+    "aliases": [
+      "forordning om forsvarsrelaterede investeringer (rearm)",
+      "rearm_europe",
+      "rearm europe",
+      "rearm-europe"
+    ],
+    "display_name": "Forordning om forsvarsrelaterede investeringer (REARM)"
+  },
+  "reg_sandkasser": {
+    "aliases": [
+      "reguleringssandkasser-forordningen",
+      "reg_sandkasser",
+      "reg sandkasser",
+      "reg-sandkasser",
+      "reguleringsmæssige sandbox (reg-sandbox)",
+      "forordning om reguleringsmæssige sandkasser (eu-sandkasser)"
+    ],
+    "display_name": "Forordning om reguleringsmæssige sandkasser (EU-SANDKASSER)"
+  }
+}

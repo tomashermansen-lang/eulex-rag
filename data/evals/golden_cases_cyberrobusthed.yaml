@@ -1,0 +1,221 @@
+- id: cyberrobusthed-01-retrieval-tilgængelighed
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke regler gælder for tilgængeliggørelse af produkter med digitale elementer
+    på markedet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde den specifikke artikel om tilgængelighed.
+- id: cyberrobusthed-02-retrieval-cybersikkerhedskrav
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke krav skal produkter med digitale elementer opfylde for at være tilgængelige
+    på markedet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde den specifikke artikel om cybersikkerhedskrav.
+- id: cyberrobusthed-03-retrieval-højrisiko
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad er definitionen af højrisiko-AI-systemer i relation til cybersikkerhed?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde den specifikke artikel om højrisiko-AI-systemer.
+- id: cyberrobusthed-04-retrieval-fabrikantens forpligtelser
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke forpligtelser har fabrikanten, når et produkt med digitale elementer
+    bringes i omsætning?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde den specifikke artikel om fabrikantens forpligtelser.
+- id: cyberrobusthed-05-faithfulness-sårbarhed
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad skal en fabrikant gøre, hvis de opdager en aktivt udnyttet sårbarhed
+    i deres produkt?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:14
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt baseret på fabrikantens rapporteringsforpligtelser.
+- id: cyberrobusthed-06-faithfulness-offentlige indkøb
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Kan medlemsstaterne pålægge yderligere cybersikkerhedskrav ved offentlige
+    indkøb af produkter med digitale elementer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt i forhold til reglerne for offentlige indkøb.
+- id: cyberrobusthed-07-faithfulness-cybersikkerhedspolitik
+  profile: ENGINEERING
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad skal open source software-forvaltere gøre for at fremme cybersikkerhed?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:24
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt i henhold til kravene til open source software-forvaltere.
+- id: cyberrobusthed-08-relevancy-sikkerhedscertificering
+  profile: LEGAL
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvad er formålet med sikkerhedscertificering af gratis open source-software?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:25
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er relevant for spørgsmålet om sikkerhedscertificering.
+- id: cyberrobusthed-09-relevancy-vejledning
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvordan kan Kommissionen hjælpe med at lette overholdelsen af cybersikkerhedslovgivningen
+    for små og mellemstore virksomheder?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:26
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er relevant for spørgsmålet om vejledning til små og mellemstore
+      virksomheder.
+- id: cyberrobusthed-10-abstention-ikke relevant
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er straffen for at overtræde cybersikkerhedslovgivningen?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester om systemet nægter at svare på spørgsmål uden for lovens scope.
+- id: cyberrobusthed-11-abstention-privatliv
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvilke rettigheder har forbrugerne i forhold til databeskyttelse under denne
+    forordning?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester om systemet nægter at svare på spørgsmål, der ikke dækkes af loven.
+- id: cyberrobusthed-12-robustness-omformulering
+  profile: LEGAL
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvilke krav skal man opfylde for at sælge produkter med digitale elementer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at forstå omformulering af spørgsmålet.
+- id: cyberrobusthed-13-robustness-stavefejl
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er de vigtigste krav til cybesikkerhed for digitale produkter?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets håndtering af stavefejl i spørgsmålet.
+- id: cyberrobusthed-14-multi_hop-kategorier
+  profile: LEGAL
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke produkter med digitale elementer kræver en europæisk cybersikkerhedsattest,
+    og hvad er kriterierne for dette?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    - article:7
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler.
+- id: cyberrobusthed-15-multi_hop-krav og forpligtelser
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke forpligtelser har distributører og importører i forhold til cybersikkerhed
+    for digitale produkter?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:19
+    - article:20
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at syntetisere information fra flere relevante
+      artikler.

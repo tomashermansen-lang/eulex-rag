@@ -1,0 +1,226 @@
+- id: nis2-dir-2022-2555-01-retrieval-genstand
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad er formålet med direktivet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde den specifikke artikel, der beskriver formålet
+      med direktivet.
+- id: nis2-dir-2022-2555-02-retrieval-anvendelsesområde
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke enheder er omfattet af direktivets anvendelsesområde?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan identificere den artikel, der beskriver anvendelsesområdet
+      for direktivet.
+- id: nis2-dir-2022-2555-03-retrieval-krav-til-csirt
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke krav skal CSIRT'er opfylde?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:11
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at finde den artikel, der specificerer kravene
+      til CSIRT'er.
+- id: nis2-dir-2022-2555-04-retrieval-national-cybersikkerhedsstrategi
+  profile: ENGINEERING
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad skal en national cybersikkerhedsstrategi indeholde?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:7
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde den artikel, der beskriver indholdet af den
+      nationale cybersikkerhedsstrategi.
+- id: nis2-dir-2022-2555-05-faithfulness-krav-til-rapport
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvilke elementer skal ENISA inkludere i sin rapport om cybersikkerhedssituationen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:18
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt baseret på den specifikke artikel, der beskriver
+      rapportens indhold.
+- id: nis2-dir-2022-2555-06-faithfulness-sikkerhedsrisikovurdering
+  profile: ENGINEERING
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad er kravene til sikkerhedsrisikovurderinger af kritiske forsyningskæder?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:22
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret kan verificeres mod den relevante artikel om sikkerhedsrisikovurderinger.
+- id: nis2-dir-2022-2555-07-faithfulness-rapportering
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad skal enheder gøre i tilfælde af en væsentlig hændelse?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:23
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt i forhold til kravene til rapportering af væsentlige
+      hændelser.
+- id: nis2-dir-2022-2555-08-relevancy-koordineret-offentliggørelse
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvad er formålet med den koordinerede offentliggørelse af sårbarheder?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret præcist besvarer spørgsmålet om formålet med offentliggørelsen
+      af sårbarheder.
+- id: nis2-dir-2022-2555-09-relevancy-udveksling-af-oplysninger
+  profile: LEGAL
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvordan kan enheder udveksle relevante cybersikkerhedsoplysninger?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:29
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret dækker metoderne for udveksling af cybersikkerhedsoplysninger.
+- id: nis2-dir-2022-2555-10-abstention-ikke-relevant-spørgsmål
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er den bedste cybersikkerhedspraksis for private virksomheder?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester systemets evne til at afstå fra at svare på spørgsmål uden for direktivets
+      scope.
+- id: nis2-dir-2022-2555-11-abstention-privatlivspolitik
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvordan skal virksomheder håndtere persondata i cybersikkerhed?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester systemets evne til at afstå fra at svare på spørgsmål, der ikke
+      er dækket af direktivet.
+- id: nis2-dir-2022-2555-12-robustness-omformulering-af-krav
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvilke forpligtelser har medlemsstaterne i forhold til cybersikkerhed?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    - article:7
+    - article:20
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere omformulering af kravene til medlemsstaterne.
+- id: nis2-dir-2022-2555-13-robustness-sikkerhedshændelser
+  profile: LEGAL
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad skal gøres, hvis der opstår en hændelse, der påvirker cybersikkerheden?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:23
+    - article:10
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere variationer i spørgsmålet om håndtering
+      af cybersikkerhedshændelser.
+- id: nis2-dir-2022-2555-14-multi_hop-cybersikkerhedsstrategi
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvordan skal medlemsstaterne koordinere cybersikkerhed og håndtere hændelser?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    - article:9
+    - article:10
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at syntetisere information fra flere artikler
+      om koordinering af cybersikkerhed.
+- id: nis2-dir-2022-2555-15-multi_hop-internationalt-samarbejde
+  profile: LEGAL
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke internationale aftaler kan EU indgå for cybersikkerhed?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:17
+    - article:14
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra forskellige artikler
+      om internationalt samarbejde.

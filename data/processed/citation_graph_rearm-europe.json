@@ -1,0 +1,395 @@
+{
+  "schema_version": "citation_graph:v1",
+  "corpus_id": "rearm-europe",
+  "generated_at": "2026-01-30T21:09:14.849426+00:00",
+  "nodes": {
+    "164": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "173": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "175": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "177": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "182": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "183": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "188": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "192": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "2": {
+      "type": "article",
+      "title": "(EØS-relevant tekst)",
+      "roles": [
+        "exemptions",
+        "obligations",
+        "scope",
+        "prohibitions",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "7": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "48": {
+      "type": "article",
+      "mention_count": 3
+    },
+    "212": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "ANNEX:II": {
+      "type": "annex",
+      "mention_count": 2
+    },
+    "5": {
+      "type": "article",
+      "title": "(EØS-relevant tekst)",
+      "roles": [
+        "classification",
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "1": {
+      "type": "article",
+      "title": "(EØS-relevant tekst)",
+      "roles": [
+        "classification",
+        "obligations",
+        "enforcement",
+        "prohibitions"
+      ]
+    },
+    "3": {
+      "type": "article",
+      "title": "Støtte til disruptive forsvarsteknologier",
+      "roles": [
+        "obligations",
+        "scope",
+        "procedures",
+        "exemptions",
+        "classification"
+      ],
+      "mention_count": 3
+    },
+    "4": {
+      "type": "article",
+      "title": "(EØS-relevant tekst)",
+      "roles": [
+        "classification",
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 1
+    },
+    "6": {
+      "type": "article",
+      "title": "(EØS-relevant tekst)",
+      "roles": [
+        "enforcement",
+        "obligations",
+        "procedures",
+        "scope"
+      ],
+      "mention_count": 2
+    },
+    "14": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "8": {
+      "type": "article",
+      "mention_count": 4
+    },
+    "12": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "20": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "ANNEX:I": {
+      "type": "annex",
+      "mention_count": 1
+    },
+    "46": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "21": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "50": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "24": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "8A": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "62": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "13": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "10": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "9": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "15": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "136": {
+      "type": "article",
+      "mention_count": 1
+    }
+  },
+  "edges": [
+    {
+      "source": "1",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "1",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "1",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "1",
+      "target": "12",
+      "type": "cites",
+      "count": 2,
+      "weight": 1.0
+    },
+    {
+      "source": "1",
+      "target": "14",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "1",
+      "target": "8",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "1",
+      "target": "20",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "1",
+      "target": "ANNEX:I",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "2",
+      "target": "21",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "2",
+      "target": "48",
+      "type": "cites",
+      "count": 2,
+      "weight": 1.0
+    },
+    {
+      "source": "2",
+      "target": "212",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "2",
+      "target": "46",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "2",
+      "target": "50",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "2",
+      "target": "7",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "24",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "8A",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "62",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "13",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "3",
+      "target": "21",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "4",
+      "target": "3",
+      "type": "cites",
+      "count": 2,
+      "weight": 1.0
+    },
+    {
+      "source": "4",
+      "target": "8",
+      "type": "cites",
+      "count": 2,
+      "weight": 1.0
+    },
+    {
+      "source": "4",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "4",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "4",
+      "target": "ANNEX:II",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "4",
+      "target": "136",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "5",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    },
+    {
+      "source": "5",
+      "target": "8",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.5
+    }
+  ]
+}

@@ -1,0 +1,217 @@
+- id: eucs-cir-2025-2540-01-retrieval-tidsplan
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvornår skal peerreviewene af de nationale cybersikkerhedscertificeringsmyndigheder
+    finde sted?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde den specifikke tidsplan for peerreview.
+- id: eucs-cir-2025-2540-02-retrieval-rotationsordning
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvem udfører peerreviewet af de nationale cybersikkerhedscertificeringsmyndigheder?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan identificere de involverede parter i peerreview.
+- id: eucs-cir-2025-2540-03-retrieval-sammensætning
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad er kravene til sammensætningen af peerreviewholdet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:3
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at finde kravene til peerreviewholdet.
+- id: eucs-cir-2025-2540-04-retrieval-peerreviewmetode
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke aspekter skal vurderes i peerreviewet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at finde de specifikke aspekter, der vurderes.
+- id: eucs-cir-2025-2540-05-faithfulness-peerreviewrapport
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvor lang tid har peerreviewholdet til at udarbejde rapporten efter peerreviewet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt baseret på den specifikke tidsramme nævnt i
+      loven.
+- id: eucs-cir-2025-2540-06-faithfulness-fortrolighed
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvilke oplysninger skal beskyttes under fortrolighedsbestemmelserne?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret korrekt refererer til de specifikke oplysninger, der skal
+      beskyttes.
+- id: eucs-cir-2025-2540-07-faithfulness-kapacitetsopbygning
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad er formålet med ENISAs analyse af peerreviewresultaterne?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:7
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt baseret på formålet med analysen som nævnt
+      i loven.
+- id: eucs-cir-2025-2540-08-relevancy-ikrafttræden
+  profile: LEGAL
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvornår træder forordningen i kraft?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er relevant og præcist i forhold til ikrafttrædelsen.
+- id: eucs-cir-2025-2540-09-relevancy-omkostninger
+  profile: LEGAL
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvilke omkostninger er forbundet med peerreviewene?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret adresserer omkostningerne relateret til peerreview.
+- id: eucs-cir-2025-2540-10-abstention-udenfor-scope
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er straffen for manglende overholdelse af peerreviewprocessen?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester systemets evne til at afvise spørgsmål uden for lovens scope.
+- id: eucs-cir-2025-2540-11-abstention-ikke-dækket
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Kan jeg få en kopi af en peerreviewrapport?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester systemets evne til at afvise spørgsmål om emner, der ikke er dækket.
+- id: eucs-cir-2025-2540-12-robustness-omformulering
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvordan er peerreviewprocessen struktureret?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at forstå omformulering af spørgsmål om peerreviewprocessen.
+- id: eucs-cir-2025-2540-13-robustness-stavefejl
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er de vigtigste ting ved peerreviewet?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets håndtering af stavefejl og uformuleringer.
+- id: eucs-cir-2025-2540-14-multi_hop-kombination
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvordan bidrager ENISA til kapacitetsopbygning i cybersikkerhed?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:7
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler.
+- id: eucs-cir-2025-2540-15-multi_hop-rapport-fortrolighed
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvad skal rapporten indeholde, og hvordan skal fortrolighed håndteres?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at syntetisere information fra rapporterings-
+      og fortrolighedsartikler.

@@ -1,0 +1,74 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+
+# Pytest cache
+.pytest_cache/
+
+# Virtual environments
+.venv/
+.env/
+
+# Environment variable files
+.env
+.env.*
+
+# OS cruft
+.DS_Store
+**/.DS_Store
+
+# Test / coverage artifacts
+.coverage
+coverage.xml
+htmlcov/
+ui_react/frontend/coverage/
+
+# Generated data artifacts
+data/vector_store/
+data/processed/**
+!data/processed/
+!data/processed/anchor_hints.json
+!data/processed/corpora.json
+!data/processed/corpus_registry.json
+!data/processed/*_toc_tree.json
+!data/processed/*_toc.jsonl
+!data/processed/anchor_hints.suggested.json
+# Keep chunks and citation graphs for all corpora
+!data/processed/*_chunks.jsonl
+!data/processed/citation_graph_*.json
+!data/processed/example_questions.json
+
+# Eval output artifacts (inputs live in data/evals/*.yaml)
+data/evals/runs/
+data/evals/*_eval_run.json
+
+# Canonical eval runner artifacts (generated)
+runs/**
+!runs/
+!runs/README.md
+
+# Logs and Debug
+*.log
+debug_case.json
+debug*.json
+
+# Debug artifacts (generated)
+**/*.run_meta.json
+**/*.debug.json
+**/*.suggested.json
+
+# Vector DB files
+chroma/
+chromadb/
+chroma_db/
+data/chroma_db/
+.eval_cache/
+
+# Node modules (frontend)
+ui_react/frontend/node_modules/
+
+# Server PID file (runtime artifact)
+ui_react/.server_pids
+
+# Claude logs (generated, local only)
+.claude/logs/

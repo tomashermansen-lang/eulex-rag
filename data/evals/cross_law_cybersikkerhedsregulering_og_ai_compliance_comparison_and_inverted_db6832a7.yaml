@@ -1,0 +1,466 @@
+cases:
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - eucs-dr-2024-1366:article:10
+  - nis2-cir-2024-2690:annex:1
+  - nis2-dir-2022-2555:article:10
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - ai-act
+  id: auto_inverted_obligations
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 4
+  must_include_all_of: []
+  must_include_any_of:
+  - eucs-dr-2024-1366:article:10
+  - nis2-cir-2024-2690:annex:1
+  - nis2-dir-2022-2555:article:10
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan adskiller kravene til inddragelse af interessenter i artikel 10
+    i eucs-dr-2024-1366 sig fra de tekniske og metodologiske krav i nis2-cir-2024-2690,
+    især i forhold til håndtering af IT-sikkerhedshændelser som beskrevet i artikel
+    10 i nis2-dir-2022-2555?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:article:1
+  - eucs-dr-2024-1366:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  id: cybersikkerhedskrav
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 5
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:article:1
+  - eucs-dr-2024-1366:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan adskiller de cybersikkerhedsmæssige krav i forordningen om produkter
+    med digitale elementer sig fra de specifikke netregler for cybersikkerhed i forbindelse
+    med grænseoverskridende elektricitetsstrømme?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:annex:VIII:2
+  - eucs-dr-2024-1366:article:11
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - ai-act
+  id: omkostninger_og_overensstemmelse
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 4
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:annex:VIII:2
+  - eucs-dr-2024-1366:article:11
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan håndteres omkostninger i forbindelse med overensstemmelsesvurdering
+    i forhold til kravene i cyberrobusthed og dækning af omkostninger i EU-lovgivningen?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - eucs-dr-2024-1366:article:4
+  - nis2-dir-2022-2555:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  id: cybersikkerhed_kompetent_myndighed
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 4
+  must_include_all_of: []
+  must_include_any_of:
+  - eucs-dr-2024-1366:article:4
+  - nis2-dir-2022-2555:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan adskiller kravene til udpegning af en kompetent myndighed i henholdsvis
+    artikel 4 i forordningen om kompetente myndigheder og artikel 1 i direktivet om
+    cybersikkerhed sig fra hinanden?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - eucs-dr-2024-1366:article:32
+  - nis2-cir-2024-2690:annex:1
+  - cyberrobusthed:article:11
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - ai-act
+  id: cybersikkerhed_og_regulering
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 4
+  must_include_all_of: []
+  must_include_any_of:
+  - eucs-dr-2024-1366:article:32
+  - nis2-cir-2024-2690:annex:1
+  - cyberrobusthed:article:11
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan adskiller kravene til cybersikkerhedsstyringssystemer i artikel
+    32 i eucs-dr-2024-1366 sig fra de tekniske og metodologiske krav nævnt i bilag
+    1 til nis2-cir-2024-2690, og hvordan relaterer de sig til produktsikkerhed i artikel
+    11 i cyberrobusthed?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:article:2
+  - nis2-dir-2022-2555:article:2
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  id: auto_inverted_scope
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 4
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:article:2
+  - nis2-dir-2022-2555:article:2
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan adskiller anvendelsesområdet for produkter med digitale elementer
+    sig mellem forordningen om cyberrobusthed og direktivet om net- og informationssikkerhed
+    (NIS2)?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - eucs-dr-2024-1366:article:3
+  - nis2-dir-2022-2555:article:6
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-dir-2022-2555
+  - ai-act
+  id: aktiv_definitions_comparison
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 3
+  must_include_all_of: []
+  must_include_any_of:
+  - eucs-dr-2024-1366:article:3
+  - nis2-dir-2022-2555:article:6
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan definerer forskellige EU-regler begrebet 'aktiv' i relation til
+    net- og informationssystemer, og hvilke elementer indgår i denne definition?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:annex:IV:1
+  - eucs-dr-2024-1366:article:12
+  - nis2-dir-2022-2555:article:10
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - ai-act
+  id: auto_inverted_classification
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 4
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:annex:IV:1
+  - eucs-dr-2024-1366:article:12
+  - nis2-dir-2022-2555:article:10
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan adskiller kravene til overvågning af kritiske produkter med digitale
+    elementer sig fra kravene til håndtering af IT-sikkerhedshændelser i EU-lovgivningen?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:article:2
+  - eucs-dr-2024-1366:article:2
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  id: auto_inverted_classification_1
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 5
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:article:2
+  - eucs-dr-2024-1366:article:2
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan adskiller anvendelsesområdet for produkter med digitale elementer
+    sig mellem forordningen om cyberrobusthed og forordningen om cybersikkerhedsmæssige
+    aspekter af elektricitetsstrømme?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - nis2-dir-2022-2555:article:11
+  - eucs-dr-2024-1366:article:12
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - ai-act
+  id: auto_inverted_procedures
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 4
+  must_include_all_of: []
+  must_include_any_of:
+  - nis2-dir-2022-2555:article:11
+  - eucs-dr-2024-1366:article:12
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan adskiller kravene til kommunikationskanaler for CSIRT'er sig fra
+    overvågningsprocedurerne beskrevet af ACER i forhold til samarbejde med andre
+    enheder?
+  retrieval_confirmed: true
+  synthesis_mode: comparison
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - rearm-europe
+  - ai-act
+  test_types:
+  - comparison_completeness
+  - retrieval
+  - faithfulness
+  - relevancy
+created_at: '2026-02-11T21:35:16.618575+00:00'
+default_synthesis_mode: comparison
+description: Test-suiten evaluerer og sammenligner cybersikkerhedskrav og definitioner
+  mellem flere EU-forordninger og direktiver, herunder forordningen om cyberrobusthed,
+  som pålægger producenter at sikre produkter med digitale elementer mod cybersikkerhedstrusler,
+  og NIS 2-direktivet, der fastsætter krav til medlemsstaterne om at opretholde et
+  højt niveau af cybersikkerhed. Derudover undersøges specifikke krav til risikostyring
+  og hændelsesrapportering for DNS-tjenesteudbydere og cloudtjenesteudbydere, som
+  defineret i den gennemførelsesforordning, der relaterer til direktiv
+id: cybersikkerhedsregulering_og_ai_compliance_comparison_and_inverted_db6832a7
+modified_at: '2026-02-11T21:35:49.531583+00:00'
+name: Cybersikkerhedsregulering og AI-Compliance Comparison and Inverted
+target_corpora:
+- cyberrobusthed
+- eucs-dr-2024-1366
+- nis2-cir-2024-2690
+- nis2-dir-2022-2555
+- rearm-europe
+- ai-act

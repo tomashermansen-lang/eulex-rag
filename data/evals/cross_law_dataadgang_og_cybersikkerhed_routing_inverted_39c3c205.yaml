@@ -1,0 +1,422 @@
+cases:
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - data-act:article:10
+  - gdpr:article:10
+  expected_behavior: answer
+  expected_corpora:
+  - data-act
+  - gdpr
+  id: tvistbilagelse_og_personoplysninger
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - data-act:article:10
+  - gdpr:article:10
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken lovgivning gælder, hvis en offentlig myndighed skal behandle personoplysninger
+    vedrørende straffedomme, samtidig med at der opstår en tvist om datadeling mellem
+    brugere og dataindehavere?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - gdpr:article:1
+  - elan:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - gdpr
+  - elan
+  id: data_protection_and_trade
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - gdpr:article:1
+  - elan:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken forordning gælder, hvis en virksomhed ønsker at dele personoplysninger
+    om kunder i forbindelse med handel med tredjelande, samtidig med at de skal overholde
+    reglerne for beskyttelse af personoplysninger?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - data-act:article:17
+  - gdpr:article:23
+  expected_behavior: answer
+  expected_corpora:
+  - data-act
+  - gdpr
+  id: data_request_and_privacy
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - data-act:article:17
+  - gdpr:article:23
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken lovgivning gælder, når offentlige myndigheder anmoder om data, og
+    samtidig skal sikre, at personoplysninger beskyttes i henhold til gældende regler?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - gdpr:article:4
+  - nis2-cir-2024-2690:article:9
+  expected_behavior: answer
+  expected_corpora:
+  - gdpr
+  - nis2-cir-2024-2690
+  id: data_privacy_incident
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - gdpr:article:4
+  - nis2-cir-2024-2690:article:9
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken lovgivning gælder, hvis en virksomhed oplever en væsentlig hændelse,
+    der involverer personoplysninger, og som påvirker tilgængeligheden af deres indholdsleveringsnetværk?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: easy
+  disabled: false
+  expected_anchors:
+  - data-act:article:21
+  expected_behavior: answer
+  expected_corpora:
+  - data-act
+  id: data_delivering_research
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - data-act:article:21
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken lovgivning gælder for en offentlig myndighed, der ønsker at dele
+    data indsamlet under ekstraordinære omstændigheder med forskningsinstitutioner?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - gdpr:article:2
+  - elan:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - gdpr
+  - elan
+  id: data_processing_scenario
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - gdpr:article:2
+  - elan:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken forordning gælder for behandling af personoplysninger i forbindelse
+    med elektronisk udveksling af dokumenter til handel med tredjelande?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - data-act:article:35
+  - gdpr:article:68
+  expected_behavior: answer
+  expected_corpora:
+  - data-act
+  - gdpr
+  id: interoperabilitet_og_databeskyttelse
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - data-act:article:35
+  - gdpr:article:68
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken lovgivning gælder for situationen, hvor en virksomhed ønsker at
+    sikre, at deres databehandlingstjenester er interoperable og samtidig overholder
+    databeskyttelsesstandarder i EU?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - data-act:article:1
+  - gdpr:article:4
+  expected_behavior: answer
+  expected_corpora:
+  - data-act
+  - gdpr
+  id: data_processing_scenario_1
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - data-act:article:1
+  - gdpr:article:4
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken forordning gælder for en virksomhed, der indsamler og behandler
+    personoplysninger fra brugere af et forbundet produkt, samtidig med at den tilrådighedsstiller
+    produktdata til offentlige myndigheder?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - data-act:article:36
+  - gdpr:article:23
+  expected_behavior: answer
+  expected_corpora:
+  - data-act
+  - gdpr
+  id: auto_inverted_classification
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - data-act:article:36
+  - gdpr:article:23
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilke krav skal en leverandør af en applikation, der anvender intelligente
+    kontrakter til datadeling, overholde i henhold til gældende lovgivning, hvis der
+    også er begrænsninger i databeskyttelsesretten?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - elan:article:1
+  - gdpr:article:2
+  expected_behavior: answer
+  expected_corpora:
+  - elan
+  - gdpr
+  id: auto_inverted_classification_1
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - elan:article:1
+  - gdpr:article:2
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilken lovgivning gælder for behandling af personoplysninger i forbindelse
+    med elektronisk udveksling af dokumenter til handel med tredjelande?
+  retrieval_confirmed: true
+  synthesis_mode: routing
+  target_corpora:
+  - data-act
+  - elan
+  - gdpr
+  - nis2-cir-2024-2690
+  - dora
+  - reg-sandkasser
+  test_types:
+  - routing_precision
+  - retrieval
+  - faithfulness
+  - relevancy
+created_at: '2026-02-11T21:19:13.832610+00:00'
+default_synthesis_mode: routing
+description: Test-suiten vurderer, hvilke love der gælder for scenarier vedrørende
+  adgang til og anvendelse af data, herunder EU's dataforordning, der fastsætter krav
+  om rimelig adgang til data, samt GDPR, der beskytter personoplysninger og fastsætter
+  rettigheder for enkeltpersoner. Desuden sammenlignes reglerne for cybersikkerhed
+  fra Kommissionens gennemførelsesforordning og kravene til digital operationel modstandsdygtighed
+  i den finansielle sektor, som begge fastlægger forpligtelser for virksomheder til
+  at håndtere risici og beskytte data effektivt.
+id: dataadgang_og_cybersikkerhed_routing_inverted_39c3c205
+modified_at: '2026-02-11T21:19:44.881699+00:00'
+name: Dataadgang og Cybersikkerhed Routing Inverted
+target_corpora:
+- data-act
+- elan
+- gdpr
+- nis2-cir-2024-2690
+- dora
+- reg-sandkasser

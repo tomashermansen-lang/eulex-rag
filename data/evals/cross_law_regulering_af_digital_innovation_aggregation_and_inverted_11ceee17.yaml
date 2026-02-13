@@ -1,0 +1,430 @@
+cases:
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - ai-act:annex:III:1
+  - dora:article:10
+  - data-act:article:10
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  id: auto_inverted_obligations
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 3
+  must_include_all_of: []
+  must_include_any_of:
+  - ai-act:annex:III:1
+  - dora:article:10
+  - data-act:article:10
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan skal finansielle enheder sikre detektion af anormale aktiviteter
+    i overensstemmelse med DORA, og hvordan relaterer dette sig til kravene for højrisiko-AI-systemer
+    og tvistbilæggelse i forbindelse med datadeling?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - ai-act:article:1
+  - dora:article:1
+  - data-act:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  id: data_protection_and_resilience
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 3
+  must_include_all_of: []
+  must_include_any_of:
+  - ai-act:article:1
+  - dora:article:1
+  - data-act:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan sikrer de forskellige forordninger, at data, der anvendes i AI-systemer
+    og finansielle enheder, er beskyttet og tilgængelige for relevante interessenter?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - dora:article:19
+  - data-act:article:17
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  id: data_management_and_reporting
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 3
+  must_include_all_of: []
+  must_include_any_of:
+  - dora:article:19
+  - data-act:article:17
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan skal finansielle enheder indberette større IKT-relaterede hændelser,
+    og hvilke krav gælder der for anmodninger om data fra offentlige myndigheder?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - reg-sandkasser:article:9
+  - data-act:article:2
+  expected_behavior: answer
+  expected_corpora:
+  - reg-sandkasser
+  - data-act
+  id: data_management_in_regulatory_sandboxes
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - reg-sandkasser:article:9
+  - data-act:article:2
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan håndteres data og metadata i forbindelse med driften af reguleringsmæssige
+    sandkasser, og hvilke specifikke opgaver har koordinatorerne i denne sammenhæng?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - ai-act:article:57
+  - dora:article:26
+  - data-act:article:21
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - dora
+  - data-act
+  id: data_sharing_and_testing_in_AI
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 2
+  must_include_all_of: []
+  must_include_any_of:
+  - ai-act:article:57
+  - dora:article:26
+  - data-act:article:21
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan kan data, der er indhentet til videnskabelig forskning, anvendes
+    i forbindelse med avancerede tests af IKT-værktøjer og systemer i reguleringsmæssige
+    AI-sandkasser?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - ai-act:article:1
+  - reg-sandkasser:article:3
+  - dora:article:1
+  - data-act:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  id: digital_modstandsdygtighed_og_interoperabilitet
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 3
+  must_include_all_of: []
+  must_include_any_of:
+  - ai-act:article:1
+  - reg-sandkasser:article:3
+  - dora:article:1
+  - data-act:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan bidrager reguleringsmæssige sandkasser til at sikre digital operationel
+    modstandsdygtighed og interoperabilitet i forbindelse med anvendelsen af kunstig
+    intelligens og dataudveksling?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - ai-act:article:3
+  - reg-sandkasser:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  id: data_interoperability_ai_systems
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 3
+  must_include_all_of: []
+  must_include_any_of:
+  - ai-act:article:3
+  - reg-sandkasser:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan påvirker definitionen af et AI-system i ai-act den måde, hvorpå
+    innovative interoperabilitetsløsninger udvikles og testes i reguleringsmæssige
+    sandkasser ifølge reg-sandkasser?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - dora:article:18
+  - data-act:article:36
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  id: auto_inverted_classification
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 3
+  must_include_all_of: []
+  must_include_any_of:
+  - dora:article:18
+  - data-act:article:36
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan skal finansielle enheder klassificere IKT-relaterede hændelser,
+    og hvilke krav skal intelligente kontrakter opfylde for at sikre datadeling i
+    forbindelse med disse hændelser?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - ai-act:article:1
+  - dora:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - dora
+  id: auto_inverted_classification_1
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 1
+  must_include_all_of: []
+  must_include_any_of:
+  - ai-act:article:1
+  - dora:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan sikrer både AI-forordningen og DORA-forordningen beskyttelse af
+    grundlæggende rettigheder og operationel modstandsdygtighed i forbindelse med
+    brugen af kunstig intelligens og digitale systemer?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: medium
+  disabled: false
+  expected_anchors:
+  - ai-act:annex:VI:1
+  - reg-sandkasser:article:10
+  - data-act:article:10
+  expected_behavior: answer
+  expected_corpora:
+  - ai-act
+  - reg-sandkasser
+  - data-act
+  id: auto_inverted_procedures
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: 2
+  must_include_all_of: []
+  must_include_any_of:
+  - ai-act:annex:VI:1
+  - reg-sandkasser:article:10
+  - data-act:article:10
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan kan deltagere i en reguleringsmæssig sandkasse sikre, at deres tvister
+    vedrørende datadeling bliver behandlet korrekt og i overensstemmelse med gældende
+    procedurer for overensstemmelsesvurdering?
+  retrieval_confirmed: true
+  synthesis_mode: aggregation
+  target_corpora:
+  - ai-act
+  - reg-sandkasser
+  - dora
+  - data-act
+  test_types:
+  - synthesis_balance
+  - retrieval
+  - faithfulness
+  - relevancy
+created_at: '2026-02-11T21:30:22.110638+00:00'
+default_synthesis_mode: aggregation
+description: Test-suiten analyserer, hvordan de forskellige EU-forordninger regulerer
+  brugen af kunstig intelligens, datatilgang og operationel modstandsdygtighed i den
+  digitale sektor. Den sammenligner specifikke krav som AI-forordningens krav om sikkerhed
+  og ansvarlighed, dataforordningens bestemmelser om rimelig adgang til data, samt
+  reglerne for reguleringsmæssige sandkasser, der fremmer innovation uden at gå på
+  kompromis med forbrugersikkerhed og databeskyttelse.
+id: regulering_af_digital_innovation_aggregation_and_inverted_11ceee17
+modified_at: '2026-02-11T21:30:53.230189+00:00'
+name: Regulering af Digital Innovation Aggregation and Inverted
+target_corpora:
+- ai-act
+- reg-sandkasser
+- dora
+- data-act

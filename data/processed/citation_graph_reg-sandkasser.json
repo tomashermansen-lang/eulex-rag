@@ -1,0 +1,718 @@
+{
+  "schema_version": "citation_graph:v1",
+  "corpus_id": "reg-sandkasser",
+  "generated_at": "2026-01-30T18:54:31.185247+00:00",
+  "nodes": {
+    "12": {
+      "type": "article",
+      "title": "Risikostyring",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 18
+    },
+    "11": {
+      "type": "article",
+      "title": "Deltagernes generelle rettigheder og forpligtelser",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "rights"
+      ],
+      "mention_count": 14
+    },
+    "15": {
+      "type": "article",
+      "title": "Afslutning af et projekt",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "procedures",
+        "prohibitions",
+        "exemptions"
+      ],
+      "mention_count": 5
+    },
+    "61": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "62": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "4": {
+      "type": "article",
+      "title": "Centralt kontaktpunkt",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "42": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "22": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "1": {
+      "type": "article",
+      "title": "Definitioner",
+      "chapter": "I",
+      "roles": [
+        "obligations",
+        "definitions"
+      ]
+    },
+    "2": {
+      "type": "article",
+      "title": "Almindelige bestemmelser",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "3": {
+      "type": "article",
+      "title": "Kriterier for oprettelse af reguleringsmæssige sandkasser for interoperabilitet",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "scope",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "5": {
+      "type": "article",
+      "title": "Underretning om og godkendelse af en reguleringsmæssig sandkasse for interoperabilitet",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "7": {
+      "type": "article",
+      "title": "Fornyelse af den reguleringsmæssige sandkasse for interoperabilitet",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "9": {
+      "type": "article",
+      "title": "Generelle rettigheder og forpligtelser for koordinatorer for reguleringsmæssige sandkasser",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "procedures",
+        "enforcement"
+      ],
+      "mention_count": 2
+    },
+    "6": {
+      "type": "article",
+      "title": "Gennemsigtighed",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "procedures"
+      ]
+    },
+    "8": {
+      "type": "article",
+      "title": "Afslutning af en reguleringsmæssig sandkasse for interoperabilitet",
+      "chapter": "II",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 1
+    },
+    "10": {
+      "type": "article",
+      "title": "Adgang for deltagere og andre aktører",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 2
+    },
+    "13": {
+      "type": "article",
+      "title": "Rapporteringsforpligtelser",
+      "chapter": "III",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "14": {
+      "type": "article",
+      "title": "Deltageres udtræden",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "procedures"
+      ],
+      "mention_count": 1
+    },
+    "16": {
+      "type": "article",
+      "title": "Ikrafttræden",
+      "chapter": "IV",
+      "roles": [
+        "obligations",
+        "enforcement",
+        "rights"
+      ]
+    },
+    "ANNEX:1": {
+      "type": "annex",
+      "title": "Tjekliste for reguleringsmæssige sandkasser for interoperabilitet (jf. artikel 2, stk. 2, litra a))",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    }
+  },
+  "edges": [
+    {
+      "source": "1",
+      "target": "12",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.6667
+    },
+    {
+      "source": "2",
+      "target": "11",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "12",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "7",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "3",
+      "target": "11",
+      "type": "cites",
+      "count": 3,
+      "weight": 1.0
+    },
+    {
+      "source": "3",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "5",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "7",
+      "target": "8",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "7",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "7",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "8",
+      "target": "7",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "8",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "8",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "8",
+      "target": "12",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "9",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "9",
+      "target": "12",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "9",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "9",
+      "target": "11",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "12",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "12",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "13",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "14",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "13",
+      "target": "12",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.6667
+    },
+    {
+      "source": "14",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "14",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "11",
+      "type": "cites",
+      "count": 3,
+      "weight": 1.0
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "12",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "12",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.6667
+    },
+    {
+      "source": "12",
+      "target": "15",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.6667
+    },
+    {
+      "source": "2",
+      "target": "3",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "4",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "2",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "3",
+      "target": "4",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "3",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "3",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "3",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "3",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "4",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "4",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "4",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "4",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "5",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "5",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "5",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "6",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "6",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "7",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "11",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "12",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "13",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "14",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "10",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "12",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "13",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "14",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "11",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "12",
+      "target": "13",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "12",
+      "target": "14",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "12",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "12",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "13",
+      "target": "14",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "13",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "13",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "14",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "14",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    },
+    {
+      "source": "15",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.3333
+    }
+  ]
+}

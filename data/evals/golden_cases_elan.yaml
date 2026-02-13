@@ -1,0 +1,145 @@
+- id: elan-01-retrieval-dokumentformat
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilket format skal ELAN-dokumenter identificeres i?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:3
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde den specifikke artikel om dokumentformat.
+- id: elan-02-retrieval-udstedelse-af-dokumenter
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad skal de nationale udstedende myndigheder gøre for at generere dokumenter
+    i ELAN?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet korrekt identificerer proceduren for udstedelse af dokumenter.
+- id: elan-03-retrieval-behandling-af-personoplysninger
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvordan behandles personoplysninger i ELAN?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at finde information om behandling af personoplysninger.
+- id: elan-04-retrieval-overgangsperiode
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvornår kan de nationale udstedende myndigheder begynde at generere dokumenter
+    i ELAN?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om systemet kan finde information om overgangsperioden.
+- id: elan-05-faithfulness-dokumenter-ved-vedligeholdelse
+  profile: ENGINEERING
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad skal der gøres, hvis ELAN er utilgængeligt i mere end en time?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er korrekt baseret på den specifikke artikel om dokumenter
+      under vedligeholdelse.
+- id: elan-06-faithfulness-toldkontrol
+  profile: ENGINEERING
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvordan skal toldmyndighederne kontrollere dokumenter, der er genereret,
+    mens ELAN var utilgængeligt?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:9
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret kan verificeres mod kildeteksten vedrørende toldkontrol.
+- id: elan-07-relevancy-vedligeholdelsesarbejde
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvad skal brugerne af ELAN vide om planlagt vedligeholdelsesarbejde?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:7
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester om svaret er direkte relateret til vedligeholdelsesarbejde.
+- id: elan-08-abstention-ikke-relevant-spørgsmål
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er de økonomiske konsekvenser af ELAN-systemet?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester om systemet nægter at svare på et spørgsmål uden for lovens scope.
+- id: elan-09-robustness-stavefejl
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad sker der, hvis ELAN er utilgængeligt i mere end en time?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere stavefejl i spørgsmålet.
+- id: elan-10-multi_hop-dokumenter-og-toldkontrol
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvordan håndteres dokumenter under vedligeholdelse, og hvordan kontrolleres
+    de af toldmyndighederne?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    - article:9
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler.

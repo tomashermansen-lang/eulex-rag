@@ -1,0 +1,22 @@
+# Naming conventions for corpus identification
+# Used by AI name suggestion and validation
+
+# CELEX type character to document type mapping
+# Position 6 in CELEX number (e.g., 32022L2555 -> L = directive)
+celex_type_mapping:
+  L: dir      # Directive (Direktiv)
+  R: reg      # Regulation (Forordning)
+  D: dec      # Decision (Beslutning)
+
+# corpus_id format template
+# {known_name} = publicly known abbreviation (e.g., NIS2, GDPR)
+# {type_code} = from celex_type_mapping above
+# {year} = 4-digit year from CELEX
+# {number} = document number from CELEX
+corpus_id_format: "{known_name}-{type_code}-{year}-{number}"
+
+# Special type codes for implementing/delegated regulations
+# These are determined by LLM analysis of the title
+special_type_codes:
+  implementing_regulation: cir   # Commission Implementing Regulation
+  delegated_regulation: dr       # Delegated Regulation

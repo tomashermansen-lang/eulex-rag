@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root"
+
+if [[ -x ".venv/bin/python" ]]; then
+  PYTHON=".venv/bin/python"
+else
+  PYTHON="python"
+fi
+
+"$PYTHON" -m pytest -q

@@ -1,0 +1,542 @@
+{
+  "schema_version": "citation_graph:v1",
+  "corpus_id": "nis2-cir-2024-2690",
+  "generated_at": "2026-02-01T14:54:23.764501+00:00",
+  "nodes": {
+    "21": {
+      "type": "article",
+      "mention_count": 12
+    },
+    "23": {
+      "type": "article",
+      "mention_count": 7
+    },
+    "3": {
+      "type": "article",
+      "title": "Væsentlige hændelser",
+      "roles": [
+        "obligations",
+        "classification",
+        "exemptions"
+      ],
+      "mention_count": 12
+    },
+    "49": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "5": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår DNS-tjenesteudbydere",
+      "roles": [
+        "obligations",
+        "exemptions"
+      ],
+      "mention_count": 2
+    },
+    "42": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "39": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "1": {
+      "type": "article",
+      "title": "Genstand",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    },
+    "2": {
+      "type": "article",
+      "title": "Tekniske og metodologiske krav",
+      "roles": [
+        "obligations",
+        "classification",
+        "exemptions"
+      ],
+      "mention_count": 1
+    },
+    "4": {
+      "type": "article",
+      "title": "Tilbagevendende hændelser",
+      "roles": [
+        "obligations",
+        "classification"
+      ],
+      "mention_count": 2
+    },
+    "7": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår udbydere af cloudcomputingtjenester",
+      "roles": [
+        "obligations",
+        "classification"
+      ],
+      "mention_count": 1
+    },
+    "6": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår topdomænenavneadministratorer",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    },
+    "8": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår udbydere af datacentertjenester",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    },
+    "9": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår udbydere af indholdsleveringsnetværk",
+      "roles": [
+        "obligations",
+        "enforcement"
+      ]
+    },
+    "10": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår udbydere af administrerede tjenester og udbydere af administrerede sikkerhedstjenester",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "11": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår udbydere af onlinemarkedspladser",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    },
+    "12": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår udbydere af onlinesøgemaskiner",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    },
+    "13": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår udbydere af platforme for sociale netværkstjenester",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "14": {
+      "type": "article",
+      "title": "Væsentlige hændelser for så vidt angår tillidstjenesteudbydere",
+      "roles": [
+        "obligations",
+        "enforcement"
+      ]
+    },
+    "15": {
+      "type": "article",
+      "title": "Ophævelse",
+      "roles": [
+        "obligations",
+        "prohibitions"
+      ]
+    },
+    "16": {
+      "type": "article",
+      "title": "Ikrafttræden og anvendelse",
+      "roles": [
+        "obligations",
+        "scope",
+        "classification"
+      ]
+    },
+    "ANNEX:1": {
+      "type": "annex",
+      "title": "Tekniske og metodologiske krav, jf. denne forordnings artikel 2",
+      "roles": [
+        "obligations",
+        "procedures",
+        "scope",
+        "enforcement",
+        "classification",
+        "prohibitions"
+      ]
+    },
+    "ANNEX:1:1": {
+      "type": "annex_point",
+      "title": "Politik for sikkerheden i net- og informationssystemer (artikel 21, stk. 2, litra a), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "procedures",
+        "scope"
+      ]
+    },
+    "ANNEX:1:2": {
+      "type": "annex_point",
+      "title": "Politik for risikostyring (artikel 21, stk. 2, litra a), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "procedures",
+        "enforcement"
+      ]
+    },
+    "ANNEX:1:3": {
+      "type": "annex_point",
+      "title": "Håndtering af hændelser (artikel 21, stk. 2, litra b), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "procedures",
+        "classification"
+      ]
+    },
+    "ANNEX:1:4": {
+      "type": "annex_point",
+      "title": "Driftskontinuitet og krisestyring (artikel 21, stk. 2, litra c), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "procedures"
+      ]
+    },
+    "ANNEX:1:5": {
+      "type": "annex_point",
+      "title": "Forsyningskædesikkerhed (artikel 21, stk. 2, litra d), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "classification"
+      ]
+    },
+    "ANNEX:1:6": {
+      "type": "annex_point",
+      "title": "Sikkerhed i forbindelse med erhvervelse, udvikling og vedligeholdelse af net- og informationssystemer (artikel 21, stk. 2, litra e), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "classification",
+        "procedures",
+        "prohibitions"
+      ]
+    },
+    "ANNEX:1:7": {
+      "type": "annex_point",
+      "title": "Politikker og procedurer til vurdering af effektiviteten af foranstaltninger til styring af cybersikkerhedsrisici (artikel 21, stk. 2, litra f), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "procedures"
+      ]
+    },
+    "ANNEX:1:8": {
+      "type": "annex_point",
+      "title": "Grundlæggende cyberhygiejnepraksisser og sikkerhedsuddannelse (artikel 21, stk. 2, litra g), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "ANNEX:1:9": {
+      "type": "annex_point",
+      "title": "Kryptografi (artikel 21, stk. 2, litra h), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "classification",
+        "procedures"
+      ]
+    },
+    "ANNEX:1:10": {
+      "type": "annex_point",
+      "title": "Personalesikkerhed (artikel 21, stk. 2, litra i), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "procedures"
+      ]
+    },
+    "ANNEX:1:11": {
+      "type": "annex_point",
+      "title": "Adgangskontrol (artikel 21, stk. 2, litra i) og j), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "procedures",
+        "prohibitions",
+        "enforcement",
+        "classification"
+      ]
+    },
+    "ANNEX:1:12": {
+      "type": "annex_point",
+      "title": "Forvaltning af aktiver (artikel 21, stk. 2, litra i), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "classification",
+        "prohibitions",
+        "procedures"
+      ]
+    },
+    "ANNEX:1:13": {
+      "type": "annex_point",
+      "title": "Miljømæssig og fysisk sikkerhed (artikel 21, stk. 2, litra c), e) og i), i direktiv (EU) 2022/2555)",
+      "roles": [
+        "obligations",
+        "classification",
+        "procedures"
+      ]
+    }
+  },
+  "edges": [
+    {
+      "source": "1",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "1",
+      "target": "21",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "2",
+      "target": "21",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "3",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "3",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "3",
+      "target": "23",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "3",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "3",
+      "target": "7",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "4",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "5",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "6",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "7",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "8",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "9",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "10",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "11",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "12",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "13",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "14",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:1",
+      "type": "contains",
+      "count": 2,
+      "weight": 0.1818
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:2",
+      "type": "contains",
+      "count": 3,
+      "weight": 0.2727
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:3",
+      "type": "contains",
+      "count": 6,
+      "weight": 0.5455
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:4",
+      "type": "contains",
+      "count": 3,
+      "weight": 0.2727
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:5",
+      "type": "contains",
+      "count": 3,
+      "weight": 0.2727
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:6",
+      "type": "contains",
+      "count": 11,
+      "weight": 1.0
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:7",
+      "type": "contains",
+      "count": 1,
+      "weight": 0.0909
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "21",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.1818
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:8",
+      "type": "contains",
+      "count": 2,
+      "weight": 0.1818
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:9",
+      "type": "contains",
+      "count": 2,
+      "weight": 0.1818
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:10",
+      "type": "contains",
+      "count": 4,
+      "weight": 0.3636
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:11",
+      "type": "contains",
+      "count": 7,
+      "weight": 0.6364
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:12",
+      "type": "contains",
+      "count": 5,
+      "weight": 0.4545
+    },
+    {
+      "source": "ANNEX:1",
+      "target": "ANNEX:1:13",
+      "type": "contains",
+      "count": 3,
+      "weight": 0.2727
+    },
+    {
+      "source": "21",
+      "target": "23",
+      "type": "co-occurrence",
+      "count": 4,
+      "weight": 0.3636
+    },
+    {
+      "source": "23",
+      "target": "5",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.1818
+    }
+  ]
+}

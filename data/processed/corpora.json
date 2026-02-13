@@ -1,0 +1,362 @@
+{
+  "corpora": {
+    "ai-act": {
+      "category": "kunstig-intelligens",
+      "celex_number": "32024R1689",
+      "chunks_collection": "ai-act_documents",
+      "display_name": "Forordning om kunstig intelligens (AI-ACT)",
+      "enabled": true,
+      "entry_into_force": "2026-08-02T00:00:00",
+      "fullname": "Europa-Parlamentets og Rådets forordning (EU) 2024/1689 af 13. juni 2024 om harmoniserede regler for kunstig intelligens og om ændring af forordning (EF) nr. 300/2008, (EU) nr. 167/2013, (EU) nr. 168/2013, (EU) 2018/858, (EU) 2018/1139 og (EU) 2019/2144 og direktiv 2014/90/EU, (EU) 2016/797 og (EU) 2020/1828 (forordningen om kunstig intelligens)",
+      "ingested_at": "2026-01-30T18:28:45.882407+00:00",
+      "last_modified": "2024-06-13T00:00:00",
+      "max_distance": null,
+      "quality": {
+        "chunk_count": 929,
+        "structure_coverage_pct": 99.9,
+        "unhandled_count": 1,
+        "unhandled_patterns": {
+          "image_with_alt": 1
+        },
+        "unhandled_pct": 0.0
+      },
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1689",
+      "eurovoc_labels": [
+        "harmonisering af normer",
+        "indre marked",
+        "innovation",
+        "intelligent teknologi",
+        "kunstig intelligens",
+        "ny teknologi",
+        "salgstilladelse"
+      ]
+    },
+    "cyberrobusthed": {
+      "category": "cybersikkerhed",
+      "celex_number": "32024R2847",
+      "chunks_collection": "cyberrobusthed_documents",
+      "display_name": "Forordning om cybersikkerhed (EU-CYBER)",
+      "enabled": true,
+      "entry_into_force": "2024-12-10T00:00:00",
+      "fullname": "Europa-Parlamentets og Rådets forordning (EU) 2024/2847 af 23. oktober 2024 om horisontale cybersikkerhedskrav til produkter med digitale elementer og om ændring af forordning (EU) nr. 168/2013 og (EU) 2019/1020 og direktiv (EU) 2020/1828 (forordningen om cyberrobusthed)",
+      "ingested_at": "2026-01-31T11:59:46.011039+00:00",
+      "last_modified": "2024-10-23T00:00:00",
+      "max_distance": null,
+      "quality": {
+        "chunk_count": 590,
+        "structure_coverage_pct": 99.8,
+        "unhandled_count": 1,
+        "unhandled_patterns": {
+          "image_with_alt": 1
+        },
+        "unhandled_pct": 0.1
+      },
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R2847",
+      "eurovoc_labels": [
+        "CE-overensstemmelsesmærkning",
+        "datakriminalitet",
+        "digital teknologi",
+        "edb-udstyr",
+        "indre marked",
+        "informationskrigsførelse",
+        "informationssikkerhed",
+        "markedsovervågning",
+        "programmel",
+        "salgstilladelse"
+      ]
+    },
+    "data-act": {
+      "category": "dataokonomi",
+      "celex_number": "32023R2854",
+      "chunks_collection": "data-act_documents",
+      "display_name": "Forordning om harmoniserede regler for dataadgang (Data Act)",
+      "enabled": true,
+      "entry_into_force": "2025-09-12T00:00:00",
+      "fullname": "Europa-Parlamentets og Rådets forordning (EU) 2023/2854 af 13. december 2023 om harmoniserede regler for rimelig adgang til og anvendelse af data og om ændring af forordning (EU) 2017/2394 og direktiv (EU) 2020/1828 (dataforordningen)",
+      "ingested_at": "2026-01-28T16:55:00.470549+00:00",
+      "last_modified": "2023-12-13T00:00:00",
+      "max_distance": null,
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32023R2854",
+      "eurovoc_labels": [
+        "adgang til information",
+        "databeskyttelse",
+        "datadeling",
+        "datakommunikation",
+        "dataret",
+        "datatransmission",
+        "forbrugerbeskyttelse",
+        "harmonisering af normer",
+        "personoplysninger",
+        "udveksling af information"
+      ]
+    },
+    "dora": {
+      "category": "finansiel-regulering",
+      "celex_number": "32022R2554",
+      "chunks_collection": "dora_documents",
+      "display_name": "Forordning om digital operationel modstandsdygtighed (DORA)",
+      "enabled": true,
+      "entry_into_force": "2025-01-17",
+      "fullname": "Europa-Parlamentets og Rådets forordning (EU) 2022/2554 af 14. december 2022 om digital operationel modstandsdygtighed i den finansielle sektor og om ændring af forordning (EF) nr. 1060/2009, (EU) nr. 648/2012, (EU) nr. 600/2014, (EU) nr. 909/2014 og (EU) 2016/1011",
+      "ingested_at": "2025-01-15T10:00:00Z",
+      "last_modified": "2022-12-14T00:00:00",
+      "max_distance": null,
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32022R2554",
+      "eurovoc_labels": [
+        "cloudcomputing",
+        "digitalisering",
+        "digitalt indre marked",
+        "finansiel teknologi",
+        "finansielle tjenesteydelser",
+        "informationssikkerhed",
+        "informationsteknologi",
+        "outsourcing",
+        "risikostyring"
+      ]
+    },
+    "elan": {
+      "category": "dataokonomi",
+      "celex_number": "32025R1272",
+      "chunks_collection": "elan_documents",
+      "display_name": "Forordning om landbrugsdata (ELAN)",
+      "enabled": true,
+      "entry_into_force": "2027-01-18T00:00:00",
+      "fullname": "Europa-Parlamentets og Rådets forordning (EU) 2025/1272 af 6. maj 2025 om rammer for adgang til landbrugsdata (ELAN)",
+      "ingested_at": "2026-01-30T08:19:07.358410+00:00",
+      "last_modified": "2025-05-06T00:00:00",
+      "max_distance": null,
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32025R1272",
+      "eurovoc_labels": [
+        "administrativt samarbejde",
+        "anvendelse af EU-retten",
+        "datalagring",
+        "fælles markedsordning",
+        "handel med landbrugsvarer",
+        "informationssystem",
+        "landbrugsprodukt",
+        "tredjeland",
+        "udveksling af information"
+      ]
+    },
+    "eucs-cir-2025-2540": {
+      "category": "cybersikkerhed",
+      "celex_number": "32025R2540",
+      "chunks_collection": "eucs-cir-2025-2540_documents",
+      "display_name": "Forordning om peer reviews (EUCS-CIR-2025-2540)",
+      "enabled": true,
+      "entry_into_force": "2026-01-01T00:00:00",
+      "fullname": "Kommissionens gennemførelsesforordning (EU) 2025/2540 af 9. december 2025 om regler for anvendelsen af Europa-Parlamentets og Rådets forordning (EU) 2019/881 for så vidt angår fastlæggelsen af planen for peerreviews",
+      "ingested_at": "2026-02-04T10:17:37.434270+00:00",
+      "last_modified": "2025-12-09T00:00:00",
+      "max_distance": null,
+      "quality": {
+        "chunk_count": 53,
+        "structure_coverage_pct": 98.1,
+        "unhandled_count": 1,
+        "unhandled_patterns": {
+          "image_with_alt": 1
+        },
+        "unhandled_pct": 0.5
+      },
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32025R2540",
+      "eurovoc_labels": [
+        "Den Europæiske Unions Agentur for Cybersikkerhed",
+        "datakriminalitet",
+        "dataoverførselsnet",
+        "godkendelse",
+        "informationssikkerhed",
+        "informationsteknologi",
+        "institutionernes funktion"
+      ]
+    },
+    "eucs-dr-2024-1366": {
+      "category": "cybersikkerhed",
+      "celex_number": "32024R1366",
+      "chunks_collection": "eucs-dr-2024-1366_documents",
+      "display_name": "Forordning om cybersikkerhedsmæssige aspekter af grænseoverskridende elektricitetsstrømme (EUCS-DR-2024-1366)",
+      "enabled": true,
+      "entry_into_force": "2024-06-13T00:00:00",
+      "fullname": "Kommissionens delegerede forordning (EU) 2024/1366 af 11. marts 2024 om supplerende regler til Europa-Parlamentets og Rådets forordning (EU) 2019/943 for så vidt angår fastsættelse af netregler om sektorspecifikke regler for cybersikkerhedsmæssige aspekter af grænseoverskridende elektricitetsstrømme",
+      "ingested_at": "2026-02-03T11:24:26.502794+00:00",
+      "last_modified": "2024-03-11T00:00:00",
+      "max_distance": null,
+      "quality": {
+        "chunk_count": 304,
+        "structure_coverage_pct": 99.7,
+        "unhandled_count": 1,
+        "unhandled_patterns": {
+          "image_with_alt": 1
+        },
+        "unhandled_pct": 0.1
+      },
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1366",
+      "eurovoc_labels": [
+        "Den Europæiske Unions Agentur for Samarbejde mellem Energireguleringsmyndigheder",
+        "Energisamarbejde",
+        "elektricitetsdistribution",
+        "elektrisk energi",
+        "energipolitik",
+        "europæisk samarbejde",
+        "forsyningssikkerhed",
+        "indre marked",
+        "informationssikkerhed",
+        "vedvarende energi"
+      ]
+    },
+    "gdpr": {
+      "category": "databeskyttelse",
+      "celex_number": "32016R0679",
+      "chunks_collection": "gdpr_documents",
+      "display_name": "Persondataforordningen (GDPR)",
+      "enabled": true,
+      "entry_into_force": "2016-05-24T00:00:00",
+      "fullname": "Europa-Parlamentets og Rådets forordning (EU) 2016/679 af 27. april 2016 om beskyttelse af fysiske personer i forbindelse med behandling af personoplysninger og om fri udveksling af sådanne oplysninger og om ophævelse af direktiv 95/46/EF (generel forordning om databeskyttelse)",
+      "ingested_at": "2026-01-27T16:33:26.818618+00:00",
+      "last_modified": "2016-04-27T00:00:00",
+      "max_distance": null,
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32016R0679",
+      "eurovoc_labels": [
+        "adgang til information",
+        "beskyttelse af privatlivet",
+        "databeskyttelse",
+        "datakommunikation",
+        "dataret",
+        "fysisk person",
+        "grænseoverskridende datastrøm",
+        "område for frihed, sikkerhed og retfærdighed",
+        "personoplysninger"
+      ]
+    },
+    "nis2-cir-2024-2690": {
+      "category": "cybersikkerhed",
+      "celex_number": "32024R2690",
+      "chunks_collection": "nis2-cir-2024-2690_documents",
+      "display_name": "Forordning om cybersikkerhedsrisikostyring (NIS2-CIR-2024-2690)",
+      "enabled": true,
+      "entry_into_force": "2024-11-07T00:00:00",
+      "fullname": "Kommissionens gennemførelsesforordning (EU) 2024/2690 af 17. oktober 2024 om regler for anvendelsen af direktiv (EU) 2022/2555 for så vidt angår tekniske og metodologiske krav til foranstaltninger til styring af cybersikkerhedsrisici og yderligere præcisering af de tilfælde, hvor en hændelse anses for at være væsentlig, for så vidt angår DNS-tjenesteudbydere, topdomænenavneadministratorer og udbydere af cloudcomputingtjenester, af datacentertjenester, af indholdsleveringsnetværk, af administrerede tjenester, af administrerede sikkerhedstjenester, af onlinemarkedspladser, af onlinesøgemaskiner og af platforme for sociale netværkstjenester og af tillidstjenester",
+      "ingested_at": "2026-02-01T14:55:35.013665+00:00",
+      "last_modified": "2024-10-17T00:00:00",
+      "max_distance": null,
+      "quality": {
+        "chunk_count": 118,
+        "structure_coverage_pct": 99.2,
+        "unhandled_count": 1,
+        "unhandled_patterns": {
+          "image_with_alt": 1
+        },
+        "unhandled_pct": 0.1
+      },
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R2690",
+      "eurovoc_labels": [
+        "cloudcomputing",
+        "databeskyttelse",
+        "datakriminalitet",
+        "europæisk sikkerhed",
+        "informationssikkerhed",
+        "risikostyring",
+        "sikkerhed i kritisk infrastruktur",
+        "sikkerheds- og vagtservice",
+        "udførelse af tjenesteydelser"
+      ]
+    },
+    "nis2-dir-2022-2555": {
+      "category": "cybersikkerhed",
+      "celex_number": "32022L2555",
+      "chunks_collection": "nis2-dir-2022-2555_documents",
+      "display_name": "Direktiv om cybersikkerhed (NIS2)",
+      "enabled": true,
+      "entry_into_force": "2023-01-16T00:00:00",
+      "fullname": "Europa-Parlamentets og Rådets direktiv (EU) 2022/2555 af 14. december 2022 om foranstaltninger til sikring af et højt fælles cybersikkerhedsniveau i hele Unionen, om ændring af forordning (EU) nr. 910/2014 og direktiv (EU) 2018/1972 og om ophævelse af direktiv (EU) 2016/1148 (NIS 2-direktivet) (EØS-relevant tekst)",
+      "ingested_at": "2026-02-01T16:21:37.616815+00:00",
+      "last_modified": "2022-12-14T00:00:00",
+      "max_distance": null,
+      "quality": {
+        "chunk_count": 437,
+        "structure_coverage_pct": 99.8,
+        "unhandled_count": 0,
+        "unhandled_patterns": {},
+        "unhandled_pct": 0.0
+      },
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32022L2555",
+      "eurovoc_labels": [
+        "databeskyttelse",
+        "datakriminalitet",
+        "europæisk sikkerhed",
+        "informationssikkerhed",
+        "risikostyring",
+        "sikkerhed i kritisk infrastruktur"
+      ]
+    },
+    "rearm-europe": {
+      "category": "forsvar",
+      "celex_number": "32025R2653",
+      "chunks_collection": "rearm-europe_documents",
+      "display_name": "Forordning om forsvarsrelaterede investeringer (REARM)",
+      "enabled": true,
+      "entry_into_force": "2025-12-23T00:00:00",
+      "fullname": "Europa-Parlamentets og Rådets forordning (EU) 2025/2653 af 19. december 2025 om fremme af forsvarsrelaterede investeringer og sikring af forsyningssikkerheden i Den Europæiske Union (REARM)",
+      "ingested_at": "2026-01-30T21:20:41.710569+00:00",
+      "last_modified": "2025-12-19T00:00:00",
+      "max_distance": null,
+      "quality": {
+        "chunk_count": 55,
+        "structure_coverage_pct": 98.2,
+        "unhandled_count": 1,
+        "unhandled_patterns": {
+          "image_with_alt": 1
+        },
+        "unhandled_pct": 0.4
+      },
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32025R2653",
+      "eurovoc_labels": [
+        "EU's budget",
+        "EU-aktion",
+        "EU-finansiering",
+        "EU-investeringer",
+        "cloudcomputing",
+        "europæisk forsvarspolitik",
+        "europæisk rustningspolitik",
+        "kunstig intelligens",
+        "militærmateriel",
+        "teknologi med dobbelt formål"
+      ]
+    },
+    "reg-sandkasser": {
+      "category": "innovation",
+      "celex_number": "32025R1420",
+      "chunks_collection": "reg-sandkasser_documents",
+      "display_name": "Forordning om reguleringsmæssige sandkasser (EU-SANDKASSER)",
+      "enabled": true,
+      "entry_into_force": "2025-08-07T00:00:00",
+      "fullname": "Europa-Parlamentets og Rådets forordning (EU) 2025/1420 af 17. juli 2025 om reguleringsmæssige sandkasser til fremme af innovation i den digitale sektor",
+      "ingested_at": "2026-01-30T18:55:27.868171+00:00",
+      "last_modified": "2025-07-17T00:00:00",
+      "max_distance": null,
+      "quality": {
+        "chunk_count": 77,
+        "structure_coverage_pct": 98.7,
+        "unhandled_count": 2,
+        "unhandled_patterns": {
+          "image_with_alt": 1,
+          "unclassified_table": 1
+        },
+        "unhandled_pct": 0.5
+      },
+      "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32025R1420",
+      "eurovoc_labels": [
+        "administrativt samarbejde",
+        "anvendelse af EU-retten",
+        "den europæiske interoperabilitetsramme",
+        "elektronisk administration",
+        "grænseoverskridende samarbejde",
+        "informationssystem",
+        "innovation",
+        "offentlig tjeneste",
+        "offentlig virksomhed",
+        "udveksling af information"
+      ]
+    }
+  },
+  "version": 1
+}

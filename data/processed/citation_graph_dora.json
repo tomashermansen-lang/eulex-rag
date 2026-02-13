@@ -1,0 +1,4253 @@
+{
+  "schema_version": "citation_graph:v1",
+  "corpus_id": "dora",
+  "generated_at": "2026-01-22T18:12:39.835337+00:00",
+  "nodes": {
+    "114": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "4": {
+      "type": "article",
+      "title": "Proportionalitetsprincippet",
+      "chapter": "I",
+      "roles": [
+        "obligations",
+        "scope"
+      ],
+      "mention_count": 19
+    },
+    "5": {
+      "type": "article",
+      "title": "Forvaltning og organisation",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 4
+    },
+    "31": {
+      "type": "article",
+      "title": "Udpegelse af kritiske tredjepartsudbydere af IKT-tjenester",
+      "chapter": "V",
+      "roles": [
+        "classification",
+        "obligations"
+      ],
+      "mention_count": 16
+    },
+    "33": {
+      "type": "article",
+      "title": "Den ledende tilsynsførendes opgaver",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "enforcement"
+      ],
+      "mention_count": 6
+    },
+    "101": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "6": {
+      "type": "article",
+      "title": "Ramme for IKT-risikostyring",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 27
+    },
+    "9": {
+      "type": "article",
+      "title": "Beskyttelse og forebyggelse",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 4
+    },
+    "32": {
+      "type": "article",
+      "title": "Tilsynsrammens struktur",
+      "chapter": "V",
+      "roles": [
+        "classification",
+        "obligations",
+        "scope",
+        "enforcement"
+      ],
+      "mention_count": 8
+    },
+    "2": {
+      "type": "article",
+      "title": "Anvendelsesområde",
+      "chapter": "I",
+      "roles": [
+        "classification",
+        "scope",
+        "definitions"
+      ],
+      "mention_count": 17
+    },
+    "22": {
+      "type": "article",
+      "title": "Tilsynsmæssig feedback",
+      "chapter": "III",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ],
+      "mention_count": 5
+    },
+    "3": {
+      "type": "article",
+      "title": "Definitioner",
+      "chapter": "I",
+      "roles": [
+        "definitions",
+        "obligations",
+        "scope",
+        "classification"
+      ],
+      "mention_count": 5
+    },
+    "127": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "290": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "10": {
+      "type": "article",
+      "title": "Detektion",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 12
+    },
+    "291": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "15": {
+      "type": "article",
+      "title": "Yderligere harmonisering af IKT-risikostyringsværktøjer, -metoder, -processer og -politikker",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 3
+    },
+    "42": {
+      "type": "article",
+      "title": "De kompetente myndigheders opfølgning",
+      "chapter": "V",
+      "roles": [
+        "enforcement",
+        "obligations",
+        "classification"
+      ],
+      "mention_count": 3
+    },
+    "1": {
+      "type": "article",
+      "title": "Genstand",
+      "chapter": "I",
+      "roles": [
+        "obligations",
+        "classification",
+        "scope"
+      ]
+    },
+    "12": {
+      "type": "article",
+      "title": "Politikker og procedurer for sikkerhedskopiering og procedurer og metoder for gendannelse og genopretning",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 6
+    },
+    "13": {
+      "type": "article",
+      "title": "Læring og udvikling",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 3
+    },
+    "54": {
+      "type": "article",
+      "title": "Offentliggørelse af administrative sanktioner",
+      "chapter": "VII",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "16": {
+      "type": "article",
+      "title": "Forenklet ramme for IKT-risikostyring",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 5
+    },
+    "11": {
+      "type": "article",
+      "title": "Indsats og genopretning",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 4
+    },
+    "14": {
+      "type": "article",
+      "title": "Kommunikation",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 7
+    },
+    "7": {
+      "type": "article",
+      "title": "IKT-systemer, -protokoller og-værktøjer",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "8": {
+      "type": "article",
+      "title": "Identifikation",
+      "chapter": "II",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "17": {
+      "type": "article",
+      "title": "Proces for styring af IKT-relaterede hændelser",
+      "chapter": "III",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "25": {
+      "type": "article",
+      "title": "Test af IKT-værktøjer og -systemer",
+      "chapter": "IV",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "19": {
+      "type": "article",
+      "title": "Indberetning af større IKT-relaterede hændelserog frivillig underretning om væsentlige cybertrusler",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "classification",
+        "enforcement"
+      ],
+      "mention_count": 6
+    },
+    "26": {
+      "type": "article",
+      "title": "Avancerede test af IKT-værktøjer, -systemer og -processer baseret på TLPT",
+      "chapter": "IV",
+      "roles": [
+        "obligations",
+        "classification",
+        "scope",
+        "enforcement"
+      ],
+      "mention_count": 6
+    },
+    "30": {
+      "type": "article",
+      "title": "Centrale kontraktbestemmelser",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "classification"
+      ],
+      "mention_count": 2
+    },
+    "18": {
+      "type": "article",
+      "title": "Klassificering af IKT-relaterede hændelser og cybertrusler",
+      "chapter": "III",
+      "roles": [
+        "classification",
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "46": {
+      "type": "article",
+      "title": "Kompetente myndigheder",
+      "chapter": "VII",
+      "roles": [
+        "enforcement",
+        "obligations",
+        "scope",
+        "classification"
+      ],
+      "mention_count": 2
+    },
+    "20": {
+      "type": "article",
+      "title": "Harmonisering af indholdet af og modeller for indberetninger",
+      "chapter": "III",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 3
+    },
+    "21": {
+      "type": "article",
+      "title": "Centralisering af indberetninger af større IKT-relaterede hændelser",
+      "chapter": "III",
+      "roles": [
+        "obligations",
+        "classification"
+      ],
+      "mention_count": 1
+    },
+    "23": {
+      "type": "article",
+      "title": "Operationelle eller sikkerhedsmæssige betalingsrelaterede hændelser vedrørende kreditinstitutter, betalingsinstitutter, kontooplysningstjenesteudbydere og e-pengeinstitutter",
+      "chapter": "III",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "24": {
+      "type": "article",
+      "title": "Generelle krav til gennemførelsen af test af digital operationel modstandsdygtighed",
+      "chapter": "IV",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "27": {
+      "type": "article",
+      "title": "Krav til testere vedrørende gennemførelsen af TLPT",
+      "chapter": "IV",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "28": {
+      "type": "article",
+      "title": "Generelle principper",
+      "chapter": "V",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 3
+    },
+    "29": {
+      "type": "article",
+      "title": "Foreløbig vurdering af IKT-koncentrationsrisiko på enhedsniveau",
+      "chapter": "V",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "57": {
+      "type": "article",
+      "title": "Udøvelse af de delegerede beføjelser",
+      "chapter": "VIII",
+      "roles": [
+        "obligations",
+        "scope",
+        "enforcement"
+      ],
+      "mention_count": 3
+    },
+    "56": {
+      "type": "article",
+      "title": "Databeskyttelse",
+      "chapter": "VII",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "35": {
+      "type": "article",
+      "title": "Den ledende tilsynsførendes beføjelser",
+      "chapter": "V",
+      "roles": [
+        "enforcement",
+        "obligations",
+        "classification"
+      ],
+      "mention_count": 15
+    },
+    "34": {
+      "type": "article",
+      "title": "Operationel koordinering mellem ledende tilsynsførende",
+      "chapter": "V",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 4
+    },
+    "37": {
+      "type": "article",
+      "title": "Anmodning om oplysninger",
+      "chapter": "V",
+      "roles": [
+        "obligations",
+        "enforcement"
+      ],
+      "mention_count": 3
+    },
+    "38": {
+      "type": "article",
+      "title": "Generelle undersøgelser",
+      "chapter": "V",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "41": {
+      "type": "article",
+      "title": "Harmonisering af de betingelser, der muliggør udførelsen af tilsynsaktiviteter",
+      "chapter": "V",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "36": {
+      "type": "article",
+      "title": "Den ledende tilsynsførendes udøvelse af beføjelser uden for Unionen",
+      "chapter": "V",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "39": {
+      "type": "article",
+      "title": "Inspektioner",
+      "chapter": "V",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "60": {
+      "type": "article",
+      "title": "Ændringer af forordning (EU) nr. 648/2012",
+      "chapter": "IX",
+      "roles": [
+        "obligations",
+        "classification"
+      ],
+      "mention_count": 1
+    },
+    "40": {
+      "type": "article",
+      "title": "Løbende tilsyn",
+      "chapter": "V",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ],
+      "mention_count": 4
+    },
+    "50": {
+      "type": "article",
+      "title": "Administrative sanktioner og afhjælpende foranstaltninger",
+      "chapter": "VII",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ],
+      "mention_count": 3
+    },
+    "43": {
+      "type": "article",
+      "title": "Tilsynsgebyrer",
+      "chapter": "V",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 3
+    },
+    "44": {
+      "type": "article",
+      "title": "Internationalt samarbejde",
+      "chapter": "V",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 2
+    },
+    "45": {
+      "type": "article",
+      "title": "Ordninger for informationsudveksling af oplysninger og efterretninger om cybertrusler",
+      "chapter": "VI",
+      "roles": [
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "67": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "97": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "47": {
+      "type": "article",
+      "title": "Samarbejde med strukturer og myndigheder, der er oprettet ved direktiv (EU) 2022/2555",
+      "chapter": "VII",
+      "roles": [
+        "classification",
+        "obligations",
+        "enforcement"
+      ],
+      "mention_count": 2
+    },
+    "48": {
+      "type": "article",
+      "title": "Samarbejde mellem myndigheder",
+      "chapter": "VII",
+      "roles": [
+        "obligations",
+        "enforcement"
+      ]
+    },
+    "49": {
+      "type": "article",
+      "title": "Simuleringsøvelser på tværs af sektorer, kommunikation og samarbejde inden for finans",
+      "chapter": "VII",
+      "roles": [
+        "obligations",
+        "enforcement"
+      ]
+    },
+    "52": {
+      "type": "article",
+      "title": "Strafferetlige sanktioner",
+      "chapter": "VII",
+      "roles": [
+        "enforcement",
+        "classification",
+        "obligations"
+      ],
+      "mention_count": 1
+    },
+    "51": {
+      "type": "article",
+      "title": "Udøvelse af beføjelsen til at pålægge administrative sanktioner og afhjælpende foranstaltninger",
+      "chapter": "VII",
+      "roles": [
+        "enforcement",
+        "obligations"
+      ]
+    },
+    "53": {
+      "type": "article",
+      "title": "Meddelelsespligt",
+      "chapter": "VII",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "55": {
+      "type": "article",
+      "title": "Tavshedspligt",
+      "chapter": "VII",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "58": {
+      "type": "article",
+      "title": "Revisionsklausul",
+      "chapter": "IX",
+      "roles": [
+        "enforcement",
+        "obligations",
+        "scope"
+      ]
+    },
+    "108": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "59": {
+      "type": "article",
+      "title": "Ændringer af forordning (EF) nr. 1060/2009",
+      "chapter": "IX",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "ANNEX:I": {
+      "type": "annex",
+      "mention_count": 3
+    },
+    "ANNEX:III": {
+      "type": "annex",
+      "mention_count": 3
+    },
+    "79": {
+      "type": "article",
+      "mention_count": 3
+    },
+    "80": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "61": {
+      "type": "article",
+      "title": "Ændringer af forordning (EU) nr. 909/2014",
+      "chapter": "IX",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "62": {
+      "type": "article",
+      "title": "Ændringer af forordning (EU) nr. 600/2014",
+      "chapter": "IX",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "27G": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "27H": {
+      "type": "article",
+      "mention_count": 1
+    },
+    "27I": {
+      "type": "article",
+      "mention_count": 2
+    },
+    "63": {
+      "type": "article",
+      "title": "Ændring af forordning (EU) 2016/1011",
+      "chapter": "IX",
+      "roles": [
+        "obligations"
+      ]
+    },
+    "64": {
+      "type": "article",
+      "title": "Ikrafttræden og anvendelse",
+      "chapter": "IX",
+      "roles": [
+        "obligations",
+        "scope",
+        "classification"
+      ]
+    }
+  },
+  "edges": [
+    {
+      "source": "1",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "1",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "1",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "2",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "2",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "3",
+      "target": "6",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "3",
+      "target": "2",
+      "type": "cites",
+      "count": 8,
+      "weight": 1.0
+    },
+    {
+      "source": "3",
+      "target": "31",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "3",
+      "target": "22",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "3",
+      "target": "12",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "3",
+      "target": "4",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "3",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "3",
+      "target": "33",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "3",
+      "target": "32",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "3",
+      "target": "13",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "3",
+      "target": "54",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "4",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "4",
+      "target": "16",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "5",
+      "target": "6",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "5",
+      "target": "11",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "5",
+      "target": "13",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "6",
+      "target": "14",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "7",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "8",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "9",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "9",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "25",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "17",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "6",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "11",
+      "target": "8",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "14",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "11",
+      "target": "12",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "11",
+      "target": "19",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "16",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "11",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "6",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "13",
+      "target": "26",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "30",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "14",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "15",
+      "target": "9",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "15",
+      "target": "10",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "15",
+      "target": "6",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "15",
+      "target": "11",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "16",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "16",
+      "target": "5",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "16",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "17",
+      "target": "18",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "17",
+      "target": "14",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "18",
+      "target": "19",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "18",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "18",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "19",
+      "target": "6",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "19",
+      "target": "20",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "19",
+      "target": "46",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "19",
+      "target": "4",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "19",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "19",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "19",
+      "target": "7",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "20",
+      "target": "18",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "20",
+      "target": "19",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "20",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "20",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "22",
+      "target": "19",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "24",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "24",
+      "target": "4",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "24",
+      "target": "25",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "25",
+      "target": "24",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "25",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "26",
+      "target": "16",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "26",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "26",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "26",
+      "target": "27",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "26",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "27",
+      "target": "26",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "6",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "28",
+      "target": "16",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "29",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "4",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "15",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "28",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "13",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "26",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "30",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "32",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "31",
+      "target": "57",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "127",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "28",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "57",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "31",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "56",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "46",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "16",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "35",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "31",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "34",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "42",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "31",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "37",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "35",
+      "target": "33",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "38",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "41",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "35",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "36",
+      "target": "31",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "36",
+      "target": "38",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "39",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "37",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "35",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "60",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "38",
+      "target": "40",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "38",
+      "target": "35",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "39",
+      "target": "40",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "39",
+      "target": "35",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "40",
+      "target": "32",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "40",
+      "target": "35",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "41",
+      "target": "35",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "41",
+      "target": "31",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "41",
+      "target": "42",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "41",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "42",
+      "target": "35",
+      "type": "cites",
+      "count": 4,
+      "weight": 0.5
+    },
+    {
+      "source": "42",
+      "target": "50",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "42",
+      "target": "28",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "42",
+      "target": "32",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "43",
+      "target": "32",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "43",
+      "target": "40",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "43",
+      "target": "57",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "44",
+      "target": "36",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "44",
+      "target": "33",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "22",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "46",
+      "target": "33",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "4",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "46",
+      "target": "44",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "46",
+      "target": "67",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "11",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "97",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "46",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "30",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "40",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "10",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "21",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "12",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "14",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "29",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "47",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "31",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "47",
+      "target": "14",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "3",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "47",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "50",
+      "target": "52",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "51",
+      "target": "50",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "57",
+      "target": "31",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "57",
+      "target": "43",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "58",
+      "target": "35",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "31",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "58",
+      "target": "19",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "2",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "108",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "59",
+      "target": "ANNEX:I",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "59",
+      "target": "ANNEX:III",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "59",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "60",
+      "target": "34",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "60",
+      "target": "26",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "60",
+      "target": "56",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "60",
+      "target": "79",
+      "type": "cites",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "60",
+      "target": "ANNEX:I",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "60",
+      "target": "80",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "60",
+      "target": "ANNEX:III",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "61",
+      "target": "45",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "61",
+      "target": "12",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "62",
+      "target": "27H",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "62",
+      "target": "27I",
+      "type": "cites",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "62",
+      "target": "27G",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "63",
+      "target": "6",
+      "type": "cites",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "2",
+      "target": "22",
+      "type": "co-occurrence",
+      "count": 4,
+      "weight": 0.5
+    },
+    {
+      "source": "2",
+      "target": "32",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "2",
+      "target": "33",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "2",
+      "target": "9",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "22",
+      "target": "33",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "32",
+      "target": "33",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "32",
+      "target": "9",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "33",
+      "target": "9",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "3",
+      "target": "4",
+      "type": "co-occurrence",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "2",
+      "target": "31",
+      "type": "co-occurrence",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "12",
+      "target": "2",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "12",
+      "target": "4",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "2",
+      "target": "4",
+      "type": "co-occurrence",
+      "count": 4,
+      "weight": 0.5
+    },
+    {
+      "source": "33",
+      "target": "4",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "16",
+      "target": "6",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "11",
+      "target": "6",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "12",
+      "target": "14",
+      "type": "co-occurrence",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "10",
+      "target": "6",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "4",
+      "target": "6",
+      "type": "co-occurrence",
+      "count": 5,
+      "weight": 0.625
+    },
+    {
+      "source": "31",
+      "target": "42",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "31",
+      "target": "35",
+      "type": "co-occurrence",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "22",
+      "target": "4",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "44",
+      "target": "97",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "31",
+      "target": "43",
+      "type": "co-occurrence",
+      "count": 3,
+      "weight": 0.375
+    },
+    {
+      "source": "ANNEX:I",
+      "target": "ANNEX:III",
+      "type": "co-occurrence",
+      "count": 2,
+      "weight": 0.25
+    },
+    {
+      "source": "1",
+      "target": "2",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "1",
+      "target": "3",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "1",
+      "target": "4",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "2",
+      "target": "3",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "2",
+      "target": "4",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "3",
+      "target": "4",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "11",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "12",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "13",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "14",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "16",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "10",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "12",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "13",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "14",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "16",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "11",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "13",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "14",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "16",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "12",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "14",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "16",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "13",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "14",
+      "target": "15",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "14",
+      "target": "16",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "14",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "14",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "14",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "14",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "14",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "15",
+      "target": "16",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "15",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "15",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "15",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "15",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "15",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "16",
+      "target": "5",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "16",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "16",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "16",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "16",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "5",
+      "target": "6",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "5",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "5",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "5",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "6",
+      "target": "7",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "6",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "6",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "7",
+      "target": "8",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "7",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "8",
+      "target": "9",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "17",
+      "target": "18",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "17",
+      "target": "19",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "17",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "17",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "17",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "17",
+      "target": "23",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "18",
+      "target": "19",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "18",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "18",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "18",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "18",
+      "target": "23",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "19",
+      "target": "20",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "19",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "19",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "19",
+      "target": "23",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "20",
+      "target": "21",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "20",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "20",
+      "target": "23",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "21",
+      "target": "22",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "21",
+      "target": "23",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "22",
+      "target": "23",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "24",
+      "target": "25",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "24",
+      "target": "26",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "24",
+      "target": "27",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "25",
+      "target": "26",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "25",
+      "target": "27",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "26",
+      "target": "27",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "29",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "32",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "33",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "34",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "28",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "30",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "32",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "33",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "34",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "29",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "31",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "32",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "33",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "34",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "30",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "32",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "33",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "34",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "31",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "33",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "34",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "32",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "34",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "33",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "35",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "34",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "36",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "35",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "37",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "36",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "38",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "37",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "38",
+      "target": "39",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "38",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "38",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "38",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "38",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "38",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "39",
+      "target": "40",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "39",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "39",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "39",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "39",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "40",
+      "target": "41",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "40",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "40",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "40",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "41",
+      "target": "42",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "41",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "41",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "42",
+      "target": "43",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "42",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "43",
+      "target": "44",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "47",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "48",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "49",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "50",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "51",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "52",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "53",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "54",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "46",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "48",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "49",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "50",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "51",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "52",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "53",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "54",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "47",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "48",
+      "target": "49",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "48",
+      "target": "50",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "48",
+      "target": "51",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "48",
+      "target": "52",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "48",
+      "target": "53",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "48",
+      "target": "54",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "48",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "48",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "50",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "51",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "52",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "53",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "54",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "49",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "50",
+      "target": "51",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "50",
+      "target": "52",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "50",
+      "target": "53",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "50",
+      "target": "54",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "50",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "50",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "51",
+      "target": "52",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "51",
+      "target": "53",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "51",
+      "target": "54",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "51",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "51",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "52",
+      "target": "53",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "52",
+      "target": "54",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "52",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "52",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "53",
+      "target": "54",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "53",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "53",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "54",
+      "target": "55",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "54",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "55",
+      "target": "56",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "59",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "60",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "61",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "62",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "63",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "58",
+      "target": "64",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "59",
+      "target": "60",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "59",
+      "target": "61",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "59",
+      "target": "62",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "59",
+      "target": "63",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "59",
+      "target": "64",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "60",
+      "target": "61",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "60",
+      "target": "62",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "60",
+      "target": "63",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "60",
+      "target": "64",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "61",
+      "target": "62",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "61",
+      "target": "63",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "61",
+      "target": "64",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "62",
+      "target": "63",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "62",
+      "target": "64",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    },
+    {
+      "source": "63",
+      "target": "64",
+      "type": "same_chapter",
+      "count": 1,
+      "weight": 0.125
+    }
+  ]
+}

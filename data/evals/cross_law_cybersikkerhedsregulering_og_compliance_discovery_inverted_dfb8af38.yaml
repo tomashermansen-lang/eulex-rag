@@ -1,0 +1,511 @@
+cases:
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - eucs-dr-2024-1366:article:10
+  - nis2-dir-2022-2555:article:10
+  - dora:article:10
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  id: auto_inverted_obligations
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - eucs-dr-2024-1366:article:10
+  - nis2-dir-2022-2555:article:10
+  - dora:article:10
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan sikres det, at interessenter inddrages i håndteringen af IT-sikkerhedshændelser
+    og detektion af anormale aktiviteter?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:article:1
+  - data-act:article:1
+  - nis2-dir-2022-2555:article:1
+  - dora:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  id: cybersikkerhed_og_datahåndtering
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:article:1
+  - data-act:article:1
+  - nis2-dir-2022-2555:article:1
+  - dora:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilke regler og forpligtelser gælder for cybersikkerhed i forbindelse med
+    produkter med digitale elementer og datahåndtering i EU?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - eucs-dr-2024-1366:article:11
+  - nis2-dir-2022-2555:article:13
+  - dora:article:19
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  id: omkostninger_og_samarbejde
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - eucs-dr-2024-1366:article:11
+  - nis2-dir-2022-2555:article:13
+  - dora:article:19
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan skal omkostninger relateret til cybersikkerhed håndteres, og hvilke
+    samarbejdsforpligtelser har de relevante myndigheder i forbindelse med indberetning
+    af hændelser?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:article:1
+  - eucs-dr-2024-1366:article:4
+  - nis2-dir-2022-2555:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - data-act
+  id: cybersecurity_regulations
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:article:1
+  - eucs-dr-2024-1366:article:4
+  - nis2-dir-2022-2555:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilke krav og forpligtelser er der i forhold til cybersikkerhed for produkter
+    med digitale elementer, og hvordan skal medlemsstaterne håndtere udpegningen af
+    kompetente myndigheder til at overvåge disse krav?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - eucs-dr-2024-1366:article:32
+  - data-act:article:21
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  id: cybersikkerhed_og_data_deling
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - eucs-dr-2024-1366:article:32
+  - data-act:article:21
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan skal enheder med stor indvirkning håndtere cybersikkerhed og deling
+    af data i forbindelse med videnskabelig forskning?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:article:2
+  - eucs-dr-2024-1366:article:2
+  - data-act:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  id: auto_inverted_scope
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:article:2
+  - eucs-dr-2024-1366:article:2
+  - data-act:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilke regler gælder for produkter med digitale elementer og deres tilgængelighed
+    på markedet, samt hvordan påvirker cybersikkerhed og datadeling disse produkter?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:annex:V:1
+  - data-act:article:35
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - data-act
+  id: interoperabilitet_og_cybersikkerhed
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:annex:V:1
+  - data-act:article:35
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan kan interoperabilitet mellem databehandlingstjenester bidrage til
+    at forbedre cybersikkerhed og robusthed af digitale aktiver?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:article:3
+  - eucs-dr-2024-1366:article:3
+  - nis2-dir-2022-2555:article:6
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  id: digital_product_definitions
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:article:3
+  - eucs-dr-2024-1366:article:3
+  - nis2-dir-2022-2555:article:6
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvad forstås der ved produkter med digitale elementer, og hvordan relaterer
+    det sig til databehandling i net- og informationssystemer?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:annex:IV:1
+  - nis2-dir-2022-2555:article:10
+  - dora:article:18
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  id: auto_inverted_classification
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:annex:IV:1
+  - nis2-dir-2022-2555:article:10
+  - dora:article:18
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvordan sikres det, at digitale produkter og tjenester opfylder kravene
+    til cybersikkerhed og håndtering af IT-sikkerhedshændelser?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+- contract_check: false
+  corpus_scope: explicit
+  difficulty: hard
+  disabled: false
+  expected_anchors:
+  - cyberrobusthed:article:2
+  - eucs-dr-2024-1366:article:2
+  - nis2-cir-2024-2690:article:1
+  - nis2-dir-2022-2555:article:3
+  - dora:article:1
+  expected_behavior: answer
+  expected_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - ai-act
+  - elan
+  id: auto_inverted_classification_1
+  max_citations: null
+  min_citations: null
+  min_corpora_cited: null
+  must_include_all_of: []
+  must_include_any_of:
+  - cyberrobusthed:article:2
+  - eucs-dr-2024-1366:article:2
+  - nis2-cir-2024-2690:article:1
+  - nis2-dir-2022-2555:article:3
+  - dora:article:1
+  must_include_any_of_2: []
+  must_not_include_any_of: []
+  notes: ''
+  origin: auto-generated
+  profile: LEGAL
+  prompt: Hvilke krav gælder for enheder, der håndterer digitale elementer og cybersikkerhed
+    i forbindelse med deres drift og tjenester?
+  retrieval_confirmed: true
+  synthesis_mode: discovery
+  target_corpora:
+  - cyberrobusthed
+  - eucs-dr-2024-1366
+  - nis2-cir-2024-2690
+  - nis2-dir-2022-2555
+  - dora
+  - data-act
+  - ai-act
+  - elan
+  test_types:
+  - corpus_coverage
+  - retrieval
+  - faithfulness
+  - relevancy
+created_at: '2026-02-11T21:23:20.365752+00:00'
+default_synthesis_mode: discovery
+description: Test-suiten evaluerer overholdelsen af cybersikkerhedskrav og databeskyttelsesforpligtelser
+  i henhold til EU-forordningerne om cyberrobusthed, herunder forordning (EU) 2024/2847
+  og NIS 2-direktivet (direktiv (EU) 2022/2555), ved at sammenligne specifikke krav
+  til risikostyring, hændelsesrapportering og sikring af et højt cybersikkerhedsniveau
+  på tværs af sektorer som finans, cloud-tjenester og sociale medier. Desuden testes
+  overholdelsen af regler for kunstig intelligens og dataadgang som fastsat i forordning
+  (EU
+id: cybersikkerhedsregulering_og_compliance_discovery_inverted_dfb8af38
+modified_at: '2026-02-11T21:23:52.352437+00:00'
+name: Cybersikkerhedsregulering og Compliance Discovery Inverted
+target_corpora:
+- cyberrobusthed
+- eucs-dr-2024-1366
+- nis2-cir-2024-2690
+- nis2-dir-2022-2555
+- dora
+- data-act
+- ai-act
+- elan

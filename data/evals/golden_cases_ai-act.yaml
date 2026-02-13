@@ -1,0 +1,823 @@
+- id: ai-act-01-retrieval-genstand
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad er formålet med forordningen om kunstig intelligens?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:1
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke artikel om formålet med forordningen.
+- id: ai-act-02-retrieval-anvendelsesområde
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvem er omfattet af anvendelsesområdet for forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke artikel om anvendelsesområdet.
+- id: ai-act-03-retrieval-definitioner
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvordan defineres et AI-system i forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:3
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke artikel med definitionen af AI-system.
+- id: ai-act-04-retrieval-højrisiko
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad karakteriserer et højrisiko-AI-system ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke artikel om højrisiko-AI-systemer.
+- id: ai-act-05-faithfulness-højrisiko-krav
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvilke krav skal højrisiko-AI-systemer overholde?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er korrekt og baseret på den relevante artikel om krav til højrisiko-AI-systemer.
+- id: ai-act-06-faithfulness-risikostyring
+  profile: ENGINEERING
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad indebærer et risikostyringssystem for højrisiko-AI-systemer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:9
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er korrekt og baseret på den relevante artikel om risikostyring.
+- id: ai-act-07-relevancy-gennemsigtighed
+  profile: LEGAL
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvordan sikres gennemsigtighed i højrisiko-AI-systemer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er relevant og direkte besvarer spørgsmålet om gennemsigtighed.
+- id: ai-act-08-relevancy-menneskeligt-tilsyn
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvilke foranstaltninger skal der træffes for menneskeligt tilsyn med højrisiko-AI-systemer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:14
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er relevant og direkte besvarer spørgsmålet om menneskeligt tilsyn.
+- id: ai-act-09-abstention-ikke-omfattet
+  profile: LEGAL
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er reglerne for AI-systemer, der ikke anvendes i EU?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester at systemet nægter at svare på spørgsmål uden for lovens scope.
+- id: ai-act-10-abstention-privatliv
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvordan beskytter forordningen privatlivets fred for brugerne af AI-systemer?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester at systemet nægter at svare på spørgsmål om emner, der ikke dækkes af loven.
+- id: ai-act-11-robustness-højrisiko-krav
+  profile: LEGAL
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvilke krav skal højrisiko-AI-systemer overholde ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:8
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere variationer i spørgsmålet om krav til højrisiko-AI-systemer.
+- id: ai-act-12-robustness-risikostyring
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er proceduren for at implementere et risikostyringssystem for højrisiko-AI-systemer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:9
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere variationer i spørgsmålet om risikostyring.
+- id: ai-act-13-multi_hop-registrering-og-dokumentation
+  profile: LEGAL
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke krav er der til registrering og teknisk dokumentation af højrisiko-AI-systemer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    - article:11
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler om registrering og dokumentation.
+- id: ai-act-14-multi_hop-kvalitetsstyring-og-dokumentation
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke forpligtelser har udbydere af højrisiko-AI-systemer vedrørende kvalitetsstyring og opbevaring af dokumentation?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:17
+    - article:18
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler om kvalitetsstyring og dokumentation.
+- id: ai-act-15-logging-incident-reporting
+  profile: LEGAL
+  prompt: 'Efter AI-forordningen (AI Act): Hvilke krav til logning og indberetning af alvorlige hændelser gælder for et højrisiko-AI-system?
+    Vær eksplicit om antagelser.'
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    - article:73
+    must_not_include_any_of: []
+    notes: Bør forankre logning og hændelsesindberetning i artikel 12 og/eller artikel 73; skal undgå normative MUST-udsagn
+      uden artikel-støtte.
+- id: ai-act-16-access-to-logs
+  profile: LEGAL
+  prompt: Hvem skal have adgang til logs for et højrisiko-AI-system efter AI-forordningen, og med hvilket formål?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    - article:21
+    must_not_include_any_of: []
+    notes: Bør forankres i bestemmelser om logning/adgang/tilsyn.
+- id: ai-act-17-high-risk-classification
+  profile: LEGAL
+  prompt: Forklar hvordan man afgør om et AI-system er 'højrisiko' efter AI-forordningen. Inkludér rollen af bilag III.
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    - annex:iii
+    must_not_include_any_of: []
+    notes: Skal være forankret i artikel 6 og/eller bilag III.
+- id: ai-act-18-transparency-obligations
+  profile: LEGAL
+  prompt: Hvilke gennemsigtighedsforpligtelser gælder efter AI-forordningen, når brugere interagerer med et AI-system?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    - article:50
+    must_not_include_any_of: []
+    notes: Bør være forankret i relevante gennemsigtighedsbestemmelser (typisk artikel 50; artikel 13 kan også være relevant
+      afhængigt af afgrænsning).
+- id: ai-act-19-data-governance
+  profile: ENGINEERING
+  prompt: 'For et højrisiko-AI-system: Hvilke krav stiller AI-forordningen til datastyring og datakvalitet for trænings-/valideringsdatasæt?'
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:10
+    must_not_include_any_of: []
+    notes: Bør forankre krav til datastyring i artikel 10.
+- id: ai-act-20-human-oversight
+  profile: LEGAL
+  prompt: Opsummér AI-forordningens krav til menneskelig kontrol (human oversight) for højrisiko-AI-systemer.
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:14
+    must_not_include_any_of: []
+    notes: Bør referere til artikel 14.
+- id: ai-act-21-risk-management-system
+  profile: ENGINEERING
+  prompt: Hvad kræver AI-forordningen for et risikostyringssystem for højrisiko-AI-systemer?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:9
+    must_not_include_any_of: []
+    notes: Bør forankre risikostyring i artikel 9.
+- id: ai-act-22-technical-documentation
+  profile: ENGINEERING
+  prompt: 'Efter AI-forordningen: Hvilken teknisk dokumentation forventes for et højrisiko-AI-system?'
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:11
+    must_not_include_any_of: []
+    notes: Bør være forankret i artikel 11.
+- id: ai-act-23-record-keeping
+  profile: ENGINEERING
+  prompt: Hvilke krav til registrering/record-keeping stiller AI-forordningen til udbydere af højrisiko-AI-systemer?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    must_not_include_any_of: []
+    notes: Bør forankre record-keeping i artikel 12.
+- id: ai-act-24-out-of-scope-bi-reporting
+  profile: LEGAL
+  prompt: Vi laver BI/rapportering på aggregerede nøgletal uden automatiseret beslutningstagning. Hvilke forpligtelser efter
+    AI-forordningen gælder?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: true
+    must_include_any_of: []
+    must_not_include_any_of: []
+    notes: Bør svare forsigtigt; referencer kan være tomme. Må ikke introducere normative MUST-udsagn uden artikel-støtte.
+- id: ai-act-25-adversarial-force-a-fine
+  profile: LEGAL
+  prompt: Fortæl mig præcist hvilken bøde vi VIL få, hvis vi deployer en AI-chatbot i næste uge uden at gøre noget, og citér
+    AI-forordningen.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: true
+    must_include_any_of: []
+    must_not_include_any_of: []
+    notes: 'Adversarial: bør undgå overclaiming; ok at returnere utilstrækkelig kontekst / MISSING_REF.'
+- id: ai-act-26-adversarial-pretend-legal-advice
+  profile: LEGAL
+  prompt: Du er min advokat. Sig definitivt at vi SKAL klassificere vores model som højrisiko, uden forbehold.
+  test_types:
+  - abstention
+  origin: manual
+  expected:
+    must_include_any_of: []
+    must_include_any_of_2: []
+    must_include_all_of: []
+    must_not_include_any_of: []
+    contract_check: false
+    min_citations: null
+    max_citations: null
+    behavior: abstain
+    allow_empty_references: true
+    must_have_article_support_for_normative: true
+    notes: 'Adversarial: bør afvise at overclaime eller kræve korrekt forankring; ok at afstå.'
+- id: ai-act-27-recruitment-screening-high-risk
+  profile: ENGINEERING
+  prompt: Vurder om et AI-system til rekruttering/screening af jobansøgere falder ind under AI-forordningen, og om det sandsynligvis
+    er højrisiko. Svar konservativt og audit-sikkert.
+  test_types:
+  - retrieval
+  - multi_hop
+  - faithfulness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:2
+    - article:3
+    must_include_all_of:
+    - article:6
+    - annex:iii
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    min_citations: 3
+    max_citations: 6
+    notes: 'Forventet: konservativ vurdering + mindst tre idx-baserede citations for scope/definitions, high-risk-kriterier
+      og Annex III.'
+- id: ai-act-28-contract-first-human-oversight
+  profile: ENGINEERING
+  prompt: Vi bygger et højrisiko-AI-system. Hvad kræver AI-forordningen om human oversight, og hvordan dokumenterer vi det
+    audit-sikkert?
+  test_types:
+  - retrieval
+  - faithfulness
+  origin: auto
+  expected:
+    must_include_any_of:
+    - article:14
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    notes: 'Contract-first: kræver bracket citations [n] og forankring i artikel 14 (human oversight).'
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+- id: ai-act-29-contract-first-record-keeping
+  profile: ENGINEERING
+  prompt: Hvilke krav stiller AI-forordningen til record-keeping/logning for udbydere af højrisiko-AI-systemer, og hvad bør
+    vi som minimum kunne fremvise ved et tilsyn?
+  test_types:
+  - retrieval
+  - faithfulness
+  origin: auto
+  expected:
+    must_include_any_of:
+    - article:12
+    must_not_include_any_of: []
+    contract_check: true
+    allow_additional_uncited_refs: false
+    notes: 'Contract-first: kræver bracket citations [n] og forankring i artikel 12 (record-keeping).'
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+- id: ai-act-30-multi-concept-logging-transparency
+  profile: LEGAL
+  prompt: Et højrisiko-AI-system skal både føre logs og informere brugere. Hvilke krav i AI-forordningen dækker begge områder,
+    og hvordan hænger de sammen?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    - article:21
+    must_include_all_of: []
+    notes: 'Multi-concept: logging (art. 12/21). Semantisk mismatch i spørgsmålet: art. 13 handler om idriftsættere (ikke
+      brugere), art. 50 er ikke højrisiko- specifik. Ingen must_include_all_of da retrieval ikke kan matche perfekt.'
+    must_not_include_any_of: []
+- id: ai-act-31-multi-concept-highrisk-oversight
+  profile: ENGINEERING
+  prompt: 'For et AI-system der klassificeres som højrisiko: Hvilke krav til menneskelig kontrol (human oversight) gælder,
+    og hvordan relaterer det til klassifikationskriterierne?'
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:6
+    - annex:iii
+    must_include_all_of:
+    - article:14
+    notes: 'Multi-concept: skal dække både high-risk classification og human oversight.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-32-multi-concept-data-logging
+  profile: ENGINEERING
+  prompt: Hvilke krav stiller AI-forordningen til både datastyring (data governance) og logning for højrisiko-AI-systemer?
+    Beskriv sammenhængen.
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:10
+    must_include_all_of:
+    - article:12
+    notes: 'Multi-concept: skal dække data governance (art. 10) og logging (art. 12).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-33-edge-specific-article-reference
+  profile: LEGAL
+  prompt: Forklar præcist hvad artikel 14, stk. 4, litra d i AI-forordningen kræver vedrørende menneskelig kontrol.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:14
+    notes: 'Edge case: Specifik artikel-/stk-reference. Skal finde og citere art. 14.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-34-edge-annex-specific
+  profile: LEGAL
+  prompt: Hvilke anvendelsesområder er listet i bilag III, punkt 4 (beskæftigelse og arbejdstagere) i AI-forordningen?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - annex:iii
+    notes: 'Edge case: Specifik bilagsreference. Skal præcist beskrive bilag III punkt 4 om beskæftigelse, rekruttering og
+      arbejdstagerforvaltning.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-35-edge-definition-lookup
+  profile: LEGAL
+  prompt: Hvad er definitionen af 'udbyder' (provider) efter AI-forordningen artikel 3?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:3
+    notes: 'Edge case: Definition lookup i artikel 3.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-36-edge-scope-exclusion
+  profile: LEGAL
+  prompt: Hvilke typer AI-systemer er eksplicit undtaget fra AI-forordningens anvendelsesområde i artikel 2?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:2
+    - article:1
+    - article:3
+    notes: 'Edge case: Scope exclusions. May go fail-closed on complex scope questions.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-37-edge-cross-reference
+  profile: LEGAL
+  prompt: Hvordan henviser artikel 6 i AI-forordningen til bilag III, og hvad betyder denne kobling for klassificeringen?
+  test_types:
+  - retrieval
+  - multi_hop
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_all_of:
+    - article:6
+    - annex:iii
+    notes: 'Edge case: Cross-reference mellem artikel og bilag.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+    must_include_any_of: []
+- id: ai-act-38-adversarial-negation
+  profile: LEGAL
+  prompt: Hvad kræver AI-forordningen IKKE af lavrisiko-AI-systemer? Beskriv hvad der er frivilligt vs. obligatorisk.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: true
+    must_include_any_of:
+    - article:6
+    - article:69
+    - article:8
+    - article:9
+    - article:52
+    notes: 'Adversarial: Negation question. May reference high-risk requirements (art 8-9) to contrast, or minimal risk (art
+      52/69).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-39-adversarial-hypothetical
+  profile: ENGINEERING
+  prompt: Hvis et AI-system fejlagtigt klassificeres som lavrisiko, men faktisk burde være højrisiko - hvad er de juridiske
+    konsekvenser efter AI-forordningen?
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:6
+    - article:71
+    - article:99
+    notes: 'Adversarial: Hypothetical scenario om fejlklassificering og sanktioner.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-40-adversarial-ambiguous
+  profile: LEGAL
+  prompt: Er et AI-system til CV-screening højrisiko eller ej? Der er argumenter for begge sider.
+  test_types:
+  - retrieval
+  - robustness
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:6
+    - annex:iii
+    notes: 'Adversarial: Ambiguous case der kræver nuanceret svar.'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-41-multi-role-importer
+  profile: ENGINEERING
+  prompt: Vi importerer et højrisiko-AI-system fra en ikke-EU udbyder. Hvilke forpligtelser har vi som importør efter AI-forordningen?
+  test_types:
+  - retrieval
+  - multi_hop
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:23
+    - article:24
+    notes: 'Role-specific: Importer obligations (art. 23-24).'
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-42-conformity-assessment
+  profile: ENGINEERING
+  prompt: Hvornår kræves der en overensstemmelsesvurdering (conformity assessment) efter AI-forordningen, og hvem udfører
+    den?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:43
+    - article:40
+    - article:6
+    - article:16
+    - annex:vi
+    - annex:vii
+    notes: Conformity assessment requirements. May reference classification (art 6), provider duties (art 16), or annexes.
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-43-gpai-obligations
+  profile: LEGAL
+  prompt: Hvilke særlige forpligtelser gælder for general-purpose AI-modeller (GPAI) efter AI-forordningen?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:51
+    - article:52
+    - article:53
+    notes: GPAI-specific obligations (Chapter V).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-44-prohibited-practices
+  profile: LEGAL
+  prompt: Hvilke AI-praksisser er helt forbudte efter AI-forordningen artikel 5?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_include_any_of:
+    - article:5
+    notes: Prohibited practices (art. 5).
+    must_have_article_support_for_normative: true
+    must_not_include_any_of: []
+- id: ai-act-45-financial-product-recommendations-high-risk
+  profile: LEGAL
+  prompt: Vi er i gang med at bygge et system, der automatisk foreslår pensionsprodukter og investeringsprofiler til kunder.
+    Kan det falde ind under højrisiko-AI ifølge EU’s AI-lov, og hvad afhænger det af?
+  test_types:
+  - retrieval
+  - multi_hop
+  - faithfulness
+  - relevancy
+  origin: manual
+  expected:
+    must_include_any_of:
+    - article:6
+    - annex:iii
+    must_include_any_of_2: []
+    must_include_all_of: []
+    must_not_include_any_of:
+    - article:51
+    - annex:xiii
+    contract_check: false
+    min_citations: null
+    max_citations: null
+    behavior: answer
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    notes: Skal forankres i artikel 6 (højrisiko-kriterier inkl. undtagelser) og bilag III (use-cases). Må ikke forveksle
+      med GPAI-systemisk-risiko-regimet (art 51 / bilag XIII) medmindre spørgsmålet eksplicit handler om GPAI.
+- id: ai-act-46-regulatory-sandbox
+  profile: LEGAL
+  prompt: Hvad er en 'AI-reguleringsmæssig sandkasse' efter AI-forordningen, og hvilke fordele får virksomheder ved at deltage?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:57
+    - article:58
+    must_not_include_any_of: []
+    notes: Tester præcis term 'sandkasse'. Artikel 57-58 definerer regulatory sandbox.
+- id: ai-act-47-sme-support
+  profile: LEGAL
+  prompt: Hvilke særlige lettelser eller støtteforanstaltninger giver AI-forordningen til SMV'er (små og mellemstore virksomheder)?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:58
+    - article:62
+    must_not_include_any_of: []
+    notes: Tester akronym 'SMV'. Artikel 58 (sandkasse) og 62 (SMV-støttestrukturer) er relevante.
+- id: ai-act-48-ce-marking
+  profile: ENGINEERING
+  prompt: Hvornår skal et højrisiko-AI-system have CE-mærkning, og hvad kræves for at opnå det?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:48
+    - article:43
+    must_not_include_any_of: []
+    notes: Tester præcis teknisk term 'CE-mærkning'. Artikel 48 handler om CE-mærkning.
+- id: ai-act-49-market-surveillance
+  profile: LEGAL
+  prompt: Hvilke beføjelser har markedsovervågningsmyndigheder efter AI-forordningen i forhold til AI-systemer på markedet?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:74
+    - article:79
+    must_not_include_any_of: []
+    notes: Tester sammensat ord 'markedsovervågning'. Artikel 74 og 79 definerer myndigheds-beføjelser.
+- id: ai-act-50-systemic-risk-gpai
+  profile: LEGAL
+  prompt: Hvad menes med 'systemisk risiko' for AI-modeller med generelle formål, og hvilke forpligtelser følger deraf?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:51
+    - article:52
+    - article:55
+    must_not_include_any_of: []
+    notes: Tester GPAI med systemisk risiko. Artikel 51-55 dækker GPAI-forpligtelser.
+- id: ai-act-51-ai-office-role
+  profile: LEGAL
+  prompt: Hvad er AI-kontorets rolle og beføjelser efter AI-forordningen?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:56
+    - article:64
+    - article:65
+    must_not_include_any_of: []
+    notes: Tester 'AI-kontor' institution. Artikel 56 etablerer kontoret, 64-65 definerer beføjelser.
+- id: ai-act-52-registration-annex-viii
+  profile: LEGAL
+  prompt: Hvad skal indsendes ved registrering af højrisiko-AI-systemer ifølge bilag VIII?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:49
+    - annex:viii
+    must_not_include_any_of: []
+    notes: Tester eksplicit bilagsreference. Bilag VIII specificerer registreringsoplysninger.
+- id: ai-act-53-generative-ai-synthetic-content
+  profile: LEGAL
+  prompt: Hvis man udvikler et AI-system der kan generere syntetisk indhold som musik, billeder eller video, hvilke forpligtelser
+    gælder så efter AI-forordningen?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:50
+    - article:52
+    must_not_include_any_of: []
+    notes: Tester at systemet korrekt identificerer gennemsigtighedsforpligtelser for syntetisk indhold (Artikel 50) fremfor
+      at antage højrisiko-klassificering. Generativ AI til kreativt indhold er IKKE højrisiko.
+- id: ai-act-54-gpai-copyright-training-data
+  profile: LEGAL
+  prompt: Hvilke krav stiller AI-forordningen til ophavsret og træningsdata for udbydere af generelle AI-modeller (GPAI)?
+  test_types:
+  - retrieval
+  origin: auto
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:53
+    must_not_include_any_of: []
+    notes: Tester GPAI-forpligtelser vedr. ophavsret. Artikel 53 kræver politik for overholdelse af EU-ophavsret og offentliggørelse
+      af træningsdata-resumé.
