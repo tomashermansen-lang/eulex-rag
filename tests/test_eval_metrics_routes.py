@@ -8,7 +8,6 @@ Uses fixture run files in tmp directories with monkeypatched paths.
 """
 
 import json
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -460,9 +459,7 @@ class TestOverviewEndpoint:
         empty_dir = project_dir / "empty_runs"
         empty_dir.mkdir()
         monkeypatch.setattr(eval_metrics, "_get_single_law_runs_dir", lambda: empty_dir)
-        monkeypatch.setattr(
-            eval_metrics, "_get_cross_law_runs_dir", lambda: empty_dir
-        )
+        monkeypatch.setattr(eval_metrics, "_get_cross_law_runs_dir", lambda: empty_dir)
 
         app = FastAPI()
         app.include_router(eval_metrics.router, prefix="/api/eval/metrics")
@@ -607,17 +604,29 @@ class TestIngestionEndpoint:
                 "ai-act": {
                     "display_name": "AI Act",
                     "enabled": True,
-                    "quality": {"structure_coverage_pct": 99.5, "unhandled_count": 2, "chunk_count": 929},
+                    "quality": {
+                        "structure_coverage_pct": 99.5,
+                        "unhandled_count": 2,
+                        "chunk_count": 929,
+                    },
                 },
                 "gdpr": {
                     "display_name": "GDPR",
                     "enabled": True,
-                    "quality": {"structure_coverage_pct": 97.0, "unhandled_count": 5, "chunk_count": 500},
+                    "quality": {
+                        "structure_coverage_pct": 97.0,
+                        "unhandled_count": 5,
+                        "chunk_count": 500,
+                    },
                 },
                 "dora": {
                     "display_name": "DORA",
                     "enabled": True,
-                    "quality": {"structure_coverage_pct": 0.0, "unhandled_count": 0, "chunk_count": 0},
+                    "quality": {
+                        "structure_coverage_pct": 0.0,
+                        "unhandled_count": 0,
+                        "chunk_count": 0,
+                    },
                 },
             },
             "version": 1,
@@ -627,8 +636,10 @@ class TestIngestionEndpoint:
         monkeypatch.setattr(eval_metrics, "_get_corpora_path", lambda: corpora_path)
 
         from starlette.testclient import TestClient
+
         app = eval_metrics.router
         from fastapi import FastAPI
+
         test_app = FastAPI()
         test_app.include_router(app, prefix="/api/eval/metrics")
         test_client = TestClient(test_app)
@@ -831,7 +842,7 @@ class TestAnalyseEndpoint:
         events = []
         for line in resp.text.split("\n"):
             if line.startswith("data: "):
-                events.append(json.loads(line[len("data: "):]))
+                events.append(json.loads(line[len("data: ") :]))
 
         # Must have start, 3 tokens, and complete
         types = [e["type"] for e in events]
@@ -860,7 +871,7 @@ class TestAnalyseEndpoint:
         events = []
         for line in resp.text.split("\n"):
             if line.startswith("data: "):
-                events.append(json.loads(line[len("data: "):]))
+                events.append(json.loads(line[len("data: ") :]))
 
         error_events = [e for e in events if e["type"] == "error"]
         assert len(error_events) == 1

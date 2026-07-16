@@ -35,7 +35,6 @@ from src.eval.cross_law_suite_manager import (
 )
 from src.eval.eval_case_generator import (
     GenerationRequest,
-    GeneratedCase,
     generate_cross_law_cases,
     assign_test_types,
     assign_difficulty,
@@ -43,7 +42,12 @@ from src.eval.eval_case_generator import (
     MAX_CASES_LIMIT,
     suggest_suite_text,
 )
-from src.eval.eval_core import EvalConfig, evaluate_cases_iter, _build_engine, _evaluate_single_case
+from src.eval.eval_core import (
+    EvalConfig,
+    evaluate_cases_iter,
+    _build_engine,
+    _evaluate_single_case,
+)
 from src.eval.types import GoldenCase, ExpectedBehavior
 from src.eval.reporters import CaseResult, EvalSummary
 from src.eval.scorers import AnchorScorer, PipelineBreakdownScorer, ContractScorer
@@ -158,8 +162,8 @@ class GenerateCasesRequest(BaseModel):
     suite_description: str = ""
     synthesis_distribution: dict[str, float] | None = None
     difficulty_distribution: dict[str, float] | None = None
-    generation_strategy: str = "standard"   # "standard" | "inverted"
-    calibrate_anchors: bool = True          # Run retrieval probe on inverted cases
+    generation_strategy: str = "standard"  # "standard" | "inverted"
+    calibrate_anchors: bool = True  # Run retrieval probe on inverted cases
 
 
 class GenerateCasesResponse(BaseModel):
@@ -407,7 +411,9 @@ class CrossLawEvalService:
             for c in suite.cases:
                 mode_counts[c.synthesis_mode] = mode_counts.get(c.synthesis_mode, 0) + 1
                 if c.difficulty:
-                    difficulty_counts[c.difficulty] = difficulty_counts.get(c.difficulty, 0) + 1
+                    difficulty_counts[c.difficulty] = (
+                        difficulty_counts.get(c.difficulty, 0) + 1
+                    )
 
             stats = CrossLawSuiteStats(
                 id=suite.id,
@@ -426,7 +432,9 @@ class CrossLawEvalService:
             suite_stats.append(stats)
 
         overall_total = overall_passed + overall_failed
-        overall_pass_rate = (overall_passed / overall_total) if overall_total > 0 else 0.0
+        overall_pass_rate = (
+            (overall_passed / overall_total) if overall_total > 0 else 0.0
+        )
 
         return CrossLawOverviewResponse(
             suites=suite_stats,
@@ -510,9 +518,7 @@ class CrossLawEvalService:
             failed=run_data["failed"],
             pass_rate=run_data["pass_rate"],
             run_mode=run_data["run_mode"],
-            results=[
-                CrossLawCaseResult(**r) for r in run_data.get("results", [])
-            ],
+            results=[CrossLawCaseResult(**r) for r in run_data.get("results", [])],
         )
 
     def _persist_run(self, run_data: dict) -> None:
@@ -527,7 +533,12 @@ class CrossLawEvalService:
             test_types = case.test_types
         elif case.corpus_scope != "single":
             # Cross-law cases: standard scorers + cross-law specific scorers
-            cross_law_types = ["retrieval", "faithfulness", "relevancy", "corpus_coverage"]
+            cross_law_types = [
+                "retrieval",
+                "faithfulness",
+                "relevancy",
+                "corpus_coverage",
+            ]
             if case.synthesis_mode == "comparison":
                 cross_law_types.append("comparison_completeness")
             elif case.synthesis_mode == "routing":
@@ -542,7 +553,8 @@ class CrossLawEvalService:
 
         # Fall back to expected_anchors when must_include_any_of is empty (backward compat)
         raw_anchors = (
-            list(case.must_include_any_of) if case.must_include_any_of
+            list(case.must_include_any_of)
+            if case.must_include_any_of
             else list(case.expected_anchors)
         )
         must_include_any_of = raw_anchors
@@ -664,8 +676,12 @@ class CrossLawEvalService:
                 result_data = {
                     "case_id": item.case_id,
                     "prompt": matched_case.prompt if matched_case else "",
-                    "synthesis_mode": matched_case.synthesis_mode if matched_case else "",
-                    "target_corpora": list(matched_case.target_corpora) if matched_case else [],
+                    "synthesis_mode": matched_case.synthesis_mode
+                    if matched_case
+                    else "",
+                    "target_corpora": list(matched_case.target_corpora)
+                    if matched_case
+                    else [],
                     "passed": item.passed,
                     "duration_ms": item.duration_ms,
                     "scores": {
@@ -733,7 +749,11 @@ class CrossLawEvalService:
         start_time = time.perf_counter()
 
         # Build GoldenCase from request
-        test_types = tuple(request.test_types) if request.test_types else ("retrieval", "faithfulness", "relevancy")
+        test_types = (
+            tuple(request.test_types)
+            if request.test_types
+            else ("retrieval", "faithfulness", "relevancy")
+        )
         golden_case = GoldenCase(
             id="inline-validation",
             profile=request.profile,
@@ -777,22 +797,28 @@ class CrossLawEvalService:
             references = []
             for i, ref in enumerate(result.references_structured):
                 if isinstance(ref, dict):
-                    references.append(CrossLawReference(
-                        idx=i + 1,
-                        display=ref.get("display", ""),
-                        chunk_text=ref.get("chunk_text", ref.get("text", "")),
-                        corpus_id=ref.get("corpus_id"),
-                        article=ref.get("article"),
-                        recital=ref.get("recital"),
-                        annex=ref.get("annex"),
-                        paragraph=ref.get("paragraph"),
-                        litra=ref.get("litra"),
-                    ))
+                    references.append(
+                        CrossLawReference(
+                            idx=i + 1,
+                            display=ref.get("display", ""),
+                            chunk_text=ref.get("chunk_text", ref.get("text", "")),
+                            corpus_id=ref.get("corpus_id"),
+                            article=ref.get("article"),
+                            recital=ref.get("recital"),
+                            annex=ref.get("annex"),
+                            paragraph=ref.get("paragraph"),
+                            litra=ref.get("litra"),
+                        )
+                    )
 
             duration_ms = (time.perf_counter() - start_time) * 1000
 
             scores_dict = {
-                name: {"passed": score.passed, "score": score.score, "message": score.message}
+                name: {
+                    "passed": score.passed,
+                    "score": score.score,
+                    "message": score.message,
+                }
                 for name, score in result.scores.items()
             }
 
@@ -988,8 +1014,7 @@ class CrossLawEvalService:
 
         # Build corpus metadata from valid IDs
         corpus_metadata = {
-            cid: {"name": cid, "fullname": cid}
-            for cid in request.target_corpora
+            cid: {"name": cid, "fullname": cid} for cid in request.target_corpora
         }
 
         # Generate cases
@@ -1087,7 +1112,8 @@ class CrossLawEvalService:
     # -----------------------------------------------------------------------
 
     async def _calibrate_case(
-        self, case: CrossLawGoldenCase,
+        self,
+        case: CrossLawGoldenCase,
     ) -> CrossLawGoldenCase:
         """Verify expected anchors appear in actual retrieval results.
 
@@ -1121,7 +1147,7 @@ class CrossLawEvalService:
             found_anchors = set(run_meta.get("anchors_in_top_k") or [])
 
             # Also check retrieved_metadatas for article mentions
-            for meta in (result.retrieval_metrics.get("retrieved_metadatas") or []):
+            for meta in result.retrieval_metrics.get("retrieved_metadatas") or []:
                 if not isinstance(meta, dict):
                     continue
                 corpus_id = meta.get("corpus_id", "")
@@ -1143,7 +1169,9 @@ class CrossLawEvalService:
             else:
                 logger.info(
                     "Calibration: no anchors found for case %s (expected %s, found %s)",
-                    case.id, expected_set, found_anchors,
+                    case.id,
+                    expected_set,
+                    found_anchors,
                 )
                 return replace(case, retrieval_confirmed=False)
 
@@ -1178,7 +1206,9 @@ class CrossLawEvalService:
             modified_at=suite.modified_at,
         )
 
-    def _suite_to_detail_response(self, suite: CrossLawEvalSuite) -> SuiteDetailResponse:
+    def _suite_to_detail_response(
+        self, suite: CrossLawEvalSuite
+    ) -> SuiteDetailResponse:
         """Convert suite to detail response model including cases."""
         return SuiteDetailResponse(
             id=suite.id,

@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -69,17 +68,19 @@ def _parse_yaml_response(content: str) -> str | None:
 # Three normative categories: rights (what you're entitled to), obligations (what you must do),
 # prohibitions (what you must not do). Plus structural roles: scope, definitions, classification,
 # enforcement, exemptions, procedures.
-VALID_ROLES = frozenset([
-    "scope",          # Hvem/hvad loven gælder for
-    "definitions",    # Begreber og termer
-    "classification", # Kategorisering (højrisiko, forbudt, tilladt)
-    "rights",         # Rettigheder - hvad man har ret til
-    "obligations",    # Forpligtelser - hvad man skal gøre
-    "prohibitions",   # Forbud - hvad man ikke må gøre
-    "exemptions",     # Undtagelser - hvornår regler ikke gælder
-    "procedures",     # Procedurer - konkrete processer der skal følges
-    "enforcement",    # Sanktioner, tilsyn, håndhævelse
-])
+VALID_ROLES = frozenset(
+    [
+        "scope",  # Hvem/hvad loven gælder for
+        "definitions",  # Begreber og termer
+        "classification",  # Kategorisering (højrisiko, forbudt, tilladt)
+        "rights",  # Rettigheder - hvad man har ret til
+        "obligations",  # Forpligtelser - hvad man skal gøre
+        "prohibitions",  # Forbud - hvad man ikke må gøre
+        "exemptions",  # Undtagelser - hvornår regler ikke gælder
+        "procedures",  # Procedurer - konkrete processer der skal følges
+        "enforcement",  # Sanktioner, tilsyn, håndhævelse
+    ]
+)
 
 ENRICHMENT_PROMPT = """<lovtekst fra {article_title}>
 {chunk_text}
@@ -110,6 +111,40 @@ Opgave: Berig dette lovudsnit for bedre søgning.
 
    VIGTIGT: Vælg kun roller der passer PRÆCIST. De fleste tekster har 0-2 roller.
    Bilag der lister specifike systemer/områder har typisk "classification".
+
+Format dit svar PRÆCIST sådan:
+KONTEKST: [din beskrivelse på én linje]
+SØGETERMER: term1 | term2 | term3 | term4
+ROLLER: rolle1 | rolle2
+
+Intet andet output. Hvis ingen roller passer, skriv "ROLLER: ingen"."""
+
+CASE_LAW_ENRICHMENT_PROMPT = """<retspraksis fra {article_title}>
+Ret: {court} | Afsnit: {section_type}
+
+{chunk_text}
+</retspraksis>
+
+Opgave: Berig dette uddrag af en EU-domstolsafgørelse for bedre søgning.
+
+1. KONTEKST (50-80 ord): Beskriv INDHOLDET af dette uddrag.
+   - Nævn sagens navn fra titlen ovenfor.
+   - Hvilken lovbestemmelse fortolkes eller anvendes?
+   - Hvad fastslår retten konkret?
+   - Hvilken retlig problemstilling behandles?
+
+2. SØGETERMER (3-5 termer): Dagligdags ord en bruger ville søge efter.
+   - Brug hverdagssprog, ikke juridisk terminologi
+   - Tænk på praktiske situationer hvor afgørelsen er relevant
+
+3. ROLLER (vælg 0-3 relevante): Klassificér uddragets juridiske funktion.
+   - interpretation: Rettens fortolkning af en lovbestemmelse
+   - application: Anvendelse af lov på konkrete fakta
+   - principle: Generelt retsprincip fastslået eller bekræftet
+   - procedural: Procesuelle aspekter (formaliteter, søgsmålskompetence, omkostninger)
+   - remedy: Sanktioner, påbud eller retsmidler
+
+   VIGTIGT: Vælg kun roller der passer PRÆCIST. De fleste uddrag har 1-2 roller.
 
 Format dit svar PRÆCIST sådan:
 KONTEKST: [din beskrivelse på én linje]
@@ -169,27 +204,33 @@ def generate_chunk_enrichment(
     roles: list[str] = []
 
     # Extract SØGETERMER
-    terms_match = re.search(r'SØGETERMER:\s*(.+?)(?:\n|ROLLER:|$)', content, re.IGNORECASE)
+    terms_match = re.search(
+        r"SØGETERMER:\s*(.+)(?:\n|ROLLER:|$)", content, re.IGNORECASE
+    )
     if terms_match:
         terms_str = terms_match.group(1).strip()
         search_terms = [
-            t.strip() for t in terms_str.split("|")
-            if t.strip() and len(t.strip()) > 2
+            t.strip() for t in terms_str.split("|") if t.strip() and len(t.strip()) > 2
         ][:max_terms]
 
     # Extract KONTEKST
-    kontekst_match = re.search(r'KONTEKST:\s*(.+?)(?:\s*SØGETERMER:|$)', content, re.IGNORECASE | re.DOTALL)
+    kontekst_match = re.search(
+        r"KONTEKST:\s*(.+?)SØGETERMER:", content, re.IGNORECASE | re.DOTALL
+    )
+    if not kontekst_match:
+        kontekst_match = re.search(
+            r"KONTEKST:\s*(.+)", content, re.IGNORECASE | re.DOTALL
+        )
     if kontekst_match:
         contextual_description = kontekst_match.group(1).strip()
 
     # Extract ROLLER
-    roles_match = re.search(r'ROLLER:\s*(.+?)(?:\n|$)', content, re.IGNORECASE)
+    roles_match = re.search(r"ROLLER:\s*(.+)(?:\n|$)", content, re.IGNORECASE)
     if roles_match:
         roles_str = roles_match.group(1).strip().lower()
         if roles_str != "ingen":
             roles = [
-                r.strip() for r in roles_str.split("|")
-                if r.strip() in VALID_ROLES
+                r.strip() for r in roles_str.split("|") if r.strip() in VALID_ROLES
             ]
 
     return EnrichmentResult(
@@ -258,6 +299,7 @@ def generate_example_questions(
     """
     if model is None:
         from src.common.config_loader import load_settings
+
         settings = load_settings()
         model = settings.chat_model
 
@@ -272,6 +314,8 @@ def generate_example_questions(
 
     # Higher temperature (0.5) for more variance in generated questions
     content = _call_llm(prompt, model=model, temperature=0.5, max_tokens=1000)
+    if content is None:
+        return None
     questions = _parse_json_response(content)
 
     if not questions:
@@ -299,12 +343,12 @@ def generate_example_questions(
 
 # Professional eval case categories (industry-standard RAG evaluation)
 EVAL_TEST_TYPES = [
-    "retrieval",     # Correct document/chunk retrieval
+    "retrieval",  # Correct document/chunk retrieval
     "faithfulness",  # Answers grounded in retrieved context
-    "relevancy",     # Answers address the actual question
-    "abstention",    # System refuses when appropriate
-    "robustness",    # Handles paraphrasing, edge cases, variations
-    "multi_hop",     # Synthesis across multiple sources
+    "relevancy",  # Answers address the actual question
+    "abstention",  # System refuses when appropriate
+    "robustness",  # Handles paraphrasing, edge cases, variations
+    "multi_hop",  # Synthesis across multiple sources
 ]
 
 # Sophisticated eval cases prompt with professional test categories
@@ -557,6 +601,7 @@ def generate_eval_cases(
     """
     if model is None:
         from src.common.config_loader import load_settings
+
         settings = load_settings()
         model = settings.chat_model
 
@@ -586,6 +631,9 @@ def generate_eval_cases(
 
         # Use higher max_tokens for professional multi-category cases
         content = _call_llm(prompt, model=model, temperature=0.4, max_tokens=6000)
+        if content is None:
+            logger.warning("Attempt %d: LLM returned no content", attempt + 1)
+            continue
         yaml_content = _parse_yaml_response(content)
 
         if not yaml_content:
@@ -595,7 +643,9 @@ def generate_eval_cases(
         cases = _parse_eval_cases_yaml(yaml_content)
 
         if len(cases) == num_cases:
-            logger.info("Generated exactly %d eval cases on attempt %d", num_cases, attempt + 1)
+            logger.info(
+                "Generated exactly %d eval cases on attempt %d", num_cases, attempt + 1
+            )
             return cases
         elif len(cases) > num_cases:
             # Got too many - truncate to exact count
@@ -605,14 +655,18 @@ def generate_eval_cases(
             # Got too few - retry
             logger.warning(
                 "Attempt %d: Generated %d cases instead of %d, retrying...",
-                attempt + 1, len(cases), num_cases
+                attempt + 1,
+                len(cases),
+                num_cases,
             )
 
     # All retries exhausted - return what we have or None
     if cases:
         logger.warning(
             "Could not generate exactly %d cases after %d attempts. Got %d cases.",
-            num_cases, max_retries + 1, len(cases)
+            num_cases,
+            max_retries + 1,
+            len(cases),
         )
         return cases  # Return partial result rather than failing completely
 

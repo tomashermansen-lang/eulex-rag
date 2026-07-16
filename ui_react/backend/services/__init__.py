@@ -20,8 +20,6 @@ from src.common.config_loader import load_settings, Settings
 from src.engine.conversation import HistoryMessage as CoreHistoryMessage
 
 
-
-
 def get_settings() -> Settings:
     """Load application settings."""
     return load_settings()
@@ -33,7 +31,10 @@ def get_corpora() -> list[dict[str, Any]]:
 
     Reads display_name from corpora.json inventory file.
     """
-    from src.common.corpora_inventory import load_corpora_inventory, default_corpora_path
+    from src.common.corpora_inventory import (
+        load_corpora_inventory,
+        default_corpora_path,
+    )
 
     settings = get_settings()
     corpora = settings.corpora or {}
@@ -47,18 +48,19 @@ def get_corpora() -> list[dict[str, Any]]:
         # Get display name and celex_number from inventory, fallback to formatted ID
         inv_entry = inv_corpora.get(corpus_id, {})
         display_name = inv_entry.get(
-            "display_name",
-            corpus_id.upper().replace("-", " ").replace("_", " ")
+            "display_name", corpus_id.upper().replace("-", " ").replace("_", " ")
         )
         celex_number = inv_entry.get("celex_number")
-        result.append({
-            "id": corpus_id,
-            "name": display_name,
-            "fullname": inv_entry.get("fullname"),
-            "source_url": getattr(corpus_config, "source_url", None),
-            "celex_number": celex_number,
-            "eurovoc_labels": inv_entry.get("eurovoc_labels", []),
-        })
+        result.append(
+            {
+                "id": corpus_id,
+                "name": display_name,
+                "fullname": inv_entry.get("fullname"),
+                "source_url": getattr(corpus_config, "source_url", None),
+                "celex_number": celex_number,
+                "eurovoc_labels": inv_entry.get("eurovoc_labels", []),
+            }
+        )
 
     return result
 
@@ -107,8 +109,7 @@ def _convert_history(history: list[dict] | None) -> list[CoreHistoryMessage]:
     if not history:
         return []
     return [
-        CoreHistoryMessage(role=msg["role"], content=msg["content"])
-        for msg in history
+        CoreHistoryMessage(role=msg["role"], content=msg["content"]) for msg in history
     ]
 
 

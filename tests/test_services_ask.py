@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import asdict
 
 from src.services.ask import ask
 

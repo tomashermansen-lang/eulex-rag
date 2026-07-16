@@ -1,0 +1,414 @@
+{
+  "run_id": "run_45b3a933d4d2",
+  "suite_id": "cybersikkerhedsregulering_og_compliance_discovery_inverted_dfb8af38",
+  "timestamp": "2026-02-11T21:24:23.760758+00:00",
+  "total": 10,
+  "passed": 9,
+  "failed": 1,
+  "pass_rate": 0.9,
+  "duration_seconds": 49.98402487509884,
+  "run_mode": "full",
+  "max_retries": 0,
+  "results": [
+    {
+      "case_id": "cybersikkerhed_og_data_deling",
+      "prompt": "Hvordan skal enheder med stor indvirkning håndtere cybersikkerhed og deling af data i forbindelse med videnskabelig forskning?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 15735.368458088487,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.5,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 7/7 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "omkostninger_og_samarbejde",
+      "prompt": "Hvordan skal omkostninger relateret til cybersikkerhed håndteres, og hvilke samarbejdsforpligtelser har de relevante myndigheder i forbindelse med indberetning af hændelser?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 17570.65120805055,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 7/7 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_scope",
+      "prompt": "Hvilke regler gælder for produkter med digitale elementer og deres tilgængelighed på markedet, samt hvordan påvirker cybersikkerhed og datadeling disse produkter?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": false,
+      "duration_ms": 11388.760291971266,
+      "scores": {
+        "anchor_presence": {
+          "passed": false,
+          "score": 0.0,
+          "message": "missing_any_of=['cyberrobusthed:article:2', 'eucs-dr-2024-1366:article:2', 'data-act:article:1']"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 7/7 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "interoperabilitet_og_cybersikkerhed",
+      "prompt": "Hvordan kan interoperabilitet mellem databehandlingstjenester bidrage til at forbedre cybersikkerhed og robusthed af digitale aktiver?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 14563.148749992251,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.5,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 2/2 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_obligations",
+      "prompt": "Hvordan sikres det, at interessenter inddrages i håndteringen af IT-sikkerhedshændelser og detektion af anormale aktiviteter?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 32318.40629200451,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.3333333333333333,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 0.875,
+          "message": "Covered 7/8 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "cybersecurity_regulations",
+      "prompt": "Hvilke krav og forpligtelser er der i forhold til cybersikkerhed for produkter med digitale elementer, og hvordan skal medlemsstaterne håndtere udpegningen af kompetente myndigheder til at overvåge disse krav?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 37337.185125099495,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.3333333333333333,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 5/5 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "cybersikkerhed_og_datahåndtering",
+      "prompt": "Hvilke regler og forpligtelser gælder for cybersikkerhed i forbindelse med produkter med digitale elementer og datahåndtering i EU?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 39721.2559171021,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.75,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 8/8 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "digital_product_definitions",
+      "prompt": "Hvad forstås der ved produkter med digitale elementer, og hvordan relaterer det sig til databehandling i net- og informationssystemer?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 14070.442791096866,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.6666666666666666,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 7/7 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_classification",
+      "prompt": "Hvordan sikres det, at digitale produkter og tjenester opfylder kravene til cybersikkerhed og håndtering af IT-sikkerhedshændelser?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 17752.088917186484,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.3333333333333333,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 7/7 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_classification_1",
+      "prompt": "Hvilke krav gælder for enheder, der håndterer digitale elementer og cybersikkerhed i forbindelse med deres drift og tjenester?",
+      "synthesis_mode": "discovery",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "dora",
+        "data-act",
+        "ai-act",
+        "elan"
+      ],
+      "passed": true,
+      "duration_ms": 17652.707915985957,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.6,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "corpus_coverage": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Covered 7/7 expected corpora"
+        }
+      },
+      "difficulty": "hard"
+    }
+  ]
+}

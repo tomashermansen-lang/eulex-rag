@@ -55,12 +55,10 @@ def _build_sync_client() -> OpenAI:
     openai_settings = settings.get("openai", {})
 
     timeout_secs = float(
-        os.getenv("RAG_OPENAI_TIMEOUT_SECS")
-        or openai_settings.get("timeout_secs", 120)
+        os.getenv("RAG_OPENAI_TIMEOUT_SECS") or openai_settings.get("timeout_secs", 120)
     )
     max_retries = int(
-        os.getenv("RAG_OPENAI_MAX_RETRIES")
-        or openai_settings.get("max_retries", 3)
+        os.getenv("RAG_OPENAI_MAX_RETRIES") or openai_settings.get("max_retries", 3)
     )
 
     try:
@@ -78,16 +76,15 @@ def _build_async_client() -> AsyncOpenAI:
     perf = settings.get("performance", {})
 
     timeout_secs = float(
-        os.getenv("RAG_OPENAI_TIMEOUT_SECS")
-        or openai_settings.get("timeout_secs", 120)
+        os.getenv("RAG_OPENAI_TIMEOUT_SECS") or openai_settings.get("timeout_secs", 120)
     )
     max_retries = int(
-        os.getenv("RAG_OPENAI_MAX_RETRIES")
-        or openai_settings.get("max_retries", 3)
+        os.getenv("RAG_OPENAI_MAX_RETRIES") or openai_settings.get("max_retries", 3)
     )
 
     try:
         import httpx
+
         pool_size = int(perf.get("connection_pool_size", 100))
         keepalive = int(perf.get("keepalive_connections", 50))
         return AsyncOpenAI(
@@ -176,7 +173,9 @@ def _model_skips_temperature(model: str, no_temp_models: list[str]) -> bool:
     return any(model.startswith(prefix) for prefix in no_temp_models)
 
 
-def call_llm(prompt: str, model: str | None = None, temperature: float | None = None) -> str:
+def call_llm(
+    prompt: str, model: str | None = None, temperature: float | None = None
+) -> str:
     """Call the LLM with appropriate parameters based on model capabilities.
 
     Model-specific behavior is driven by config/settings.yaml, not hardcoded.
@@ -190,11 +189,19 @@ def call_llm(prompt: str, model: str | None = None, temperature: float | None = 
         openai_settings = settings.get("openai", {})
 
         # Get model and temperature from config (env can override)
-        eff_model = model or os.getenv("OPENAI_CHAT_MODEL") or openai_settings.get("chat_model")
-        eff_temp = temperature if temperature is not None else openai_settings.get("temperature")
+        eff_model = (
+            model or os.getenv("OPENAI_CHAT_MODEL") or openai_settings.get("chat_model")
+        )
+        eff_temp = (
+            temperature
+            if temperature is not None
+            else openai_settings.get("temperature")
+        )
 
         # Get model capabilities from config
-        reasoning_models, no_temp_models, reasoning_effort = _get_model_capabilities(settings)
+        reasoning_models, no_temp_models, reasoning_effort = _get_model_capabilities(
+            settings
+        )
 
         # Determine how to call this model based on config
         uses_reasoning = _model_uses_reasoning(eff_model, reasoning_models)
@@ -234,10 +241,14 @@ def call_llm(prompt: str, model: str | None = None, temperature: float | None = 
                 last_exc = exc
                 if attempt < max_retries - 1:
                     wait_match = re.search(r"try again in (\d+\.?\d*)s", str(exc))
-                    wait_time = float(wait_match.group(1)) + 0.5 if wait_match else (2 ** attempt)
+                    wait_time = (
+                        float(wait_match.group(1)) + 0.5 if wait_match else (2**attempt)
+                    )
                     time.sleep(wait_time)
                     continue
-                raise RAGEngineError(f"OpenAI rate limit exceeded after {max_retries} retries.") from exc
+                raise RAGEngineError(
+                    f"OpenAI rate limit exceeded after {max_retries} retries."
+                ) from exc
 
         if last_exc:
             raise RAGEngineError("OpenAI request failed after retries.") from last_exc
@@ -246,7 +257,9 @@ def call_llm(prompt: str, model: str | None = None, temperature: float | None = 
         raise RAGEngineError("OpenAI request failed.") from exc
 
 
-def call_llm_stream(prompt: str, model: str | None = None, temperature: float | None = None):
+def call_llm_stream(
+    prompt: str, model: str | None = None, temperature: float | None = None
+):
     """Call the LLM with streaming enabled. Yields chunks of text as they arrive.
 
     Uses the singleton sync client (no per-call creation overhead).
@@ -261,10 +274,18 @@ def call_llm_stream(prompt: str, model: str | None = None, temperature: float | 
         settings = get_settings_yaml()
         openai_settings = settings.get("openai", {})
 
-        eff_model = model or os.getenv("OPENAI_CHAT_MODEL") or openai_settings.get("chat_model")
-        eff_temp = temperature if temperature is not None else openai_settings.get("temperature")
+        eff_model = (
+            model or os.getenv("OPENAI_CHAT_MODEL") or openai_settings.get("chat_model")
+        )
+        eff_temp = (
+            temperature
+            if temperature is not None
+            else openai_settings.get("temperature")
+        )
 
-        reasoning_models, no_temp_models, reasoning_effort = _get_model_capabilities(settings)
+        reasoning_models, no_temp_models, reasoning_effort = _get_model_capabilities(
+            settings
+        )
 
         uses_reasoning = _model_uses_reasoning(eff_model, reasoning_models)
         skips_temperature = _model_skips_temperature(eff_model, no_temp_models)
@@ -325,10 +346,14 @@ def call_llm_stream(prompt: str, model: str | None = None, temperature: float | 
                 last_exc = exc
                 if attempt < max_retries - 1:
                     wait_match = re.search(r"try again in (\d+\.?\d*)s", str(exc))
-                    wait_time = float(wait_match.group(1)) + 0.5 if wait_match else (2 ** attempt)
+                    wait_time = (
+                        float(wait_match.group(1)) + 0.5 if wait_match else (2**attempt)
+                    )
                     time.sleep(wait_time)
                     continue
-                raise RAGEngineError(f"OpenAI rate limit exceeded after {max_retries} retries.") from exc
+                raise RAGEngineError(
+                    f"OpenAI rate limit exceeded after {max_retries} retries."
+                ) from exc
 
         if last_exc:
             raise RAGEngineError("OpenAI request failed after retries.") from last_exc
@@ -351,7 +376,9 @@ def _get_llm_semaphore() -> asyncio.Semaphore:
 
 
 async def call_llm_async(
-    prompt: str, model: str | None = None, temperature: float | None = None,
+    prompt: str,
+    model: str | None = None,
+    temperature: float | None = None,
 ) -> str:
     """Async mirror of call_llm(). Uses singleton AsyncOpenAI client."""
     from ..common.config_loader import get_settings_yaml
@@ -360,10 +387,16 @@ async def call_llm_async(
     settings = get_settings_yaml()
     openai_settings = settings.get("openai", {})
 
-    eff_model = model or os.getenv("OPENAI_CHAT_MODEL") or openai_settings.get("chat_model")
-    eff_temp = temperature if temperature is not None else openai_settings.get("temperature")
+    eff_model = (
+        model or os.getenv("OPENAI_CHAT_MODEL") or openai_settings.get("chat_model")
+    )
+    eff_temp = (
+        temperature if temperature is not None else openai_settings.get("temperature")
+    )
 
-    reasoning_models, no_temp_models, reasoning_effort = _get_model_capabilities(settings)
+    reasoning_models, no_temp_models, reasoning_effort = _get_model_capabilities(
+        settings
+    )
     uses_reasoning = _model_uses_reasoning(eff_model, reasoning_models)
     skips_temperature = _model_skips_temperature(eff_model, no_temp_models)
 
@@ -400,7 +433,9 @@ async def call_llm_async(
             last_exc = exc
             if attempt < max_retries - 1:
                 wait_match = re.search(r"try again in (\\d+\\.?\\d*)s", str(exc))
-                wait_time = float(wait_match.group(1)) + 0.5 if wait_match else (2 ** attempt)
+                wait_time = (
+                    float(wait_match.group(1)) + 0.5 if wait_match else (2**attempt)
+                )
                 await asyncio.sleep(wait_time)
                 continue
             raise RAGEngineError(
@@ -413,7 +448,9 @@ async def call_llm_async(
 
 
 async def call_llm_stream_async(
-    prompt: str, model: str | None = None, temperature: float | None = None,
+    prompt: str,
+    model: str | None = None,
+    temperature: float | None = None,
 ):
     """Async mirror of call_llm_stream(). Yields chunks via AsyncOpenAI client.
 
@@ -426,10 +463,16 @@ async def call_llm_stream_async(
     settings = get_settings_yaml()
     openai_settings = settings.get("openai", {})
 
-    eff_model = model or os.getenv("OPENAI_CHAT_MODEL") or openai_settings.get("chat_model")
-    eff_temp = temperature if temperature is not None else openai_settings.get("temperature")
+    eff_model = (
+        model or os.getenv("OPENAI_CHAT_MODEL") or openai_settings.get("chat_model")
+    )
+    eff_temp = (
+        temperature if temperature is not None else openai_settings.get("temperature")
+    )
 
-    reasoning_models, no_temp_models, reasoning_effort = _get_model_capabilities(settings)
+    reasoning_models, no_temp_models, reasoning_effort = _get_model_capabilities(
+        settings
+    )
     uses_reasoning = _model_uses_reasoning(eff_model, reasoning_models)
     skips_temperature = _model_skips_temperature(eff_model, no_temp_models)
 
@@ -465,7 +508,11 @@ async def call_llm_stream_async(
             return
 
         except TypeError as te:
-            logger.warning("Stream TypeError (attempt %d): %s — retrying without reasoning", attempt, te)
+            logger.warning(
+                "Stream TypeError (attempt %d): %s — retrying without reasoning",
+                attempt,
+                te,
+            )
             # Reasoning param may be unsupported; retry streaming without it
             try:
                 stream = await client.chat.completions.create(
@@ -490,7 +537,9 @@ async def call_llm_stream_async(
             last_exc = exc
             if attempt < max_retries - 1:
                 wait_match = re.search(r"try again in (\\d+\\.?\\d*)s", str(exc))
-                wait_time = float(wait_match.group(1)) + 0.5 if wait_match else (2 ** attempt)
+                wait_time = (
+                    float(wait_match.group(1)) + 0.5 if wait_match else (2**attempt)
+                )
                 await asyncio.sleep(wait_time)
                 continue
             raise RAGEngineError(

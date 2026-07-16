@@ -19,7 +19,6 @@ import re
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -27,10 +26,12 @@ from urllib.parse import urlparse
 import requests
 
 # Security: Only allow requests to official EU domains
-ALLOWED_DOMAINS = frozenset([
-    "eur-lex.europa.eu",
-    "publications.europa.eu",
-])
+ALLOWED_DOMAINS = frozenset(
+    [
+        "eur-lex.europa.eu",
+        "publications.europa.eu",
+    ]
+)
 
 # EUR-Lex SPARQL endpoint
 SPARQL_ENDPOINT = "https://publications.europa.eu/webapi/rdf/sparql"
@@ -83,13 +84,19 @@ class LegislationInfo:
             "celex_number": self.celex_number,
             "title_da": self.title_da,
             "title_en": self.title_en,
-            "last_modified": self.last_modified.isoformat() if self.last_modified else None,
-            "entry_into_force": self.entry_into_force.isoformat() if self.entry_into_force else None,
+            "last_modified": self.last_modified.isoformat()
+            if self.last_modified
+            else None,
+            "entry_into_force": self.entry_into_force.isoformat()
+            if self.entry_into_force
+            else None,
             "in_force": self.in_force,
             "amended_by": self.amended_by,
             "is_ingested": self.is_ingested,
             "corpus_id": self.corpus_id,
-            "local_version_date": self.local_version_date.isoformat() if self.local_version_date else None,
+            "local_version_date": self.local_version_date.isoformat()
+            if self.local_version_date
+            else None,
             "is_outdated": self.is_outdated,
             "html_url": self.html_url,
             "document_type": self.document_type,
@@ -111,16 +118,19 @@ class UpdateStatus:
 
 class EurLexSecurityError(Exception):
     """Raised when a security check fails."""
+
     pass
 
 
 class EurLexValidationError(Exception):
     """Raised when input validation fails."""
+
     pass
 
 
 class EurLexNetworkError(Exception):
     """Raised when a network request fails."""
+
     pass
 
 
@@ -318,15 +328,19 @@ from enum import Enum
 
 class DateFilterType(Enum):
     """Type of date to filter legislation by."""
-    CREATION = "creation"      # Date when the law was adopted/created
+
+    CREATION = "creation"  # Date when the law was adopted/created
     MODIFICATION = "modification"  # Date when the law was last modified
 
 
 class DocumentType(Enum):
     """Type of EU legal document."""
-    ALL = "all"              # Both regulations and directives
+
+    ALL = "all"  # Both regulations and directives
     REGULATION = "regulation"  # EU Regulations (Forordninger) - directly applicable
-    DIRECTIVE = "directive"    # EU Directives (Direktiver) - requires national implementation
+    DIRECTIVE = (
+        "directive"  # EU Directives (Direktiver) - requires national implementation
+    )
 
 
 def _build_sparql_query(
@@ -420,10 +434,10 @@ def _build_sparql_query(
     # This avoids filtering out valid legislation like NIS2 that lacks the metadata.
     in_force_filter = ""
     if in_force_only:
-        in_force_filter = '''
+        in_force_filter = """
         OPTIONAL { ?work cdm:resource_legal_in-force ?_inforce . }
         FILTER(!BOUND(?_inforce) || ?_inforce = true || ?_inforce = "1"^^xsd:boolean || STR(?_inforce) = "1")
-        '''
+        """
 
     # Build year filter based on CELEX year
     # Note: Both creation and modification use CELEX year because EUR-Lex doesn't
@@ -431,7 +445,9 @@ def _build_sparql_query(
     # represents when the law was originally adopted.
     year_patterns = [str(y) for y in range(year_from, year_to + 1)]
     year_regex = "|".join(year_patterns)
-    celex_filter = f'FILTER(REGEX(?celex, "^3({year_regex}){celex_type_letter}[0-9]+$"))'
+    celex_filter = (
+        f'FILTER(REGEX(?celex, "^3({year_regex}){celex_type_letter}[0-9]+$"))'
+    )
     date_filter = ""
 
     # Build EuroVoc parts conditionally (adds ~20-60s to query time)
@@ -644,10 +660,14 @@ def list_available_legislation(
         entry_into_force = None
         if entry_into_force_str:
             try:
-                entry_into_force = datetime.fromisoformat(entry_into_force_str.replace("Z", "+00:00"))
+                entry_into_force = datetime.fromisoformat(
+                    entry_into_force_str.replace("Z", "+00:00")
+                )
             except ValueError:
                 try:
-                    entry_into_force = datetime.strptime(entry_into_force_str[:10], "%Y-%m-%d")
+                    entry_into_force = datetime.strptime(
+                        entry_into_force_str[:10], "%Y-%m-%d"
+                    )
                 except ValueError:
                     pass
 
@@ -665,7 +685,9 @@ def list_available_legislation(
             entry_into_force=entry_into_force,
             in_force=in_force,
             html_url=build_html_url(celex),
-            document_type=doc_type if doc_type != "Unknown" else get_document_type(celex),
+            document_type=doc_type
+            if doc_type != "Unknown"
+            else get_document_type(celex),
             eurovoc_labels=eurovoc_labels,
         )
         legislation.append(info)
@@ -906,8 +928,8 @@ def _download_via_direct_url(celex: str, output_path: Path) -> Path:
             url,
             headers={
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                              "AppleWebKit/537.36 (KHTML, like Gecko) "
-                              "Chrome/120.0.0.0 Safari/537.36",
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0.0.0 Safari/537.36",
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "Accept-Language": "da-DK,da;q=0.9,en;q=0.8",
             },
@@ -990,8 +1012,8 @@ def download_legislation_html(celex: str, output_path: Path) -> Path:
 
     # All methods failed
     raise EurLexNetworkError(
-        f"All download methods failed for {celex}:\n" +
-        "\n".join(f"  - {err}" for err in errors)
+        f"All download methods failed for {celex}:\n"
+        + "\n".join(f"  - {err}" for err in errors)
     )
 
 

@@ -18,6 +18,7 @@ from fastapi.responses import StreamingResponse
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from schemas import AskRequest, AskResponse, Reference
@@ -51,7 +52,9 @@ async def ask_endpoint(request: AskRequest) -> AskResponse:
 
     try:
         # Convert Pydantic models to dicts for service layer
-        history = [msg.model_dump() for msg in request.history] if request.history else []
+        history = (
+            [msg.model_dump() for msg in request.history] if request.history else []
+        )
         result = services.get_answer(
             question=request.question,
             law=request.law,
@@ -63,7 +66,9 @@ async def ask_endpoint(request: AskRequest) -> AskResponse:
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error generating answer: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Error generating answer: {str(e)}"
+        )
 
     elapsed = time.time() - start
 
@@ -81,7 +86,9 @@ def _run_stream_in_thread(request: AskRequest, queue: Queue) -> None:
     """Run the synchronous stream_answer in a separate thread, putting results in a queue."""
     try:
         # Convert Pydantic models to dicts for service layer
-        history = [msg.model_dump() for msg in request.history] if request.history else []
+        history = (
+            [msg.model_dump() for msg in request.history] if request.history else []
+        )
         for chunk in services.stream_answer(
             question=request.question,
             law=request.law,
@@ -130,7 +137,10 @@ async def _generate_stream_events(request: AskRequest) -> AsyncGenerator[str, No
                 else:
                     # Final AskResult
                     elapsed = time.time() - start
-                    references = [_build_reference(ref) for ref in (data.references_structured or [])]
+                    references = [
+                        _build_reference(ref)
+                        for ref in (data.references_structured or [])
+                    ]
 
                     result_data = {
                         "type": "result",
@@ -139,7 +149,7 @@ async def _generate_stream_events(request: AskRequest) -> AsyncGenerator[str, No
                             "references": [ref.model_dump() for ref in references],
                             "retrieval_metrics": data.retrieval_metrics or {},
                             "response_time_seconds": elapsed,
-                        }
+                        },
                     }
                     yield f"data: {json.dumps(result_data)}\n\n"
 

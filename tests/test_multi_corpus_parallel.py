@@ -7,26 +7,17 @@ partial failure, and config integration.
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass
-from types import SimpleNamespace
-from typing import Any, Dict, List, Tuple
-from unittest.mock import MagicMock
 
-import pytest
 
 from src.engine.multi_corpus_retrieval import (
     MultiCorpusConfig,
     MultiCorpusInput,
-    MultiCorpusResult,
-    apply_rrf_fusion,
     execute_multi_corpus_retrieval,
 )
 from src.engine.retrieval_pipeline import (
     CitationExpansionResult,
     ContextSelectionResult,
     HybridRerankResult,
-    PipelineConfig,
-    PipelineInput,
     PipelineResult,
     RetrievedChunk,
     ScoredChunk,
@@ -39,7 +30,9 @@ from src.engine.retrieval_pipeline import (
 # ---------------------------------------------------------------------------
 
 
-def _make_scored_chunk(chunk_id: str, corpus_id: str, score: float = 0.5) -> ScoredChunk:
+def _make_scored_chunk(
+    chunk_id: str, corpus_id: str, score: float = 0.5
+) -> ScoredChunk:
     """Create a ScoredChunk for testing."""
     return ScoredChunk(
         chunk=RetrievedChunk(
@@ -92,17 +85,21 @@ def _make_pipeline_result(corpus_id: str, n_chunks: int = 3) -> PipelineResult:
 
 def _make_delayed_pipeline_fn(delay_secs: float, corpus_id: str, n_chunks: int = 3):
     """Create a pipeline function with configurable delay."""
+
     def pipeline_fn(*, input, config, query_fn, inject_fn, is_citable_fn):  # noqa: A002
         time.sleep(delay_secs)
         return _make_pipeline_result(corpus_id, n_chunks)
+
     return pipeline_fn
 
 
 def _make_factories():
     """Create dummy factory functions for testing."""
+
     def query_fn_factory(corpus_id: str):
         def query_fn(question, k, where_filter):
             return ([], [])
+
         return query_fn
 
     def inject_fn_factory(corpus_id: str):
@@ -293,6 +290,7 @@ class TestTimeout:
 
     def test_timeout_treated_as_failure(self, monkeypatch):
         """MC-04: Corpus exceeding timeout treated as failure, others succeed."""
+
         def mock_execute_pipeline(*, input, config, query_fn, inject_fn, is_citable_fn):  # noqa: A002
             if input.corpus_id == "slow_corpus":
                 time.sleep(5.0)  # Way over timeout
@@ -349,6 +347,7 @@ class TestAllCorporaFail:
 
     def test_all_corpora_fail_returns_empty(self, monkeypatch):
         """MC-05: All N fail → empty fused_chunks, errors in debug."""
+
         def mock_execute_pipeline(*, input, config, query_fn, inject_fn, is_citable_fn):  # noqa: A002
             raise RuntimeError(f"Failed: {input.corpus_id}")
 
@@ -459,6 +458,7 @@ class TestSingleCorpus:
 
     def test_single_corpus_no_regression(self, monkeypatch):
         """MC-08: Single-corpus call has minimal overhead vs. direct pipeline."""
+
         def mock_execute_pipeline(*, input, config, query_fn, inject_fn, is_citable_fn):  # noqa: A002
             return _make_pipeline_result(input.corpus_id, n_chunks=3)
 
@@ -504,6 +504,7 @@ class TestPerCorpusTiming:
 
     def test_per_corpus_timing_in_debug(self, monkeypatch):
         """MC-09: Each corpus has duration_ms in debug output."""
+
         def mock_execute_pipeline(*, input, config, query_fn, inject_fn, is_citable_fn):  # noqa: A002
             return _make_pipeline_result(input.corpus_id, n_chunks=2)
 

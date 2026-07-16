@@ -4,9 +4,6 @@ TDD: These tests are written BEFORE the implementation.
 """
 
 import pytest
-from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Tuple
-from unittest.mock import MagicMock
 
 
 # Test imports - will fail until implementation exists
@@ -20,6 +17,7 @@ def import_module():
         apply_rrf_fusion,
         execute_multi_corpus_retrieval,
     )
+
     return {
         "MultiCorpusInput": MultiCorpusInput,
         "MultiCorpusConfig": MultiCorpusConfig,
@@ -65,7 +63,11 @@ class TestRRFFusion:
         assert len(result) == 3
 
         # Rank 1 chunks should have higher scores than rank 2
-        rank1_scores = [r.final_score for r in result if "c1_a" in r.chunk.chunk_id or "c2_a" in r.chunk.chunk_id]
+        rank1_scores = [
+            r.final_score
+            for r in result
+            if "c1_a" in r.chunk.chunk_id or "c2_a" in r.chunk.chunk_id
+        ]
         rank2_scores = [r.final_score for r in result if "c1_b" in r.chunk.chunk_id]
         assert min(rank1_scores) > max(rank2_scores)
 
@@ -110,7 +112,7 @@ class TestRRFFusion:
                 for i in range(10)
             ],
             "corpus_2": [
-                _make_scored_chunk(f"chunk_{i+10}", 1.0 - i * 0.1, "corpus_2")
+                _make_scored_chunk(f"chunk_{i + 10}", 1.0 - i * 0.1, "corpus_2")
                 for i in range(10)
             ],
         }
@@ -180,7 +182,9 @@ class TestRRFFusion:
                 _make_scored_chunk("chunk_a", 0.9, "corpus_1"),
             ],
             "corpus_2": [
-                _make_scored_chunk("chunk_a", 0.8, "corpus_2"),  # Same ID, different corpus
+                _make_scored_chunk(
+                    "chunk_a", 0.8, "corpus_2"
+                ),  # Same ID, different corpus
             ],
         }
 
@@ -208,7 +212,9 @@ class TestMultiCorpusRetrieval:
             user_profile="LEGAL",
             where_filter=None,
         )
-        config = MultiCorpusConfig(retrieval_pool_size=50, merged_pool_size=100, rrf_k=60)
+        config = MultiCorpusConfig(
+            retrieval_pool_size=50, merged_pool_size=100, rrf_k=60
+        )
 
         # Track which corpora were queried
         queried_corpora = []
@@ -217,6 +223,7 @@ class TestMultiCorpusRetrieval:
             def query_fn(question, k, where):
                 queried_corpora.append(corpus_id)
                 return ([], [])  # Empty results
+
             return query_fn
 
         def mock_inject_fn_factory(corpus_id: str):
@@ -247,7 +254,9 @@ class TestMultiCorpusRetrieval:
             user_profile="LEGAL",
             where_filter=None,
         )
-        config = MultiCorpusConfig(retrieval_pool_size=50, merged_pool_size=100, rrf_k=60)
+        config = MultiCorpusConfig(
+            retrieval_pool_size=50, merged_pool_size=100, rrf_k=60
+        )
 
         def mock_query_fn_factory(corpus_id: str):
             def query_fn(question, k, where):
@@ -255,6 +264,7 @@ class TestMultiCorpusRetrieval:
                     [(f"chunk_{corpus_id}", f"Doc from {corpus_id}", {"article": "1"})],
                     [0.1],
                 )
+
             return query_fn
 
         def mock_inject_fn_factory(corpus_id: str):
@@ -293,6 +303,7 @@ class TestMultiCorpusRetrieval:
         def mock_query_fn_factory(corpus_id: str):
             def query_fn(question, k, where):
                 return ([], [])
+
             return query_fn
 
         def mock_inject_fn_factory(corpus_id: str):
@@ -337,6 +348,7 @@ class TestMultiCorpusRetrieval:
                         [("c3", "doc3", {})],
                         [0.15],
                     )
+
             return query_fn
 
         def mock_inject_fn_factory(corpus_id: str):

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -9,7 +8,10 @@ _TRUTHY_ENV_VALUES = {"1", "true", "yes", "on"}
 
 
 def env_flag_enabled(name: str) -> bool:
-    return str((__import__("os").environ.get(name) or "")).strip().lower() in _TRUTHY_ENV_VALUES
+    return (
+        str((__import__("os").environ.get(name) or "")).strip().lower()
+        in _TRUTHY_ENV_VALUES
+    )
 
 
 _NORMATIVE_MARKERS = (
@@ -40,35 +42,50 @@ class EngineeringJSONValidationError(Exception):
         return f"{self.code}: {self.message}"
 
 
-_TOP_KEYS_REQUIRED = {"classification", "obligations", "system_requirements", "open_questions"}
+_TOP_KEYS_REQUIRED = {
+    "classification",
+    "obligations",
+    "system_requirements",
+    "open_questions",
+}
 _TOP_KEYS_OPTIONAL = {"audit_evidence_bullets", "requirements_bullets"}
 
 
 def _require_dict(obj: Any, *, path: str) -> dict[str, Any]:
     if not isinstance(obj, dict):
-        raise EngineeringJSONValidationError("schema_fail", f"Expected object at {path}.")
+        raise EngineeringJSONValidationError(
+            "schema_fail", f"Expected object at {path}."
+        )
     return obj
 
 
 def _require_list(obj: Any, *, path: str) -> list[Any]:
     if not isinstance(obj, list):
-        raise EngineeringJSONValidationError("schema_fail", f"Expected array at {path}.")
+        raise EngineeringJSONValidationError(
+            "schema_fail", f"Expected array at {path}."
+        )
     return obj
 
 
 def _require_str(obj: Any, *, path: str) -> str:
     if not isinstance(obj, str) or not obj.strip():
-        raise EngineeringJSONValidationError("schema_fail", f"Expected non-empty string at {path}.")
+        raise EngineeringJSONValidationError(
+            "schema_fail", f"Expected non-empty string at {path}."
+        )
     return obj
 
 
 def _require_int(obj: Any, *, path: str) -> int:
     if not isinstance(obj, int):
-        raise EngineeringJSONValidationError("schema_fail", f"Expected integer at {path}.")
+        raise EngineeringJSONValidationError(
+            "schema_fail", f"Expected integer at {path}."
+        )
     return obj
 
 
-def _require_no_unknown_fields(d: dict[str, Any], *, allowed: set[str], path: str) -> None:
+def _require_no_unknown_fields(
+    d: dict[str, Any], *, allowed: set[str], path: str
+) -> None:
     extra = sorted(set(d.keys()) - set(allowed))
     missing = sorted(set(allowed) - set(d.keys()))
     if extra or missing:
@@ -99,10 +116,14 @@ def _validate_citations(value: Any, *, path: str, require_nonempty: bool) -> lis
     for i, v in enumerate(arr):
         idx = _require_int(v, path=f"{path}[{i}]")
         if idx <= 0:
-            raise EngineeringJSONValidationError("schema_fail", f"Citation idx must be > 0 at {path}[{i}].")
+            raise EngineeringJSONValidationError(
+                "schema_fail", f"Citation idx must be > 0 at {path}[{i}]."
+            )
         out.append(idx)
     if require_nonempty and len(out) == 0:
-        raise EngineeringJSONValidationError("normativ_no_citation", f"Missing citations at {path}.")
+        raise EngineeringJSONValidationError(
+            "normativ_no_citation", f"Missing citations at {path}."
+        )
     return out
 
 
@@ -116,59 +137,107 @@ def validate_engineering_answer_json(obj: Any) -> dict[str, Any]:
     )
 
     classification = _require_dict(root.get("classification"), path="$.classification")
-    _require_no_unknown_fields(classification, allowed={"status", "text", "citations"}, path="$.classification")
+    _require_no_unknown_fields(
+        classification, allowed={"status", "text", "citations"}, path="$.classification"
+    )
     status = _require_str(classification.get("status"), path="$.classification.status")
     if status not in {"JA", "NEJ", "AFHÆNGER_AF"}:
-        raise EngineeringJSONValidationError("schema_fail", "Invalid classification.status.")
+        raise EngineeringJSONValidationError(
+            "schema_fail", "Invalid classification.status."
+        )
     _require_str(classification.get("text"), path="$.classification.text")
-    _validate_citations(classification.get("citations"), path="$.classification.citations", require_nonempty=True)
+    _validate_citations(
+        classification.get("citations"),
+        path="$.classification.citations",
+        require_nonempty=True,
+    )
 
     obligations = _require_list(root.get("obligations"), path="$.obligations")
     for i, item in enumerate(obligations):
         d = _require_dict(item, path=f"$.obligations[{i}]")
-        _require_no_unknown_fields(d, allowed={"title", "text", "citations"}, path=f"$.obligations[{i}]")
+        _require_no_unknown_fields(
+            d, allowed={"title", "text", "citations"}, path=f"$.obligations[{i}]"
+        )
         title = _require_str(d.get("title"), path=f"$.obligations[{i}].title")
         text = _require_str(d.get("text"), path=f"$.obligations[{i}].text")
         require = _is_normative_text(f"{title} {text}")
-        _validate_citations(d.get("citations"), path=f"$.obligations[{i}].citations", require_nonempty=require)
+        _validate_citations(
+            d.get("citations"),
+            path=f"$.obligations[{i}].citations",
+            require_nonempty=require,
+        )
 
-    system_requirements = _require_list(root.get("system_requirements"), path="$.system_requirements")
+    system_requirements = _require_list(
+        root.get("system_requirements"), path="$.system_requirements"
+    )
     for i, item in enumerate(system_requirements):
         d = _require_dict(item, path=f"$.system_requirements[{i}]")
-        _require_no_unknown_fields(d, allowed={"level", "text", "citations"}, path=f"$.system_requirements[{i}]")
+        _require_no_unknown_fields(
+            d,
+            allowed={"level", "text", "citations"},
+            path=f"$.system_requirements[{i}]",
+        )
         level = _require_str(d.get("level"), path=f"$.system_requirements[{i}].level")
         if level not in {"SKAL", "BØR", "INFO"}:
-            raise EngineeringJSONValidationError("schema_fail", f"Invalid system_requirements[{i}].level.")
+            raise EngineeringJSONValidationError(
+                "schema_fail", f"Invalid system_requirements[{i}].level."
+            )
         text = _require_str(d.get("text"), path=f"$.system_requirements[{i}].text")
         require = bool(level in {"SKAL", "BØR"}) or _is_normative_text(text)
-        _validate_citations(d.get("citations"), path=f"$.system_requirements[{i}].citations", require_nonempty=require)
+        _validate_citations(
+            d.get("citations"),
+            path=f"$.system_requirements[{i}].citations",
+            require_nonempty=require,
+        )
 
     open_questions = _require_list(root.get("open_questions"), path="$.open_questions")
     for i, item in enumerate(open_questions):
         d = _require_dict(item, path=f"$.open_questions[{i}]")
-        _require_no_unknown_fields(d, allowed={"question", "why", "citations"}, path=f"$.open_questions[{i}]")
+        _require_no_unknown_fields(
+            d, allowed={"question", "why", "citations"}, path=f"$.open_questions[{i}]"
+        )
         q = _require_str(d.get("question"), path=f"$.open_questions[{i}].question")
         why = _require_str(d.get("why"), path=f"$.open_questions[{i}].why")
         require = _is_normative_text(f"{q} {why}")
-        _validate_citations(d.get("citations"), path=f"$.open_questions[{i}].citations", require_nonempty=require)
+        _validate_citations(
+            d.get("citations"),
+            path=f"$.open_questions[{i}].citations",
+            require_nonempty=require,
+        )
 
     # Optional: audit evidence bullets for supervision/audit readiness.
     if "audit_evidence_bullets" in root:
-        audit = _require_list(root.get("audit_evidence_bullets"), path="$.audit_evidence_bullets")
+        audit = _require_list(
+            root.get("audit_evidence_bullets"), path="$.audit_evidence_bullets"
+        )
         for i, item in enumerate(audit):
             d = _require_dict(item, path=f"$.audit_evidence_bullets[{i}]")
-            _require_no_unknown_fields(d, allowed={"text", "citations"}, path=f"$.audit_evidence_bullets[{i}]")
+            _require_no_unknown_fields(
+                d, allowed={"text", "citations"}, path=f"$.audit_evidence_bullets[{i}]"
+            )
             _require_str(d.get("text"), path=f"$.audit_evidence_bullets[{i}].text")
-            _validate_citations(d.get("citations"), path=f"$.audit_evidence_bullets[{i}].citations", require_nonempty=False)
+            _validate_citations(
+                d.get("citations"),
+                path=f"$.audit_evidence_bullets[{i}].citations",
+                require_nonempty=False,
+            )
 
     # Optional alias (additive): requirements bullets without SKAL/BØR levels.
     if "requirements_bullets" in root:
-        reqs = _require_list(root.get("requirements_bullets"), path="$.requirements_bullets")
+        reqs = _require_list(
+            root.get("requirements_bullets"), path="$.requirements_bullets"
+        )
         for i, item in enumerate(reqs):
             d = _require_dict(item, path=f"$.requirements_bullets[{i}]")
-            _require_no_unknown_fields(d, allowed={"text", "citations"}, path=f"$.requirements_bullets[{i}]")
+            _require_no_unknown_fields(
+                d, allowed={"text", "citations"}, path=f"$.requirements_bullets[{i}]"
+            )
             _require_str(d.get("text"), path=f"$.requirements_bullets[{i}].text")
-            _validate_citations(d.get("citations"), path=f"$.requirements_bullets[{i}].citations", require_nonempty=False)
+            _validate_citations(
+                d.get("citations"),
+                path=f"$.requirements_bullets[{i}].citations",
+                require_nonempty=False,
+            )
 
     return root
 
@@ -189,54 +258,102 @@ def validate_engineering_answer_json_schema_only(obj: Any) -> dict[str, Any]:
     )
 
     classification = _require_dict(root.get("classification"), path="$.classification")
-    _require_no_unknown_fields(classification, allowed={"status", "text", "citations"}, path="$.classification")
+    _require_no_unknown_fields(
+        classification, allowed={"status", "text", "citations"}, path="$.classification"
+    )
     status = _require_str(classification.get("status"), path="$.classification.status")
     if status not in {"JA", "NEJ", "AFHÆNGER_AF"}:
-        raise EngineeringJSONValidationError("schema_fail", "Invalid classification.status.")
+        raise EngineeringJSONValidationError(
+            "schema_fail", "Invalid classification.status."
+        )
     _require_str(classification.get("text"), path="$.classification.text")
-    _validate_citations(classification.get("citations"), path="$.classification.citations", require_nonempty=False)
+    _validate_citations(
+        classification.get("citations"),
+        path="$.classification.citations",
+        require_nonempty=False,
+    )
 
     obligations = _require_list(root.get("obligations"), path="$.obligations")
     for i, item in enumerate(obligations):
         d = _require_dict(item, path=f"$.obligations[{i}]")
-        _require_no_unknown_fields(d, allowed={"title", "text", "citations"}, path=f"$.obligations[{i}]")
+        _require_no_unknown_fields(
+            d, allowed={"title", "text", "citations"}, path=f"$.obligations[{i}]"
+        )
         _require_str(d.get("title"), path=f"$.obligations[{i}].title")
         _require_str(d.get("text"), path=f"$.obligations[{i}].text")
-        _validate_citations(d.get("citations"), path=f"$.obligations[{i}].citations", require_nonempty=False)
+        _validate_citations(
+            d.get("citations"),
+            path=f"$.obligations[{i}].citations",
+            require_nonempty=False,
+        )
 
-    system_requirements = _require_list(root.get("system_requirements"), path="$.system_requirements")
+    system_requirements = _require_list(
+        root.get("system_requirements"), path="$.system_requirements"
+    )
     for i, item in enumerate(system_requirements):
         d = _require_dict(item, path=f"$.system_requirements[{i}]")
-        _require_no_unknown_fields(d, allowed={"level", "text", "citations"}, path=f"$.system_requirements[{i}]")
+        _require_no_unknown_fields(
+            d,
+            allowed={"level", "text", "citations"},
+            path=f"$.system_requirements[{i}]",
+        )
         level = _require_str(d.get("level"), path=f"$.system_requirements[{i}].level")
         if level not in {"SKAL", "BØR", "INFO"}:
-            raise EngineeringJSONValidationError("schema_fail", f"Invalid system_requirements[{i}].level.")
+            raise EngineeringJSONValidationError(
+                "schema_fail", f"Invalid system_requirements[{i}].level."
+            )
         _require_str(d.get("text"), path=f"$.system_requirements[{i}].text")
-        _validate_citations(d.get("citations"), path=f"$.system_requirements[{i}].citations", require_nonempty=False)
+        _validate_citations(
+            d.get("citations"),
+            path=f"$.system_requirements[{i}].citations",
+            require_nonempty=False,
+        )
 
     open_questions = _require_list(root.get("open_questions"), path="$.open_questions")
     for i, item in enumerate(open_questions):
         d = _require_dict(item, path=f"$.open_questions[{i}]")
-        _require_no_unknown_fields(d, allowed={"question", "why", "citations"}, path=f"$.open_questions[{i}]")
+        _require_no_unknown_fields(
+            d, allowed={"question", "why", "citations"}, path=f"$.open_questions[{i}]"
+        )
         _require_str(d.get("question"), path=f"$.open_questions[{i}].question")
         _require_str(d.get("why"), path=f"$.open_questions[{i}].why")
-        _validate_citations(d.get("citations"), path=f"$.open_questions[{i}].citations", require_nonempty=False)
+        _validate_citations(
+            d.get("citations"),
+            path=f"$.open_questions[{i}].citations",
+            require_nonempty=False,
+        )
 
     if "audit_evidence_bullets" in root:
-        audit = _require_list(root.get("audit_evidence_bullets"), path="$.audit_evidence_bullets")
+        audit = _require_list(
+            root.get("audit_evidence_bullets"), path="$.audit_evidence_bullets"
+        )
         for i, item in enumerate(audit):
             d = _require_dict(item, path=f"$.audit_evidence_bullets[{i}]")
-            _require_no_unknown_fields(d, allowed={"text", "citations"}, path=f"$.audit_evidence_bullets[{i}]")
+            _require_no_unknown_fields(
+                d, allowed={"text", "citations"}, path=f"$.audit_evidence_bullets[{i}]"
+            )
             _require_str(d.get("text"), path=f"$.audit_evidence_bullets[{i}].text")
-            _validate_citations(d.get("citations"), path=f"$.audit_evidence_bullets[{i}].citations", require_nonempty=False)
+            _validate_citations(
+                d.get("citations"),
+                path=f"$.audit_evidence_bullets[{i}].citations",
+                require_nonempty=False,
+            )
 
     if "requirements_bullets" in root:
-        reqs = _require_list(root.get("requirements_bullets"), path="$.requirements_bullets")
+        reqs = _require_list(
+            root.get("requirements_bullets"), path="$.requirements_bullets"
+        )
         for i, item in enumerate(reqs):
             d = _require_dict(item, path=f"$.requirements_bullets[{i}]")
-            _require_no_unknown_fields(d, allowed={"text", "citations"}, path=f"$.requirements_bullets[{i}]")
+            _require_no_unknown_fields(
+                d, allowed={"text", "citations"}, path=f"$.requirements_bullets[{i}]"
+            )
             _require_str(d.get("text"), path=f"$.requirements_bullets[{i}].text")
-            _validate_citations(d.get("citations"), path=f"$.requirements_bullets[{i}].citations", require_nonempty=False)
+            _validate_citations(
+                d.get("citations"),
+                path=f"$.requirements_bullets[{i}].citations",
+                require_nonempty=False,
+            )
 
     return root
 
@@ -300,7 +417,9 @@ def validate_engineering_answer_json_policy(
     except Exception:  # noqa: BLE001
         allowed = set()
 
-    intent = str(getattr(intent_selected, "value", intent_selected) or "").strip().upper()
+    intent = (
+        str(getattr(intent_selected, "value", intent_selected) or "").strip().upper()
+    )
     ap = answer_policy
 
     if ap is None:
@@ -311,8 +430,12 @@ def validate_engineering_answer_json_policy(
         details = {
             "ok": True,
             "intent_selected": intent,
-            "requirements_bullet_count": int(len(req_items or [])) if isinstance(req_items, list) else 0,
-            "audit_evidence_bullet_count": int(len(audit_items or [])) if isinstance(audit_items, list) else 0,
+            "requirements_bullet_count": int(len(req_items or []))
+            if isinstance(req_items, list)
+            else 0,
+            "audit_evidence_bullet_count": int(len(audit_items or []))
+            if isinstance(audit_items, list)
+            else 0,
             "policy_min_section3_bullets": None,
             "policy_include_audit_evidence": False,
             "errors": [],
@@ -356,11 +479,21 @@ def validate_engineering_answer_json_policy(
         for i, item in enumerate(arr):
             cit = item.get("citations")
             if not isinstance(cit, list) or not cit:
-                errors.append({"code": "missing_citations", "path": f"{path_prefix}[{i}].citations"})
+                errors.append(
+                    {
+                        "code": "missing_citations",
+                        "path": f"{path_prefix}[{i}].citations",
+                    }
+                )
                 continue
             bad_type = [v for v in cit if not isinstance(v, int)]
             if bad_type:
-                errors.append({"code": "citations_not_int", "path": f"{path_prefix}[{i}].citations"})
+                errors.append(
+                    {
+                        "code": "citations_not_int",
+                        "path": f"{path_prefix}[{i}].citations",
+                    }
+                )
                 continue
             out_of_range = sorted({int(v) for v in cit if int(v) not in allowed})
             if out_of_range:
@@ -394,7 +527,13 @@ def validate_engineering_answer_json_policy(
 
     if include_audit:
         if audit_count < 3:
-            errors.append({"code": "min_audit_evidence_bullets_not_met", "have": audit_count, "need": 3})
+            errors.append(
+                {
+                    "code": "min_audit_evidence_bullets_not_met",
+                    "have": audit_count,
+                    "need": 3,
+                }
+            )
 
     ok = len(errors) == 0
     details = {
@@ -402,7 +541,9 @@ def validate_engineering_answer_json_policy(
         "intent_selected": intent,
         "requirements_bullet_count": req_count,
         "audit_evidence_bullet_count": audit_count,
-        "policy_min_section3_bullets": (int(min_req) if isinstance(min_req, int) else min_req),
+        "policy_min_section3_bullets": (
+            int(min_req) if isinstance(min_req, int) else min_req
+        ),
         "policy_include_audit_evidence": bool(include_audit),
         "errors": errors,
     }
@@ -422,7 +563,9 @@ def render_engineering_answer_text(obj: dict[str, Any]) -> str:
     cls = obj.get("classification") or {}
     status = str((cls or {}).get("status") or "").strip()
     text = str((cls or {}).get("text") or "").strip()
-    cls_line = f"- {status}: {text}{_fmt_citations((cls or {}).get('citations'))}".rstrip()
+    cls_line = (
+        f"- {status}: {text}{_fmt_citations((cls or {}).get('citations'))}".rstrip()
+    )
 
     lines: list[str] = []
     lines.append("1. Klassifikation og betingelser")
@@ -433,7 +576,9 @@ def render_engineering_answer_text(obj: dict[str, Any]) -> str:
     for item in obj.get("obligations") or []:
         title = str((item or {}).get("title") or "").strip()
         txt = str((item or {}).get("text") or "").strip()
-        lines.append(f"- {title}: {txt}{_fmt_citations((item or {}).get('citations'))}".rstrip())
+        lines.append(
+            f"- {title}: {txt}{_fmt_citations((item or {}).get('citations'))}".rstrip()
+        )
     lines.append("")
 
     lines.append("3. Konkrete systemkrav")
@@ -447,10 +592,14 @@ def render_engineering_answer_text(obj: dict[str, Any]) -> str:
         if "level" in item:
             level = str((item or {}).get("level") or "").strip()
             txt = str((item or {}).get("text") or "").strip()
-            lines.append(f"- {level}: {txt}{_fmt_citations((item or {}).get('citations'))}".rstrip())
+            lines.append(
+                f"- {level}: {txt}{_fmt_citations((item or {}).get('citations'))}".rstrip()
+            )
         else:
             txt = str((item or {}).get("text") or "").strip()
-            lines.append(f"- {txt}{_fmt_citations((item or {}).get('citations'))}".rstrip())
+            lines.append(
+                f"- {txt}{_fmt_citations((item or {}).get('citations'))}".rstrip()
+            )
 
     audit = obj.get("audit_evidence_bullets")
     if isinstance(audit, list) and audit:
@@ -458,7 +607,9 @@ def render_engineering_answer_text(obj: dict[str, Any]) -> str:
         lines.append("Minimum ved tilsyn (evidens/artefakter)")
         for item in audit:
             txt = str((item or {}).get("text") or "").strip()
-            lines.append(f"- {txt}{_fmt_citations((item or {}).get('citations'))}".rstrip())
+            lines.append(
+                f"- {txt}{_fmt_citations((item or {}).get('citations'))}".rstrip()
+            )
     lines.append("")
 
     lines.append("4. Åbne spørgsmål / risici")
@@ -466,7 +617,9 @@ def render_engineering_answer_text(obj: dict[str, Any]) -> str:
         q = str((item or {}).get("question") or "").strip()
         why = str((item or {}).get("why") or "").strip()
         joiner = " — " if why else ""
-        lines.append(f"- {q}{joiner}{why}{_fmt_citations((item or {}).get('citations'))}".rstrip())
+        lines.append(
+            f"- {q}{joiner}{why}{_fmt_citations((item or {}).get('citations'))}".rstrip()
+        )
 
     return "\n".join(lines).strip() + "\n"
 

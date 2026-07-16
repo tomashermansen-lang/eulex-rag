@@ -5,7 +5,6 @@ Tests context-aware intent classification for multi-turn conversations.
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import patch, MagicMock
 
 from src.engine.conversation import (
@@ -15,7 +14,6 @@ from src.engine.conversation import (
     SHORT_QUERY_THRESHOLD,
 )
 from src.engine.intent_router import (
-    _ROUTER_PROMPT,
     _ROUTER_PROMPT_WITH_CONTEXT,
     _INTENT_ROUTER_CACHE,
     _call_router_llm,
@@ -104,13 +102,20 @@ class TestNeedsContextAugmentation:
 
     def test_false_when_rewritten_differs_and_long(self):
         original = "hvad med stk. 4?"
-        rewritten = "Hvad siger artikel 5, stk. 4 i AI-forordningen om forbudte praksisser?"
+        rewritten = (
+            "Hvad siger artikel 5, stk. 4 i AI-forordningen om forbudte praksisser?"
+        )
         assert len(rewritten) >= SHORT_QUERY_THRESHOLD
         assert needs_context_augmentation(original, rewritten) is False
 
     def test_false_when_original_is_none(self):
         """First turn: original_query is None, no augmentation needed."""
-        assert needs_context_augmentation(None, "Any question here that is long enough to pass") is False
+        assert (
+            needs_context_augmentation(
+                None, "Any question here that is long enough to pass"
+            )
+            is False
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -257,7 +262,9 @@ class TestDisambiguateIntentWithContext:
             HistoryMessage("user", "Previous question"),
             HistoryMessage("assistant", "Previous answer"),
         ]
-        long_query = "Hvad siger artikel 5, stk. 4 i AI-forordningen om forbudte praksisser?"
+        long_query = (
+            "Hvad siger artikel 5, stk. 4 i AI-forordningen om forbudte praksisser?"
+        )
         intent, debug = disambiguate_intent(
             long_query,
             ClaimIntent.REQUIREMENTS,
@@ -293,7 +300,9 @@ class TestDisambiguateIntentWithContext:
         assert debug["context_augmented"] is False
 
     @patch("src.engine.intent_router._call_router_llm")
-    def test_general_follow_up_with_user_system_context_overrides_to_classification(self, mock_llm):
+    def test_general_follow_up_with_user_system_context_overrides_to_classification(
+        self, mock_llm
+    ):
         """GENERAL follow-up where router detects user_system should override to CLASSIFICATION."""
         mock_llm.return_value = "USER_SYSTEM"
         exchange = [
@@ -344,9 +353,12 @@ class TestPolicyThreadsContext:
     def setup_method(self):
         _INTENT_ROUTER_CACHE.clear()
 
-    @patch("src.engine.policy.disambiguate_intent")
+    @patch("src.engine.intent_router.disambiguate_intent")
     def test_passes_last_exchange_to_disambiguate(self, mock_disambiguate):
-        mock_disambiguate.return_value = (ClaimIntent.SCOPE, {"context_augmented": True})
+        mock_disambiguate.return_value = (
+            ClaimIntent.SCOPE,
+            {"context_augmented": True},
+        )
         exchange = [
             HistoryMessage("user", "Er min chatbot højrisiko?"),
             HistoryMessage("assistant", "Det afhænger af systemets formål."),
@@ -361,9 +373,12 @@ class TestPolicyThreadsContext:
         assert call_kwargs["last_exchange"] is exchange
         assert call_kwargs["query_was_rewritten"] is False
 
-    @patch("src.engine.policy.disambiguate_intent")
+    @patch("src.engine.intent_router.disambiguate_intent")
     def test_passes_query_was_rewritten_true(self, mock_disambiguate):
-        mock_disambiguate.return_value = (ClaimIntent.GENERAL, {"context_augmented": False})
+        mock_disambiguate.return_value = (
+            ClaimIntent.GENERAL,
+            {"context_augmented": False},
+        )
         classify_question_intent_with_router(
             "long rewritten question about article 5 stk 4",
             enable_router=True,
@@ -373,9 +388,12 @@ class TestPolicyThreadsContext:
         assert call_kwargs["query_was_rewritten"] is True
         assert call_kwargs["last_exchange"] is None
 
-    @patch("src.engine.policy.disambiguate_intent")
+    @patch("src.engine.intent_router.disambiguate_intent")
     def test_defaults_to_no_context(self, mock_disambiguate):
-        mock_disambiguate.return_value = (ClaimIntent.GENERAL, {"context_augmented": False})
+        mock_disambiguate.return_value = (
+            ClaimIntent.GENERAL,
+            {"context_augmented": False},
+        )
         classify_question_intent_with_router(
             "What is Article 6?",
             enable_router=True,
@@ -524,7 +542,9 @@ class TestRewriterPreservesLawName:
         mock_llm.return_value = "Hvad siger stk. 4 i artikel 5 i AI-forordningen?"
         history = [
             HistoryMessage("user", "Hvad siger artikel 5 i AI-forordningen?"),
-            HistoryMessage("assistant", "AI-forordningen artikel 5 handler om forbudte praksisser."),
+            HistoryMessage(
+                "assistant", "AI-forordningen artikel 5 handler om forbudte praksisser."
+            ),
         ]
         rewrite_query_for_retrieval("hvad med stk 4?", history)
 

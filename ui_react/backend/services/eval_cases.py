@@ -16,33 +16,39 @@ import yaml
 # Custom exceptions
 class ValidationError(Exception):
     """Raised when case data fails validation."""
+
     pass
 
 
 class NotFoundError(Exception):
     """Raised when a case is not found."""
+
     pass
 
 
 # Valid test types
-VALID_TEST_TYPES = frozenset([
-    "retrieval",
-    "faithfulness",
-    "relevancy",
-    "abstention",
-    "robustness",
-    "multi_hop",
-])
+VALID_TEST_TYPES = frozenset(
+    [
+        "retrieval",
+        "faithfulness",
+        "relevancy",
+        "abstention",
+        "robustness",
+        "multi_hop",
+    ]
+)
 
 # Valid anchor prefixes
-VALID_ANCHOR_PREFIXES = frozenset([
-    "article",
-    "section",
-    "annex",
-    "recital",
-    "paragraph",
-    "chapter",
-])
+VALID_ANCHOR_PREFIXES = frozenset(
+    [
+        "article",
+        "section",
+        "annex",
+        "recital",
+        "paragraph",
+        "chapter",
+    ]
+)
 
 
 def _get_evals_dir() -> Path:
@@ -234,7 +240,9 @@ def _validate_case_data(data: dict[str, Any], is_create: bool = True) -> None:
 
         for tt in test_types:
             if tt not in VALID_TEST_TYPES:
-                raise ValidationError(f"Invalid test_type: {tt}. Must be one of: {', '.join(sorted(VALID_TEST_TYPES))}")
+                raise ValidationError(
+                    f"Invalid test_type: {tt}. Must be one of: {', '.join(sorted(VALID_TEST_TYPES))}"
+                )
 
     # Validate anchors in expected
     if "expected" in data and isinstance(data["expected"], dict):
@@ -339,7 +347,9 @@ def _normalize_expected(expected: dict[str, Any]) -> dict[str, Any]:
         "max_citations": expected.get("max_citations"),
         "behavior": expected.get("behavior", "answer"),
         "allow_empty_references": expected.get("allow_empty_references", False),
-        "must_have_article_support_for_normative": expected.get("must_have_article_support_for_normative", True),
+        "must_have_article_support_for_normative": expected.get(
+            "must_have_article_support_for_normative", True
+        ),
         "notes": expected.get("notes", ""),
     }
 

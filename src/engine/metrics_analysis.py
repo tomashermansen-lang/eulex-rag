@@ -52,8 +52,9 @@ def _build_analysis_prompt(snapshot: dict[str, Any]) -> str:
             f"  - {l['law']}: {l['pass_rate']}% ({l['passed']}/{l['total']})"
             for l in sorted(per_law, key=lambda x: x["pass_rate"])
         ]
-        sections.append("Bestået-rate per lov (sorteret, laveste først):\n"
-                         + "\n".join(law_lines))
+        sections.append(
+            "Bestået-rate per lov (sorteret, laveste først):\n" + "\n".join(law_lines)
+        )
 
     # ── Quality: per-mode ──
     per_mode = snapshot.get("per_mode", [])

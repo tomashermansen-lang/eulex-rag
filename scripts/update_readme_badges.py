@@ -9,6 +9,7 @@ Run manually or after eval:
     python scripts/update_readme_badges.py
     python scripts/update_readme_badges.py --with-coverage   # slower: runs pytest --cov
 """
+
 from __future__ import annotations
 
 import json
@@ -23,18 +24,28 @@ import yaml
 # ---------------------------------------------------------------------------
 # Cost constants (per-case, derived from OpenAI Standard tier Feb 2025)
 # ---------------------------------------------------------------------------
-COST_MINI_PER_CASE = 1.30 / 226    # ~$0.00575 per case
-COST_GPT5_PER_CASE = 5.30 / 226    # ~$0.02345 per case
+COST_MINI_PER_CASE = 1.30 / 226  # ~$0.00575 per case
+COST_GPT5_PER_CASE = 5.30 / 226  # ~$0.02345 per case
 
 
 # ── Collectors ─────────────────────────────────────────────────────────────
+
 
 def get_backend_test_count(project_root: Path) -> int | None:
     """Fast: pytest --collect-only (~0.3 s)."""
     try:
         result = subprocess.run(
-            [str(project_root / ".venv" / "bin" / "python"), "-m", "pytest", "--collect-only", "-q"],
-            capture_output=True, text=True, cwd=project_root, timeout=30,
+            [
+                str(project_root / ".venv" / "bin" / "python"),
+                "-m",
+                "pytest",
+                "--collect-only",
+                "-q",
+            ],
+            capture_output=True,
+            text=True,
+            cwd=project_root,
+            timeout=30,
         )
         for line in result.stdout.strip().splitlines():
             m = re.match(r"(\d+)\s+tests? collected", line)
@@ -53,8 +64,14 @@ def get_frontend_test_count(project_root: Path) -> int | None:
     try:
         result = subprocess.run(
             ["npx", "vitest", "--run"],
-            capture_output=True, text=True, cwd=frontend, timeout=60,
-            env={**__import__("os").environ, "PATH": f"/opt/homebrew/bin:{__import__('os').environ.get('PATH', '')}"},
+            capture_output=True,
+            text=True,
+            cwd=frontend,
+            timeout=60,
+            env={
+                **__import__("os").environ,
+                "PATH": f"/opt/homebrew/bin:{__import__('os').environ.get('PATH', '')}",
+            },
         )
         for line in result.stdout.splitlines():
             m = re.search(r"Tests\s+(\d+)\s+passed", line)
@@ -72,14 +89,20 @@ def get_coverage(project_root: Path, run_fresh: bool = False) -> float | None:
     if run_fresh:
         subprocess.run(
             [python, "-m", "pytest", "--cov=src", "--cov-report=term", "-q"],
-            capture_output=True, text=True, cwd=project_root, timeout=120,
+            capture_output=True,
+            text=True,
+            cwd=project_root,
+            timeout=120,
         )
 
     # Try reading existing .coverage via coverage report
     try:
         result = subprocess.run(
             [python, "-m", "coverage", "report", "--format=total"],
-            capture_output=True, text=True, cwd=project_root, timeout=10,
+            capture_output=True,
+            text=True,
+            cwd=project_root,
+            timeout=10,
         )
         val = result.stdout.strip()
         if val and val.replace(".", "").isdigit():
@@ -91,7 +114,10 @@ def get_coverage(project_root: Path, run_fresh: bool = False) -> float | None:
     try:
         result = subprocess.run(
             [python, "-m", "coverage", "report"],
-            capture_output=True, text=True, cwd=project_root, timeout=10,
+            capture_output=True,
+            text=True,
+            cwd=project_root,
+            timeout=10,
         )
         for line in result.stdout.splitlines():
             m = re.search(r"TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%", line)
@@ -184,7 +210,8 @@ def get_eval_thresholds(config_path: Path) -> tuple[float, float]:
 
 
 def get_latest_eval_results(
-    runs_dir: Path, expected_corpora: set[str],
+    runs_dir: Path,
+    expected_corpora: set[str],
 ) -> tuple[dict[str, dict], str | None]:
     """Read latest eval results from runs/eval_{law}.json files."""
     if not runs_dir.exists():
@@ -208,8 +235,10 @@ def get_latest_eval_results(
         escalated = sum(1 for r in results if r.get("escalated"))
         esc_passed = sum(1 for r in results if r.get("escalated") and r.get("passed"))
         latest[law] = {
-            "passed": passed, "total": total,
-            "escalated": escalated, "esc_passed": esc_passed,
+            "passed": passed,
+            "total": total,
+            "escalated": escalated,
+            "esc_passed": esc_passed,
             "timestamp": data.get("meta", {}).get("timestamp"),
         }
         ts = data.get("meta", {}).get("timestamp")
@@ -220,10 +249,11 @@ def get_latest_eval_results(
 
 # ── README patcher ─────────────────────────────────────────────────────────
 
+
 def _re_badge(label: str) -> str:
     """Build regex to match a shields.io badge by alt text."""
     esc = re.escape(label)
-    return rf'!\[{esc}\]\(https://img\.shields\.io/badge/[^)]+\)'
+    return rf"!\[{esc}\]\(https://img\.shields\.io/badge/[^)]+\)"
 
 
 def update_readme(  # noqa: C901
@@ -298,38 +328,38 @@ def update_readme(  # noqa: C901
     # ── Technical Highlights table ─────────────────────────────────────
     if total_tests and backend_tests and frontend_tests:
         content = re.sub(
-            r'\| \*\*Automated tests\*\* \| .+? \| .+? \|',
-            f'| **Automated tests** | {total_tests:,} passed '
-            f'| {backend_tests:,} backend (pytest) + {frontend_tests:,} frontend (vitest) |',
+            r"\| \*\*Automated tests\*\* \| .+? \| .+? \|",
+            f"| **Automated tests** | {total_tests:,} passed "
+            f"| {backend_tests:,} backend (pytest) + {frontend_tests:,} frontend (vitest) |",
             content,
         )
 
     if coverage_pct is not None:
         cov_int = round(coverage_pct)
         content = re.sub(
-            r'\| \*\*Test coverage\*\* \| \d+% \|',
-            f'| **Test coverage** | {cov_int}% |',
+            r"\| \*\*Test coverage\*\* \| \d+% \|",
+            f"| **Test coverage** | {cov_int}% |",
             content,
         )
 
     if total_eval_cases:
         content = re.sub(
-            r'(\| \*\*Golden eval cases\*\* \| )\d+( \|)',
-            rf'\g<1>{total_eval_cases}\2',
+            r"(\| \*\*Golden eval cases\*\* \| )\d+( \|)",
+            rf"\g<1>{total_eval_cases}\2",
             content,
         )
 
     if corpus_count:
         content = re.sub(
-            r'(Full pipeline tests across )\d+( EU regulations)',
-            rf'\g<1>{corpus_count}\2',
+            r"(Full pipeline tests across )\d+( EU regulations)",
+            rf"\g<1>{corpus_count}\2",
             content,
         )
 
     if engine_modules:
         content = re.sub(
-            r'(\| \*\*Engine modules\*\* \| )\d+( Python files)',
-            rf'\g<1>{engine_modules}\2',
+            r"(\| \*\*Engine modules\*\* \| )\d+( Python files)",
+            rf"\g<1>{engine_modules}\2",
             content,
         )
 
@@ -341,16 +371,16 @@ def update_readme(  # noqa: C901
             rate = tp / tt * 100
             rate_str = "100%" if rate == 100 else f"{rate:.1f}%"
             content = re.sub(
-                r'(\| \*\*Eval pass rate\*\* \| )[\d.]+%( \|)',
-                rf'\g<1>{rate_str}\2',
+                r"(\| \*\*Eval pass rate\*\* \| )[\d.]+%( \|)",
+                rf"\g<1>{rate_str}\2",
                 content,
             )
 
     # ── Supported Legislation heading ──────────────────────────────────
     if corpus_count:
         content = re.sub(
-            r'\*\*\d+ EU laws currently indexed:\*\*',
-            f'**{corpus_count} EU laws currently indexed:**',
+            r"\*\*\d+ EU laws currently indexed:\*\*",
+            f"**{corpus_count} EU laws currently indexed:**",
             content,
         )
 
@@ -358,23 +388,23 @@ def update_readme(  # noqa: C901
     if total_eval_cases and corpus_count:
         # "XXX eval cases across XX EU regulations" (in "Why I Built This")
         content = re.sub(
-            r'(\d+) eval cases across (\d+) EU regulations',
-            f'{total_eval_cases} eval cases across {corpus_count} EU regulations',
+            r"(\d+) eval cases across (\d+) EU regulations",
+            f"{total_eval_cases} eval cases across {corpus_count} EU regulations",
             content,
         )
     if total_eval_cases:
         # "XXX golden eval cases" (in "What I Learned")
         content = re.sub(
-            r'\d+ golden eval cases',
-            f'{total_eval_cases} golden eval cases',
+            r"\d+ golden eval cases",
+            f"{total_eval_cases} golden eval cases",
             content,
         )
 
     # ── Mermaid diagram ────────────────────────────────────────────────
     if total_eval_cases:
         content = re.sub(
-            r'CASES\[\d+ cases\]',
-            f'CASES[{total_eval_cases} cases]',
+            r"CASES\[\d+ cases\]",
+            f"CASES[{total_eval_cases} cases]",
             content,
         )
 
@@ -388,14 +418,14 @@ def update_readme(  # noqa: C901
 
         # Table row: | Full eval suite (XXX cases) | ~$X.XX | ~$X.XX |
         content = re.sub(
-            r'\| Full eval suite \(\d+ cases\) \| ~\$[\d.]+ \| ~\$[\d.]+ \|',
-            f'| Full eval suite ({total_eval_cases} cases) | {mini_str} | {gpt5_str} |',
+            r"\| Full eval suite \(\d+ cases\) \| ~\$[\d.]+ \| ~\$[\d.]+ \|",
+            f"| Full eval suite ({total_eval_cases} cases) | {mini_str} | {gpt5_str} |",
             content,
         )
         # Inline: "~$X.XX per full eval run"
         content = re.sub(
-            r'~\$[\d.]+ per full eval run',
-            f'{mini_str} per full eval run',
+            r"~\$[\d.]+ per full eval run",
+            f"{mini_str} per full eval run",
             content,
         )
 
@@ -406,6 +436,7 @@ def update_readme(  # noqa: C901
 
 
 # ── Main ───────────────────────────────────────────────────────────────────
+
 
 def main() -> int:
     project_root = Path(__file__).parent.parent
@@ -434,7 +465,9 @@ def main() -> int:
     print(f"  Backend tests:  {backend or 'N/A'}")
     print(f"  Frontend tests: {frontend or 'N/A'}")
     print(f"  Total tests:    {total_tests or 'N/A'}")
-    print(f"  Coverage:       {f'{coverage:.0f}%' if coverage else 'N/A (use --with-coverage)'}")
+    print(
+        f"  Coverage:       {f'{coverage:.0f}%' if coverage else 'N/A (use --with-coverage)'}"
+    )
     print(f"  Golden evals:   {total_evals}")
     print(f"  Corpora (laws): {corpus_count}")
     print(f"  Engine modules: {modules}")

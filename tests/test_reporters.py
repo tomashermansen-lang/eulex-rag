@@ -5,7 +5,6 @@ import json
 import tempfile
 from pathlib import Path
 
-import pytest
 
 from src.eval.reporters import (
     CaseResult,
@@ -105,7 +104,9 @@ class TestPipelineStageStats:
                 case_id="case2",
                 profile="LEGAL",
                 passed=False,
-                scores={"anchor_presence": Score(passed=False, score=0.0, message="fail")},
+                scores={
+                    "anchor_presence": Score(passed=False, score=0.0, message="fail")
+                },
                 duration_ms=100,
             ),
         ]
@@ -120,7 +121,9 @@ class TestPipelineStageStats:
                 case_id="case1",
                 profile="ENGINEERING",
                 passed=True,
-                scores={"contract_compliance": Score(passed=True, score=1.0, message="ok")},
+                scores={
+                    "contract_compliance": Score(passed=True, score=1.0, message="ok")
+                },
                 duration_ms=100,
             ),
         ]
@@ -157,8 +160,22 @@ class TestEvalSummary:
     def test_passed_primary_no_escalations(self):
         """passed_primary counts non-escalated passes."""
         results = [
-            CaseResult(case_id="case1", profile="LEGAL", passed=True, scores={}, duration_ms=100, escalated=False),
-            CaseResult(case_id="case2", profile="LEGAL", passed=True, scores={}, duration_ms=100, escalated=False),
+            CaseResult(
+                case_id="case1",
+                profile="LEGAL",
+                passed=True,
+                scores={},
+                duration_ms=100,
+                escalated=False,
+            ),
+            CaseResult(
+                case_id="case2",
+                profile="LEGAL",
+                passed=True,
+                scores={},
+                duration_ms=100,
+                escalated=False,
+            ),
         ]
         summary = EvalSummary(
             law="ai-act",
@@ -174,8 +191,22 @@ class TestEvalSummary:
     def test_passed_escalated_counts_escalated_passes(self):
         """passed_escalated counts escalated passes only."""
         results = [
-            CaseResult(case_id="case1", profile="LEGAL", passed=True, scores={}, duration_ms=100, escalated=False),
-            CaseResult(case_id="case2", profile="LEGAL", passed=True, scores={}, duration_ms=100, escalated=True),
+            CaseResult(
+                case_id="case1",
+                profile="LEGAL",
+                passed=True,
+                scores={},
+                duration_ms=100,
+                escalated=False,
+            ),
+            CaseResult(
+                case_id="case2",
+                profile="LEGAL",
+                passed=True,
+                scores={},
+                duration_ms=100,
+                escalated=True,
+            ),
         ]
         summary = EvalSummary(
             law="ai-act",
@@ -306,7 +337,11 @@ class TestFailureReporter:
             case_id="test_case",
             profile="LEGAL",
             passed=False,
-            scores={"anchor_presence": Score(passed=False, score=0.5, message="missing article 6")},
+            scores={
+                "anchor_presence": Score(
+                    passed=False, score=0.5, message="missing article 6"
+                )
+            },
             duration_ms=100,
         )
         reporter.report_failure(result)
@@ -334,14 +369,22 @@ class TestFailureReporter:
                 case_id="case1",
                 profile="LEGAL",
                 passed=False,
-                scores={"anchor_presence": Score(passed=False, score=0.0, message="missing article")},
+                scores={
+                    "anchor_presence": Score(
+                        passed=False, score=0.0, message="missing article"
+                    )
+                },
                 duration_ms=100,
             ),
             CaseResult(
                 case_id="case2",
                 profile="ENGINEERING",
                 passed=False,
-                scores={"error": Score(passed=False, score=0.0, message="connection timeout")},
+                scores={
+                    "error": Score(
+                        passed=False, score=0.0, message="connection timeout"
+                    )
+                },
                 duration_ms=100,
             ),
         ]
@@ -436,7 +479,9 @@ class TestJsonReporter:
                     case_id="case1",
                     profile="LEGAL",
                     passed=True,
-                    scores={"anchor_presence": Score(passed=True, score=1.0, message="ok")},
+                    scores={
+                        "anchor_presence": Score(passed=True, score=1.0, message="ok")
+                    },
                     duration_ms=100,
                 ),
             ]
@@ -559,11 +604,11 @@ class TestProgressionTracker:
                     law="ai-act",
                     total=10,
                     passed=i,
-                    failed=10-i,
+                    failed=10 - i,
                     skipped=0,
                     duration_seconds=1.0,
                     results=[],
-                    timestamp=f"2026-02-0{i+1}T10:00:00Z",
+                    timestamp=f"2026-02-0{i + 1}T10:00:00Z",
                 )
                 tracker.record(summary)
 
@@ -605,7 +650,7 @@ class TestProgressionTracker:
                     law="ai-act",
                     total=10,
                     passed=i,
-                    failed=10-i,
+                    failed=10 - i,
                     skipped=0,
                     duration_seconds=1.0,
                     results=[],

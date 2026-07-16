@@ -11,10 +11,8 @@ Covers:
 """
 
 import asyncio
-import re
-import time
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -1059,14 +1057,18 @@ class TestCallLlmUsesSingleton:
         }
 
         mock_client = MagicMock()
-        mock_client.chat.completions.create.return_value = self._make_mock_response("ok")
+        mock_client.chat.completions.create.return_value = self._make_mock_response(
+            "ok"
+        )
         creation_count = [0]
 
         def mock_openai(*args, **kwargs):
             creation_count[0] += 1
             return mock_client
 
-        monkeypatch.setattr("src.common.config_loader.get_settings_yaml", lambda: mock_settings)
+        monkeypatch.setattr(
+            "src.common.config_loader.get_settings_yaml", lambda: mock_settings
+        )
         monkeypatch.setattr("src.engine.llm_client.OpenAI", mock_openai)
 
         call_llm("First call")
@@ -1089,7 +1091,9 @@ class TestCallLlmUsesSingleton:
             creation_count[0] += 1
             return mock_client
 
-        monkeypatch.setattr("src.common.config_loader.get_settings_yaml", lambda: mock_settings)
+        monkeypatch.setattr(
+            "src.common.config_loader.get_settings_yaml", lambda: mock_settings
+        )
         monkeypatch.setattr("src.engine.llm_client.OpenAI", mock_openai)
 
         list(call_llm_stream("First call"))
@@ -1125,8 +1129,12 @@ class TestCallLlmAsync:
             return_value=self._make_mock_async_response("Async response")
         )
 
-        monkeypatch.setattr("src.common.config_loader.get_settings_yaml", lambda: mock_settings)
-        monkeypatch.setattr("src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client))
+        monkeypatch.setattr(
+            "src.common.config_loader.get_settings_yaml", lambda: mock_settings
+        )
+        monkeypatch.setattr(
+            "src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client)
+        )
 
         result = asyncio.run(call_llm_async("Test prompt"))
 
@@ -1148,8 +1156,12 @@ class TestCallLlmAsync:
             return_value=self._make_mock_async_response("Reasoning async")
         )
 
-        monkeypatch.setattr("src.common.config_loader.get_settings_yaml", lambda: mock_settings)
-        monkeypatch.setattr("src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client))
+        monkeypatch.setattr(
+            "src.common.config_loader.get_settings_yaml", lambda: mock_settings
+        )
+        monkeypatch.setattr(
+            "src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client)
+        )
 
         result = asyncio.run(call_llm_async("Test prompt"))
 
@@ -1183,8 +1195,12 @@ class TestCallLlmAsync:
 
         mock_client.chat.completions.create = mock_create
 
-        monkeypatch.setattr("src.common.config_loader.get_settings_yaml", lambda: mock_settings)
-        monkeypatch.setattr("src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client))
+        monkeypatch.setattr(
+            "src.common.config_loader.get_settings_yaml", lambda: mock_settings
+        )
+        monkeypatch.setattr(
+            "src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client)
+        )
         monkeypatch.setattr("src.engine.llm_client.asyncio.sleep", AsyncMock())
 
         result = asyncio.run(call_llm_async("Test"))
@@ -1226,8 +1242,12 @@ class TestCallLlmStreamAsync:
         mock_client = MagicMock()
         mock_client.chat.completions.create = AsyncMock(return_value=mock_stream())
 
-        monkeypatch.setattr("src.common.config_loader.get_settings_yaml", lambda: mock_settings)
-        monkeypatch.setattr("src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client))
+        monkeypatch.setattr(
+            "src.common.config_loader.get_settings_yaml", lambda: mock_settings
+        )
+        monkeypatch.setattr(
+            "src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client)
+        )
 
         async def collect():
             result = []
@@ -1239,7 +1259,9 @@ class TestCallLlmStreamAsync:
 
         assert result == ["Hello ", "async"]
 
-    def test_stream_async_retries_streaming_without_reasoning_on_typeerror(self, monkeypatch):
+    def test_stream_async_retries_streaming_without_reasoning_on_typeerror(
+        self, monkeypatch
+    ):
         """call_llm_stream_async retries with stream=True (no reasoning) on TypeError."""
         mock_settings = {
             "openai": {"chat_model": "gpt-5", "temperature": 0.5},
@@ -1274,8 +1296,12 @@ class TestCallLlmStreamAsync:
         mock_client = MagicMock()
         mock_client.chat.completions.create = mock_create
 
-        monkeypatch.setattr("src.common.config_loader.get_settings_yaml", lambda: mock_settings)
-        monkeypatch.setattr("src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client))
+        monkeypatch.setattr(
+            "src.common.config_loader.get_settings_yaml", lambda: mock_settings
+        )
+        monkeypatch.setattr(
+            "src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client)
+        )
 
         async def collect():
             result = []
@@ -1293,7 +1319,9 @@ class TestCallLlmStreamAsync:
         assert "reasoning" not in call_log[1]
         assert call_log[1]["stream"] is True
 
-    def test_stream_async_falls_back_to_nonstreaming_on_double_typeerror(self, monkeypatch):
+    def test_stream_async_falls_back_to_nonstreaming_on_double_typeerror(
+        self, monkeypatch
+    ):
         """Falls back to non-streaming when streaming retry also raises TypeError."""
         mock_settings = {
             "openai": {"chat_model": "gpt-5", "temperature": 0.5},
@@ -1311,14 +1339,20 @@ class TestCallLlmStreamAsync:
                 raise TypeError("stream not supported")
             # Non-streaming fallback
             return SimpleNamespace(
-                choices=[SimpleNamespace(message=SimpleNamespace(content="Non-streamed"))]
+                choices=[
+                    SimpleNamespace(message=SimpleNamespace(content="Non-streamed"))
+                ]
             )
 
         mock_client = MagicMock()
         mock_client.chat.completions.create = mock_create
 
-        monkeypatch.setattr("src.common.config_loader.get_settings_yaml", lambda: mock_settings)
-        monkeypatch.setattr("src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client))
+        monkeypatch.setattr(
+            "src.common.config_loader.get_settings_yaml", lambda: mock_settings
+        )
+        monkeypatch.setattr(
+            "src.engine.llm_client.AsyncOpenAI", MagicMock(return_value=mock_client)
+        )
 
         async def collect():
             result = []

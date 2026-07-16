@@ -138,7 +138,9 @@ class TestSuiteCRUD:
     def test_api_003_get_suite_returns_specific(self, client, sample_suite_request):
         """GET /suites/{id} should return specific suite."""
         # Create suite
-        create_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        create_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = create_resp.json()["id"]
 
         response = client.get(f"/api/eval/cross-law/suites/{suite_id}")
@@ -157,7 +159,9 @@ class TestSuiteCRUD:
     def test_api_004_put_suite_updates(self, client, sample_suite_request):
         """PUT /suites/{id} should update suite."""
         # Create suite
-        create_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        create_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = create_resp.json()["id"]
 
         # Update
@@ -171,7 +175,9 @@ class TestSuiteCRUD:
     def test_api_005_delete_suite_removes(self, client, sample_suite_request):
         """DELETE /suites/{id} should remove suite."""
         # Create suite
-        create_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        create_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = create_resp.json()["id"]
 
         # Delete
@@ -187,10 +193,14 @@ class TestSuiteCRUD:
 class TestCaseCRUD:
     """Tests for case CRUD operations."""
 
-    def test_api_006_post_cases_adds_case(self, client, sample_suite_request, sample_case_request):
+    def test_api_006_post_cases_adds_case(
+        self, client, sample_suite_request, sample_case_request
+    ):
         """POST /suites/{id}/cases should add case."""
         # Create suite
-        create_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        create_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = create_resp.json()["id"]
 
         # Add case
@@ -204,10 +214,14 @@ class TestCaseCRUD:
         assert data["prompt"] == sample_case_request["prompt"]
         assert data["id"] is not None
 
-    def test_api_007_put_case_updates(self, client, sample_suite_request, sample_case_request):
+    def test_api_007_put_case_updates(
+        self, client, sample_suite_request, sample_case_request
+    ):
         """PUT /suites/{id}/cases/{id} should update case."""
         # Create suite and case
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_resp = client.post(
@@ -226,10 +240,14 @@ class TestCaseCRUD:
         assert response.status_code == 200
         assert response.json()["prompt"] == "Updated prompt"
 
-    def test_api_008_duplicate_case_clones(self, client, sample_suite_request, sample_case_request):
+    def test_api_008_duplicate_case_clones(
+        self, client, sample_suite_request, sample_case_request
+    ):
         """POST /suites/{id}/cases/{id}/duplicate should clone case."""
         # Create suite and case
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_resp = client.post(
@@ -251,10 +269,14 @@ class TestCaseCRUD:
         suite_resp = client.get(f"/api/eval/cross-law/suites/{suite_id}")
         assert suite_resp.json()["case_count"] == 2
 
-    def test_api_009_delete_case_removes(self, client, sample_suite_request, sample_case_request):
+    def test_api_009_delete_case_removes(
+        self, client, sample_suite_request, sample_case_request
+    ):
         """DELETE /suites/{id}/cases/{id} should remove case."""
         # Create suite and case
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_resp = client.post(
@@ -292,10 +314,14 @@ class TestValidation:
         assert response.status_code == 400
         assert "unknown_law" in response.json()["detail"]
 
-    def test_api_019_comparison_single_corpus_rejected(self, client, sample_suite_request):
+    def test_api_019_comparison_single_corpus_rejected(
+        self, client, sample_suite_request
+    ):
         """Comparison mode with single corpus should return 400."""
         # Create suite
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         # Try to add comparison case with 1 corpus
@@ -323,10 +349,14 @@ class TestValidation:
 class TestYAMLImportExport:
     """Tests for YAML import/export."""
 
-    def test_export_yaml_produces_valid(self, client, sample_suite_request, sample_case_request):
+    def test_export_yaml_produces_valid(
+        self, client, sample_suite_request, sample_case_request
+    ):
         """GET /suites/{id}/export should return valid YAML."""
         # Create suite with case
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         client.post(
@@ -338,7 +368,9 @@ class TestYAMLImportExport:
         response = client.get(f"/api/eval/cross-law/suites/{suite_id}/export")
 
         assert response.status_code == 200
-        assert "yaml" in response.headers.get("content-type", "").lower() or response.text.startswith("id:")
+        assert "yaml" in response.headers.get(
+            "content-type", ""
+        ).lower() or response.text.startswith("id:")
 
     def test_import_yaml_creates_suite(self, client):
         """POST /import should create suite from YAML."""
@@ -409,7 +441,9 @@ class TestOverviewEndpoint:
     ):
         """GET /overview should include per-test-type stats."""
         # Create suite with a case
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         client.post(
@@ -435,7 +469,9 @@ class TestOriginTracking:
     ):
         """Editing an auto-generated case should flip origin to 'manual'."""
         # Create suite
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         # Add case (origin defaults to "manual")
@@ -460,7 +496,9 @@ class TestOriginTracking:
         self, client, sample_suite_request, sample_case_request
     ):
         """Manually created case should have origin 'manual'."""
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_resp = client.post(
@@ -475,7 +513,9 @@ class TestOriginTracking:
         self, client, sample_suite_request, sample_case_request
     ):
         """Origin field should be included in case responses."""
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_resp = client.post(
@@ -497,7 +537,9 @@ class TestOriginTracking:
         """Editing an auto-generated case should flip origin to 'manual'."""
         import yaml
 
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         # Find the YAML file (manager uses suite_id as filename)
@@ -555,7 +597,9 @@ class TestRunsEndpoint:
     def test_list_runs_empty_suite(self, client, sample_suite_request):
         """GET /suites/{id}/runs should return empty list for new suite."""
         # Create a suite
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         response = client.get(f"/api/eval/cross-law/suites/{suite_id}/runs")
@@ -597,7 +641,9 @@ class TestTriggerEndpoint:
     def test_trigger_eval_returns_sse_stream(self, client, sample_suite_request):
         """POST /suites/{id}/run should return SSE stream."""
         # Create a suite (empty, no cases)
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         response = client.post(
@@ -614,7 +660,7 @@ class TestTriggerEndpoint:
 # C3: Generation + AI Suggest Endpoints
 # =========================================================================
 
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch, AsyncMock
 
 
 class TestGenerateEndpoint:
@@ -631,7 +677,12 @@ class TestGenerateEndpoint:
                 synthesis_mode="comparison",
                 expected_corpora=("ai-act", "gdpr"),
                 expected_anchors=(),
-                test_types=("corpus_coverage", "retrieval", "faithfulness", "relevancy"),
+                test_types=(
+                    "corpus_coverage",
+                    "retrieval",
+                    "faithfulness",
+                    "relevancy",
+                ),
             )
             for i in range(count)
         ]
@@ -640,13 +691,16 @@ class TestGenerateEndpoint:
         """POST /generate should create new suite with generated cases."""
         mock_cases = self._mock_generated_cases(3)
 
-        with patch(
-            "routes.eval_cross_law.generate_cross_law_cases",
-            new_callable=AsyncMock,
-            return_value=mock_cases,
-        ), patch(
-            "routes.eval_cross_law.assign_test_types",
-            return_value=mock_cases,
+        with (
+            patch(
+                "routes.eval_cross_law.generate_cross_law_cases",
+                new_callable=AsyncMock,
+                return_value=mock_cases,
+            ),
+            patch(
+                "routes.eval_cross_law.assign_test_types",
+                return_value=mock_cases,
+            ),
         ):
             response = client.post(
                 "/api/eval/cross-law/generate",
@@ -666,18 +720,23 @@ class TestGenerateEndpoint:
     def test_gn_002_generate_adds_to_existing_suite(self, client, sample_suite_request):
         """POST /generate should add cases to existing suite."""
         # Create suite first
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         mock_cases = self._mock_generated_cases(2)
 
-        with patch(
-            "routes.eval_cross_law.generate_cross_law_cases",
-            new_callable=AsyncMock,
-            return_value=mock_cases,
-        ), patch(
-            "routes.eval_cross_law.assign_test_types",
-            return_value=mock_cases,
+        with (
+            patch(
+                "routes.eval_cross_law.generate_cross_law_cases",
+                new_callable=AsyncMock,
+                return_value=mock_cases,
+            ),
+            patch(
+                "routes.eval_cross_law.assign_test_types",
+                return_value=mock_cases,
+            ),
         ):
             response = client.post(
                 "/api/eval/cross-law/generate",
@@ -707,7 +766,10 @@ class TestGenerateEndpoint:
         )
 
         assert response.status_code == 400
-        assert "2" in response.json()["detail"] or "corpora" in response.json()["detail"].lower()
+        assert (
+            "2" in response.json()["detail"]
+            or "corpora" in response.json()["detail"].lower()
+        )
 
     def test_gn_004_generate_rejects_invalid_corpus_ids(self, client):
         """POST /generate should reject invalid corpus IDs."""
@@ -728,13 +790,16 @@ class TestGenerateEndpoint:
         """POST /generate should cap at 20 cases."""
         mock_cases = self._mock_generated_cases(20)
 
-        with patch(
-            "routes.eval_cross_law.generate_cross_law_cases",
-            new_callable=AsyncMock,
-            return_value=mock_cases,
-        ), patch(
-            "routes.eval_cross_law.assign_test_types",
-            return_value=mock_cases,
+        with (
+            patch(
+                "routes.eval_cross_law.generate_cross_law_cases",
+                new_callable=AsyncMock,
+                return_value=mock_cases,
+            ),
+            patch(
+                "routes.eval_cross_law.assign_test_types",
+                return_value=mock_cases,
+            ),
         ):
             response = client.post(
                 "/api/eval/cross-law/generate",
@@ -753,13 +818,16 @@ class TestGenerateEndpoint:
         """Generated cases should have origin 'auto-generated'."""
         mock_cases = self._mock_generated_cases(1)
 
-        with patch(
-            "routes.eval_cross_law.generate_cross_law_cases",
-            new_callable=AsyncMock,
-            return_value=mock_cases,
-        ), patch(
-            "routes.eval_cross_law.assign_test_types",
-            return_value=mock_cases,
+        with (
+            patch(
+                "routes.eval_cross_law.generate_cross_law_cases",
+                new_callable=AsyncMock,
+                return_value=mock_cases,
+            ),
+            patch(
+                "routes.eval_cross_law.assign_test_types",
+                return_value=mock_cases,
+            ),
         ):
             response = client.post(
                 "/api/eval/cross-law/generate",
@@ -783,13 +851,16 @@ class TestGenerateEndpoint:
         """Generated cases should have correct target_corpora."""
         mock_cases = self._mock_generated_cases(1)
 
-        with patch(
-            "routes.eval_cross_law.generate_cross_law_cases",
-            new_callable=AsyncMock,
-            return_value=mock_cases,
-        ), patch(
-            "routes.eval_cross_law.assign_test_types",
-            return_value=mock_cases,
+        with (
+            patch(
+                "routes.eval_cross_law.generate_cross_law_cases",
+                new_callable=AsyncMock,
+                return_value=mock_cases,
+            ),
+            patch(
+                "routes.eval_cross_law.assign_test_types",
+                return_value=mock_cases,
+            ),
         ):
             response = client.post(
                 "/api/eval/cross-law/generate",
@@ -896,7 +967,9 @@ class TestTriggerEvalIntegration:
             profile="LEGAL",
             passed=passed,
             scores={
-                "retrieval": Score(passed=passed, score=1.0 if passed else 0.0, message="test"),
+                "retrieval": Score(
+                    passed=passed, score=1.0 if passed else 0.0, message="test"
+                ),
             },
             duration_ms=150.0,
         )
@@ -918,9 +991,13 @@ class TestTriggerEvalIntegration:
             run_mode="retrieval_only",
         )
 
-    def _create_suite_with_case(self, client, sample_suite_request, sample_case_request):
+    def _create_suite_with_case(
+        self, client, sample_suite_request, sample_case_request
+    ):
         """Helper to create suite with a case, returns (suite_id, case_id)."""
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_resp = client.post(
@@ -953,7 +1030,8 @@ class TestTriggerEvalIntegration:
 
         assert response.status_code == 200
         events = [
-            line for line in response.text.split("\n")
+            line
+            for line in response.text.split("\n")
             if line.startswith("data: ") and line != "data: [DONE]"
         ]
         # First event should be "start"
@@ -1136,6 +1214,7 @@ class TestConvertCaseToGolden:
     def service(self, temp_evals_dir):
         """Create a CrossLawEvalService for direct method testing."""
         from routes.eval_cross_law import CrossLawEvalService
+
         return CrossLawEvalService(
             evals_dir=temp_evals_dir,
             valid_corpus_ids={"ai-act", "gdpr", "nis2"},
@@ -1144,6 +1223,7 @@ class TestConvertCaseToGolden:
     def _make_case(self, **overrides):
         """Create a CrossLawGoldenCase with sensible defaults + overrides."""
         from src.eval.cross_law_suite_manager import CrossLawGoldenCase
+
         defaults = dict(
             id="case-1",
             prompt="Compare AI Act and GDPR",
@@ -1166,11 +1246,17 @@ class TestConvertCaseToGolden:
             test_types=("corpus_coverage", "synthesis_balance", "routing_precision"),
         )
         golden = service._convert_case_to_golden(case)
-        assert golden.test_types == ("corpus_coverage", "synthesis_balance", "routing_precision")
+        assert golden.test_types == (
+            "corpus_coverage",
+            "synthesis_balance",
+            "routing_precision",
+        )
 
     def test_t2_2_falls_back_to_cross_law_test_types_when_empty(self, service):
         """T2.2: Empty test_types on cross-law case falls back to standard + cross-law scorers."""
-        case = self._make_case(test_types=())  # corpus_scope="explicit", synthesis_mode="comparison"
+        case = self._make_case(
+            test_types=()
+        )  # corpus_scope="explicit", synthesis_mode="comparison"
         golden = service._convert_case_to_golden(case)
         assert "retrieval" in golden.test_types
         assert "faithfulness" in golden.test_types
@@ -1238,10 +1324,14 @@ class TestConvertCaseToGolden:
 class TestExpandedPydanticModels:
     """Tests for expanded CaseRequest/CaseResponse models (T3.1 to T3.3, T3.6, T3.7)."""
 
-    def test_t3_1_case_request_accepts_all_new_fields(self, client, sample_suite_request):
+    def test_t3_1_case_request_accepts_all_new_fields(
+        self, client, sample_suite_request
+    ):
         """T3.1: CaseRequest should accept all new fields."""
         # Create a suite first
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_data = {
@@ -1267,12 +1357,16 @@ class TestExpandedPydanticModels:
             "notes": "Test case for transparency",
         }
 
-        response = client.post(f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data)
+        response = client.post(
+            f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data
+        )
         assert response.status_code == 201
 
     def test_t3_2_case_request_defaults_work(self, client, sample_suite_request):
         """T3.2: CaseRequest should work without new fields (backward compat)."""
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         # Only original fields — no new ones
@@ -1283,7 +1377,9 @@ class TestExpandedPydanticModels:
             "expected_corpora": ["ai-act", "gdpr"],
         }
 
-        response = client.post(f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data)
+        response = client.post(
+            f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data
+        )
         assert response.status_code == 201
         data = response.json()
         # Defaults should be applied
@@ -1292,9 +1388,13 @@ class TestExpandedPydanticModels:
         assert data["contract_check"] is False
         assert data["notes"] == ""
 
-    def test_t3_3_case_response_includes_all_new_fields(self, client, sample_suite_request):
+    def test_t3_3_case_response_includes_all_new_fields(
+        self, client, sample_suite_request
+    ):
         """T3.3: CaseResponse should include all new fields."""
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_data = {
@@ -1314,7 +1414,9 @@ class TestExpandedPydanticModels:
             "notes": "Important test",
         }
 
-        response = client.post(f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data)
+        response = client.post(
+            f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data
+        )
         assert response.status_code == 201
         data = response.json()
 
@@ -1331,7 +1433,9 @@ class TestExpandedPydanticModels:
 
     def test_t3_6_create_case_persists_new_fields(self, client, sample_suite_request):
         """T3.6: POST case should persist new fields and return them on GET."""
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         case_data = {
@@ -1344,7 +1448,9 @@ class TestExpandedPydanticModels:
             "notes": "Persistence test",
         }
 
-        create_resp = client.post(f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data)
+        create_resp = client.post(
+            f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data
+        )
         assert create_resp.status_code == 201
 
         # Fetch suite detail to verify persisted
@@ -1356,7 +1462,9 @@ class TestExpandedPydanticModels:
 
     def test_t3_7_update_case_persists_new_fields(self, client, sample_suite_request):
         """T3.7: PUT case should update new fields and persist them."""
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         # Create case with minimal fields
@@ -1366,7 +1474,9 @@ class TestExpandedPydanticModels:
             "synthesis_mode": "comparison",
             "expected_corpora": ["ai-act", "gdpr"],
         }
-        create_resp = client.post(f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data)
+        create_resp = client.post(
+            f"/api/eval/cross-law/suites/{suite_id}/cases", json=case_data
+        )
         case_id = create_resp.json()["id"]
 
         # Update with new fields
@@ -1415,7 +1525,9 @@ class TestRunSingleEndpoint:
     ):
         """T3.4: run-single should return scores + answer + references."""
         # Create suite
-        suite_resp = client.post("/api/eval/cross-law/suites", json=sample_suite_request)
+        suite_resp = client.post(
+            "/api/eval/cross-law/suites", json=sample_suite_request
+        )
         suite_id = suite_resp.json()["id"]
 
         # Mock eval internals
@@ -1427,22 +1539,31 @@ class TestRunSingleEndpoint:
             profile="LEGAL",
             passed=True,
             scores={
-                "corpus_coverage": Score(passed=True, score=1.0, message="All corpora cited"),
+                "corpus_coverage": Score(
+                    passed=True, score=1.0, message="All corpora cited"
+                ),
             },
             duration_ms=200.0,
             answer="Both AI Act and GDPR require transparency.",
             references_structured=[
-                {"display": "AI Act Art 13", "chunk_text": "text", "corpus_id": "ai-act"},
+                {
+                    "display": "AI Act Art 13",
+                    "chunk_text": "text",
+                    "corpus_id": "ai-act",
+                },
                 {"display": "GDPR Art 12", "chunk_text": "text", "corpus_id": "gdpr"},
             ],
         )
 
-        with patch(
-            "routes.eval_cross_law._evaluate_single_case",
-            return_value=mock_case_result,
-        ), patch(
-            "routes.eval_cross_law._build_engine",
-            return_value="mock_engine",
+        with (
+            patch(
+                "routes.eval_cross_law._evaluate_single_case",
+                return_value=mock_case_result,
+            ),
+            patch(
+                "routes.eval_cross_law._build_engine",
+                return_value="mock_engine",
+            ),
         ):
             response = client.post(
                 f"/api/eval/cross-law/suites/{suite_id}/run-single",

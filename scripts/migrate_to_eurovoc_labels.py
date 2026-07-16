@@ -91,7 +91,7 @@ def migrate_corpora_to_eurovoc(corpora_path: Path) -> None:
     # Save updated corpora
     save_corpora(corpora_path, data)
 
-    print(f"\nMigration complete:")
+    print("\nMigration complete:")
     print(f"  Updated: {updated_count}")
     print(f"  Missing: {missing_count}")
     print(f"  Saved to: {corpora_path}")

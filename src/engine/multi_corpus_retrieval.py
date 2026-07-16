@@ -38,7 +38,6 @@ from typing import Any, Callable, Dict, List, Tuple
 from .retrieval_pipeline import (
     PipelineConfig,
     PipelineInput,
-    PipelineResult,
     RetrievedChunk,
     ScoredChunk,
     execute_pipeline,
@@ -272,14 +271,16 @@ def execute_multi_corpus_retrieval(
                 metadata=tagged_metadata,
                 distance=scored.chunk.distance,
             )
-            corpus_chunks.append(ScoredChunk(
-                chunk=tagged_chunk,
-                vec_score=scored.vec_score,
-                bm25_score=scored.bm25_score,
-                citation_score=scored.citation_score,
-                role_score=scored.role_score,
-                final_score=scored.final_score,
-            ))
+            corpus_chunks.append(
+                ScoredChunk(
+                    chunk=tagged_chunk,
+                    vec_score=scored.vec_score,
+                    bm25_score=scored.bm25_score,
+                    citation_score=scored.citation_score,
+                    role_score=scored.role_score,
+                    final_score=scored.final_score,
+                )
+            )
 
         corpus_duration = (time.perf_counter() - corpus_start) * 1000
         return corpus_id, corpus_chunks, corpus_duration
@@ -287,8 +288,7 @@ def execute_multi_corpus_retrieval(
     # Execute retrieval in parallel across corpora
     executor = ThreadPoolExecutor(max_workers=config.max_workers)
     future_to_corpus = {
-        executor.submit(_execute_single_corpus, cid): cid
-        for cid in input.corpus_ids
+        executor.submit(_execute_single_corpus, cid): cid for cid in input.corpus_ids
     }
 
     # Collect results with per-corpus timeout

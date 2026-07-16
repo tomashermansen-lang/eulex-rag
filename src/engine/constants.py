@@ -8,12 +8,19 @@ Also used by ingestion/citation_graph.py for article role detection during
 law ingestion - this ensures consistent keyword matching across the pipeline.
 """
 
+import os
 import re
 
 # ---------------------------------------------------------------------------
 # Environment helpers
 # ---------------------------------------------------------------------------
 _TRUTHY_ENV_VALUES = {"1", "true", "yes", "on"}
+
+
+def _truthy_env(name: str) -> bool:
+    """Return True if the named environment variable has a truthy value."""
+    return str(os.getenv(name, "") or "").strip().lower() in _TRUTHY_ENV_VALUES
+
 
 # ---------------------------------------------------------------------------
 # Intent detection keywords (substring matching unless noted otherwise)
@@ -154,7 +161,7 @@ _INTENT_REQUIREMENTS_KEYWORDS_VERBS = [
 # Definitions intent: queries about legal terminology.
 _INTENT_DEFINITIONS_KEYWORDS_SUBSTR = [
     "definitioner",
-    "definitions", 
+    "definitions",
     "for the purposes of this regulation",
     "i denne forordning forstås",
     "means",
@@ -179,7 +186,7 @@ _NORMATIVE_CLAIM_RE = _NORMATIVE_SENTENCE_TOKEN_RE
 
 def contains_normative_claim(text: str) -> bool:
     """Return True if text contains normative obligation keywords.
-    
+
     Conservative matcher for standalone obligation keywords.
     Used to determine if claims require article-level support.
     """

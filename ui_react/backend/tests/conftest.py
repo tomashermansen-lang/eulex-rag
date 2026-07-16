@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
 from dataclasses import dataclass
 from typing import Any
 
@@ -31,20 +30,28 @@ class MockAskResult:
         if self.references is None:
             object.__setattr__(self, "references", [])
         if self.references_structured is None:
-            object.__setattr__(self, "references_structured", [
-                {
-                    "idx": 1,
-                    "display": "Article 5 - Prohibited AI practices",
-                    "chunk_text": "The following AI practices shall be prohibited...",
-                    "corpus_id": "ai-act",
-                    "article": "5",
-                }
-            ])
+            object.__setattr__(
+                self,
+                "references_structured",
+                [
+                    {
+                        "idx": 1,
+                        "display": "Article 5 - Prohibited AI practices",
+                        "chunk_text": "The following AI practices shall be prohibited...",
+                        "corpus_id": "ai-act",
+                        "article": "5",
+                    }
+                ],
+            )
         if self.retrieval_metrics is None:
-            object.__setattr__(self, "retrieval_metrics", {
-                "best_distance": 0.25,
-                "query": "test",
-            })
+            object.__setattr__(
+                self,
+                "retrieval_metrics",
+                {
+                    "best_distance": 0.25,
+                    "query": "test",
+                },
+            )
 
 
 @pytest.fixture
@@ -65,15 +72,16 @@ def mock_services(monkeypatch, mock_ask_result):
     # Also import the services module as routes see it
     import importlib
     import sys
+
     backend_path = str(Path(__file__).parent.parent)
     if backend_path not in sys.path:
         sys.path.insert(0, backend_path)
 
     # Import fresh to ensure we get the same module instance
-    if 'services' in sys.modules:
-        services_direct = sys.modules['services']
+    if "services" in sys.modules:
+        services_direct = sys.modules["services"]
     else:
-        services_direct = importlib.import_module('services')
+        services_direct = importlib.import_module("services")
 
     # Mock get_answer on both module references
     mock_get_answer = lambda **kwargs: mock_ask_result

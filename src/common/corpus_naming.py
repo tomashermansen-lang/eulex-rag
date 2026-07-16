@@ -13,7 +13,9 @@ import yaml
 
 def _load_naming_config() -> dict:
     """Load naming conventions from config file."""
-    config_path = Path(__file__).parent.parent.parent / "config" / "naming_conventions.yaml"
+    config_path = (
+        Path(__file__).parent.parent.parent / "config" / "naming_conventions.yaml"
+    )
     if not config_path.exists():
         # Fallback defaults
         return {
@@ -21,8 +23,8 @@ def _load_naming_config() -> dict:
             "corpus_id_format": "{known_name}-{type_code}-{year}-{number}",
             "special_type_codes": {
                 "implementing_regulation": "cir",
-                "delegated_regulation": "dr"
-            }
+                "delegated_regulation": "dr",
+            },
         }
 
     with open(config_path) as f:
@@ -89,9 +91,13 @@ def generate_corpus_id(
     # Determine type code
     type_code = parsed["type_code"]
     if is_implementing:
-        type_code = config.get("special_type_codes", {}).get("implementing_regulation", "cir")
+        type_code = config.get("special_type_codes", {}).get(
+            "implementing_regulation", "cir"
+        )
     elif is_delegated:
-        type_code = config.get("special_type_codes", {}).get("delegated_regulation", "dr")
+        type_code = config.get("special_type_codes", {}).get(
+            "delegated_regulation", "dr"
+        )
 
     # Normalize known_name: lowercase, replace spaces with hyphens
     normalized_name = known_name.lower().replace(" ", "-")

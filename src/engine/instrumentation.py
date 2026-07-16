@@ -3,13 +3,13 @@ import re
 import json
 import hashlib
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 from datetime import datetime, timezone
 
-from .constants import _TRUTHY_ENV_VALUES
-from .helpers import _truthy_env
+from .constants import _TRUTHY_ENV_VALUES, _truthy_env
 from .types import ClaimIntent
 from .planning import UserProfile
+
 
 def is_debug_corpus_enabled() -> bool:
     return _truthy_env("RAG_DEBUG_CORPUS")
@@ -40,7 +40,9 @@ def is_debug_enabled() -> bool:
     return _truthy_env("RAG_DEBUG")
 
 
-def _debug_dump_run_meta(*, stage: str, run_meta: dict[str, Any], extra: dict[str, Any] | None = None) -> None:
+def _debug_dump_run_meta(
+    *, stage: str, run_meta: dict[str, Any], extra: dict[str, Any] | None = None
+) -> None:
     """Write deterministic run_meta snapshots when explicitly enabled.
 
     Controlled by env:
@@ -49,7 +51,10 @@ def _debug_dump_run_meta(*, stage: str, run_meta: dict[str, Any], extra: dict[st
     """
 
     try:
-        enabled = str(os.getenv("RAG_DEBUG_DUMP_RUN_META", "") or "").strip().lower() in _TRUTHY_ENV_VALUES
+        enabled = (
+            str(os.getenv("RAG_DEBUG_DUMP_RUN_META", "") or "").strip().lower()
+            in _TRUTHY_ENV_VALUES
+        )
         out_path = str(os.getenv("RAG_DEBUG_DUMP_RUN_META_PATH", "") or "").strip()
         if not enabled or not out_path:
             return
@@ -68,12 +73,18 @@ def _debug_dump_run_meta(*, stage: str, run_meta: dict[str, Any], extra: dict[st
                     return [_jsonable(x) for x in obj]
                 return str(obj)
 
-        base = {"case_label": str(os.getenv("RAG_DEBUG_DUMP_LABEL", "") or ""), "snapshots": []}
+        base = {
+            "case_label": str(os.getenv("RAG_DEBUG_DUMP_LABEL", "") or ""),
+            "snapshots": [],
+        }
         if p.exists():
             try:
                 base = json.loads(p.read_text(encoding="utf-8"))
             except Exception:  # noqa: BLE001
-                base = {"case_label": str(os.getenv("RAG_DEBUG_DUMP_LABEL", "") or ""), "snapshots": []}
+                base = {
+                    "case_label": str(os.getenv("RAG_DEBUG_DUMP_LABEL", "") or ""),
+                    "snapshots": [],
+                }
 
         snaps = base.get("snapshots")
         if not isinstance(snaps, list):
@@ -118,7 +129,10 @@ def log_intent_event(
             return
 
         only_general = is_intent_log_only_general()
-        if only_general and str(getattr(intent, "value", intent) or "") != ClaimIntent.GENERAL.value:
+        if (
+            only_general
+            and str(getattr(intent, "value", intent) or "") != ClaimIntent.GENERAL.value
+        ):
             return
 
         max_chars_raw = str(os.getenv("RAG_INTENT_LOG_MAX_CHARS", "") or "").strip()
@@ -146,7 +160,11 @@ def log_intent_event(
         # Phone-like: sequences containing >=8 digits allowing separators.
         q_redacted = re.sub(
             r"(?x)(?<!\w)(?:\+?\d[\d\s().-]{6,}\d)(?!\w)",
-            lambda m: "[REDACTED_PHONE]" if len(re.sub(r"\D", "", m.group(0))) >= 8 else m.group(0),
+            lambda m: (
+                "[REDACTED_PHONE]"
+                if len(re.sub(r"\D", "", m.group(0))) >= 8
+                else m.group(0)
+            ),
             q_redacted,
         )
 
@@ -160,7 +178,16 @@ def log_intent_event(
             if isinstance(profile, str):
                 profile_str = profile.strip().upper() or None
             else:
-                profile_str = str(getattr(profile, "value", None) or getattr(profile, "name", None) or "").strip().upper() or None
+                profile_str = (
+                    str(
+                        getattr(profile, "value", None)
+                        or getattr(profile, "name", None)
+                        or ""
+                    )
+                    .strip()
+                    .upper()
+                    or None
+                )
         except Exception:  # noqa: BLE001
             profile_str = None
         profile_str = profile_str or "UNKNOWN"
@@ -176,10 +203,16 @@ def log_intent_event(
             log_path = Path(log_path_env).expanduser()
         else:
             try:
-                project_root_path = Path(str(project_root)).resolve() if project_root else Path.cwd().resolve()
+                project_root_path = (
+                    Path(str(project_root)).resolve()
+                    if project_root
+                    else Path.cwd().resolve()
+                )
             except Exception:  # noqa: BLE001
                 project_root_path = Path.cwd()
-            log_path = project_root_path / "data" / "intent_logs" / "intent_events.jsonl"
+            log_path = (
+                project_root_path / "data" / "intent_logs" / "intent_events.jsonl"
+            )
 
         try:
             log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -187,7 +220,9 @@ def log_intent_event(
             return
 
         payload = {
-            "ts_utc": datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z"),
+            "ts_utc": datetime.now(timezone.utc)
+            .isoformat(timespec="milliseconds")
+            .replace("+00:00", "Z"),
             "corpus_id": corpus_id_str,
             "profile": profile_str,
             "intent": str(getattr(intent, "value", intent) or ""),
@@ -204,7 +239,10 @@ def log_intent_event(
 
         try:
             with log_path.open("a", encoding="utf-8") as f:
-                f.write(json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n")
+                f.write(
+                    json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+                    + "\n"
+                )
         except Exception:  # noqa: BLE001
             return
     except Exception:  # noqa: BLE001
@@ -236,10 +274,10 @@ def collect_corpus_debug_telemetry(
         strip_references_fn: Function to strip trailing references section.
         count_normative_fn: Function to count normative sentences.
     """
-    from . import helpers as _helpers
+    from . import text_transforms as _text_transforms
 
-    _strip = strip_references_fn or _helpers._strip_trailing_references_section
-    _count_normative = count_normative_fn or _helpers._count_normative_sentences
+    _strip = strip_references_fn or _text_transforms._strip_trailing_references_section
+    _count_normative = count_normative_fn or _text_transforms._count_normative_sentences
 
     allowed_idxs = sorted(
         {
@@ -250,12 +288,18 @@ def collect_corpus_debug_telemetry(
     )
 
     txt_for_citations = _strip(str(answer_text or ""))
-    citation_matches_raw = [m.group(0) for m in re.finditer(r"\[(\d{1,3})\]", txt_for_citations)]
-    cited_idxs = sorted({int(m.group(1)) for m in re.finditer(r"\[(\d{1,3})\]", txt_for_citations)})
+    citation_matches_raw = [
+        m.group(0) for m in re.finditer(r"\[(\d{1,3})\]", txt_for_citations)
+    ]
+    cited_idxs = sorted(
+        {int(m.group(1)) for m in re.finditer(r"\[(\d{1,3})\]", txt_for_citations)}
+    )
     valid_cited = sorted(set(cited_idxs) & set(allowed_idxs))
 
     normative_count = _count_normative(txt_for_citations)
-    has_utilstraekkelig = bool(re.search(r"(?i)\bUTILSTRÆKKELIG_EVIDENS\b", txt_for_citations))
+    has_utilstraekkelig = bool(
+        re.search(r"(?i)\bUTILSTRÆKKELIG_EVIDENS\b", txt_for_citations)
+    )
 
     missing_ref = str(answer_text or "").strip() == "MISSING_REF"
     gate_reason = None
@@ -267,16 +311,26 @@ def collect_corpus_debug_telemetry(
             gate_reason = str(req).upper()
         else:
             try:
-                min_cit_dbg = int(contract_min_citations) if contract_min_citations is not None else 0
+                min_cit_dbg = (
+                    int(contract_min_citations)
+                    if contract_min_citations is not None
+                    else 0
+                )
             except Exception:  # noqa: BLE001
                 min_cit_dbg = 0
-            if min_cit_dbg > 0 and len(allowed_idxs) >= min_cit_dbg and len(valid_cited) < min_cit_dbg:
+            if (
+                min_cit_dbg > 0
+                and len(allowed_idxs) >= min_cit_dbg
+                and len(valid_cited) < min_cit_dbg
+            ):
                 gate_reason = "MIN_CITATIONS_NOT_MET"
             else:
                 gate_reason = "MISSING_REF"
 
     try:
-        total_retrieved_debug = int(total_retrieved) if total_retrieved is not None else None
+        total_retrieved_debug = (
+            int(total_retrieved) if total_retrieved is not None else None
+        )
     except Exception:  # noqa: BLE001
         total_retrieved_debug = None
     try:
@@ -304,11 +358,19 @@ def collect_corpus_debug_telemetry(
         "[corpus_debug] "
         + json.dumps(
             {
-                "selected_corpus": (run_meta.get("corpus_debug") or {}).get("selected_corpus_norm"),
+                "selected_corpus": (run_meta.get("corpus_debug") or {}).get(
+                    "selected_corpus_norm"
+                ),
                 "profile": (run_meta.get("corpus_debug") or {}).get("profile"),
-                "contract_check": (run_meta.get("corpus_debug") or {}).get("contract_check"),
-                "min_citations": (run_meta.get("corpus_debug") or {}).get("expected_min_citations"),
-                "corpus_candidates": (run_meta.get("corpus_debug") or {}).get("corpus_candidates"),
+                "contract_check": (run_meta.get("corpus_debug") or {}).get(
+                    "contract_check"
+                ),
+                "min_citations": (run_meta.get("corpus_debug") or {}).get(
+                    "expected_min_citations"
+                ),
+                "corpus_candidates": (run_meta.get("corpus_debug") or {}).get(
+                    "corpus_candidates"
+                ),
                 "retrieved_refs": total_retrieved_debug,
                 "citable_refs": citable_debug,
                 "allowed_idxs": allowed_idxs,
@@ -324,4 +386,145 @@ def collect_corpus_debug_telemetry(
             sort_keys=True,
         ),
         flush=True,
+    )
+
+
+def update_retrieval_evidence_metadata(
+    *,
+    run_meta: dict[str, Any],
+    references_structured_all: list[dict[str, Any]],
+    total_retrieved: int,
+    required_anchors_payload: dict | None,
+) -> None:
+    """Compute and store high-level retrieval evidence summary in run_meta.
+
+    Populates citable_refs_count, references_structured_all_count,
+    candidates_count, and anchors_in_top_k. Also updates anchor_rescue
+    fields if required_anchors_payload is provided.
+    """
+    try:
+        anchors_in_top_k: list[str] = []
+        for r in list(references_structured_all or []):
+            if not isinstance(r, dict):
+                continue
+            if r.get("article"):
+                anchors_in_top_k.append(
+                    f"article:{str(r.get('article')).strip().lower()}"
+                )
+            if r.get("recital"):
+                anchors_in_top_k.append(
+                    f"recital:{str(r.get('recital')).strip().lower()}"
+                )
+            if r.get("annex"):
+                anchors_in_top_k.append(f"annex:{str(r.get('annex')).strip().lower()}")
+        anchors_in_top_k = sorted(
+            set([a for a in anchors_in_top_k if a and str(a).strip()])
+        )
+        run_meta["citable_refs_count"] = int(len(references_structured_all or []))
+        run_meta["references_structured_all_count"] = int(
+            len(references_structured_all or [])
+        )
+        run_meta["candidates_count"] = int(total_retrieved)
+        run_meta["anchors_in_top_k"] = anchors_in_top_k
+
+        if required_anchors_payload and isinstance(run_meta.get("anchor_rescue"), dict):
+            run_meta["anchor_rescue"]["anchors_in_top_k"] = list(anchors_in_top_k)
+            try:
+                req_any_1 = set(
+                    [
+                        re.sub(r"\s+", "", str(a)).strip().lower()
+                        for a in list(
+                            required_anchors_payload.get("must_include_any_of") or []
+                        )
+                        if isinstance(a, str) and a.strip() and ":" in a
+                    ]
+                )
+                req_any_2 = set(
+                    [
+                        re.sub(r"\s+", "", str(a)).strip().lower()
+                        for a in list(
+                            required_anchors_payload.get("must_include_any_of_2") or []
+                        )
+                        if isinstance(a, str) and a.strip() and ":" in a
+                    ]
+                )
+                req_all = set(
+                    [
+                        re.sub(r"\s+", "", str(a)).strip().lower()
+                        for a in list(
+                            required_anchors_payload.get("must_include_all_of") or []
+                        )
+                        if isinstance(a, str) and a.strip() and ":" in a
+                    ]
+                )
+                present = set(anchors_in_top_k)
+                if req_any_1 and not (req_any_1 & present):
+                    run_meta["anchor_rescue"]["missing_required_anchor_any_of"] = (
+                        sorted(req_any_1)
+                    )
+                if req_any_2 and not (req_any_2 & present):
+                    run_meta["anchor_rescue"]["missing_required_anchor_any_of_2"] = (
+                        sorted(req_any_2)
+                    )
+                if req_all:
+                    run_meta["anchor_rescue"]["missing_required_anchor_all_of"] = (
+                        sorted(req_all - present)
+                    )
+            except Exception:  # noqa: BLE001
+                pass
+    except Exception:  # noqa: BLE001
+        run_meta.setdefault(
+            "citable_refs_count", int(len(references_structured_all or []))
+        )
+        run_meta.setdefault(
+            "references_structured_all_count", int(len(references_structured_all or []))
+        )
+        try:
+            run_meta.setdefault("candidates_count", int(total_retrieved))
+        except Exception:  # noqa: BLE001
+            run_meta.setdefault("candidates_count", None)
+        run_meta.setdefault("anchors_in_top_k", [])
+
+
+def log_retrieval_debug(
+    *,
+    total_retrieved: int,
+    citable_count_total: int,
+    citable_count_context: int,
+    non_citable_debug: list[dict[str, Any]],
+) -> None:
+    """Print retrieval debug info if RAG_DEBUG is enabled."""
+    if not is_debug_enabled():
+        return
+    print(
+        f"[rag_debug] retrieved_total={total_retrieved} citable={citable_count_total} context_capped={citable_count_context} non_citable={len(non_citable_debug)}"
+    )
+    if non_citable_debug:
+        print("[rag_debug] non_citable_items (chunk_id, location_id, heading_path):")
+        for item in non_citable_debug[:10]:
+            print(
+                "- "
+                + str(item.get("chunk_id") or "")
+                + " "
+                + str(item.get("location_id") or "")
+                + " "
+                + str(item.get("heading_path") or "")
+            )
+
+
+def maybe_log_intent_event(
+    *,
+    question: str,
+    intent: ClaimIntent,
+    profile: UserProfile | str,
+    corpus_id: str = "",
+    project_root: Path | None = None,
+) -> None:
+    """Convenience wrapper: log_intent_event with explicit engine state."""
+    log_intent_event(
+        question=question,
+        intent=intent,
+        profile=profile,
+        corpus_id=corpus_id,
+        project_root=project_root,
     )

@@ -28,12 +28,14 @@ from typing import Any
 
 import yaml
 
-from .ingestion_scorers import RoleClassificationScorer, ScorerResult
+from .ingestion_scorers import RoleClassificationScorer
 
 logger = logging.getLogger(__name__)
 
 # Default paths
-DEFAULT_CASES_PATH = Path(__file__).parent.parent.parent / "data" / "evals" / "ingestion_role_cases.yaml"
+DEFAULT_CASES_PATH = (
+    Path(__file__).parent.parent.parent / "data" / "evals" / "ingestion_role_cases.yaml"
+)
 DEFAULT_CHUNKS_DIR = Path(__file__).parent.parent.parent / "data" / "processed"
 DEFAULT_OUTPUT_DIR = Path(__file__).parent.parent.parent / "runs" / "ingestion_eval"
 
@@ -119,7 +121,9 @@ def load_cases(cases_path: Path, corpus_id: str | None = None) -> list[Ingestion
     return cases
 
 
-def load_chunks(corpus_id: str, chunks_dir: Path | None = None) -> dict[str, dict[str, Any]]:
+def load_chunks(
+    corpus_id: str, chunks_dir: Path | None = None
+) -> dict[str, dict[str, Any]]:
     """Load chunks from JSONL file.
 
     Args:
@@ -205,6 +209,7 @@ def detect_roles_keywords(text: str, title: str = "") -> list[str]:
     # Import the production keyword lists
     try:
         from ..ingestion.citation_graph import _detect_roles_from_text
+
         return _detect_roles_from_text(text, title)
     except ImportError:
         # Fallback if import fails
@@ -252,7 +257,7 @@ def detect_roles_llm(text: str, title: str = "", corpus_id: str = "") -> list[st
         List of detected roles from LLM
     """
     try:
-        from ..ingestion.embedding_enrichment import generate_enrichment, is_enrichment_enabled
+        from ..ingestion.embedding_enrichment import generate_enrichment
 
         # Temporarily ensure enrichment is enabled for this call
         # (we want to call LLM even if enrichment is disabled in config)
@@ -425,9 +430,9 @@ def run_eval(
 
 def print_results(result: EvalResult) -> None:
     """Print evaluation results to console."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Ingestion Eval: {result.corpus_id} ({result.method})")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Total cases:  {result.total_cases}")
     print(f"Passed:       {result.passed}")
     print(f"Failed:       {result.failed}")
@@ -515,8 +520,12 @@ def compare_methods(
     # Print comparison
     print(f"\n{'Method':<15} {'Pass Rate':<12} {'Recall':<12} {'Precision':<12}")
     print("-" * 60)
-    print(f"{'Keywords':<15} {keyword_result.pass_rate:<12.1%} {keyword_result.avg_recall:<12.1%} {keyword_result.avg_precision:<12.1%}")
-    print(f"{'LLM':<15} {llm_result.pass_rate:<12.1%} {llm_result.avg_recall:<12.1%} {llm_result.avg_precision:<12.1%}")
+    print(
+        f"{'Keywords':<15} {keyword_result.pass_rate:<12.1%} {keyword_result.avg_recall:<12.1%} {keyword_result.avg_precision:<12.1%}"
+    )
+    print(
+        f"{'LLM':<15} {llm_result.pass_rate:<12.1%} {llm_result.avg_recall:<12.1%} {llm_result.avg_precision:<12.1%}"
+    )
 
     # Show cases where methods differ
     print("\nCases with different results:")
@@ -591,7 +600,8 @@ Examples:
         help="Output directory for results",
     )
     parser.add_argument(
-        "-v", "--verbose",
+        "-v",
+        "--verbose",
         action="store_true",
         help="Verbose output",
     )

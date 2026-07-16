@@ -1,8 +1,9 @@
-"""LLM-based intent router for semantic disambiguation.
+"""Intent classification and LLM-based disambiguation.
 
-This module provides a lightweight LLM call to disambiguate between:
-- USER_SYSTEM: Questions about the user's own system/situation (needs strict gating)
-- LAW_CONTENT: Questions about the law's content itself (general RAG retrieval)
+This module consolidates all intent classification logic:
+- Deterministic keyword heuristics (classify_question_intent)
+- LLM-based semantic disambiguation (disambiguate_intent)
+- Config-driven policy overrides (_apply_answer_policy_to_claim_intent)
 
 Best practices (per OpenAI Guardrails Cookbook):
 - Uses gpt-4o-mini for speed/cost optimization
@@ -13,15 +14,28 @@ Best practices (per OpenAI Guardrails Cookbook):
 from __future__ import annotations
 
 import os
+import re
 import hashlib
 import time
-from typing import Optional
-from functools import lru_cache
+from pathlib import Path
+from typing import Any, Optional
 
 from openai import OpenAI, RateLimitError
 
+from .constants import (
+    _INTENT_ENFORCEMENT_KEYWORDS_SUBSTR,
+    _INTENT_ENFORCEMENT_KEYWORDS_EXACT,
+    _INTENT_REQUIREMENTS_KEYWORDS_STRONG_SUBSTR,
+    _INTENT_REQUIREMENTS_KEYWORDS_WEAK_SUBSTR,
+    _INTENT_REQUIREMENTS_KEYWORDS_VERBS,
+    _INTENT_CLASSIFICATION_KEYWORDS_SUBSTR,
+    _INTENT_SCOPE_KEYWORDS_STRONG_SUBSTR,
+)
 from .conversation import HistoryMessage
-from .types import ClaimIntent
+from .types import ClaimIntent, UserProfile
+from .concept_config import Policy as AnchorPolicy
+from ..common.corpus_registry import normalize_alias
+from .corpus_resolver import load_resolver_for_project_root
 
 
 # In-memory cache for intent routing (question_hash -> result)
@@ -127,7 +141,7 @@ def _call_router_llm(question: str, context: str | None = None) -> str:
         prompt = _ROUTER_PROMPT_WITH_CONTEXT.format(question=question, context=context)
     else:
         prompt = _ROUTER_PROMPT.format(question=question)
-    
+
     max_retries = 3
     for attempt in range(max_retries):
         try:
@@ -138,20 +152,20 @@ def _call_router_llm(question: str, context: str | None = None) -> str:
                 max_tokens=10,
             )
             result = response.choices[0].message.content.strip().upper()
-            
+
             # Normalize to expected values
             if "LAW" in result or "CONTENT" in result:
                 result = "LAW_CONTENT"
             else:
                 result = "USER_SYSTEM"
-            
+
             # Cache the result
             _cache_result(question, result, context)
             return result
-            
+
         except RateLimitError:
             if attempt < max_retries - 1:
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
                 continue
             # Rate limit - conservative fallback
             return "USER_SYSTEM"
@@ -165,7 +179,7 @@ def _call_router_llm(question: str, context: str | None = None) -> str:
                     close_callable()
                 except Exception:  # noqa: BLE001
                     pass
-    
+
     return "USER_SYSTEM"
 
 
@@ -176,6 +190,228 @@ def _format_exchange_as_context(exchange: list[HistoryMessage]) -> str:
         label = "User" if msg.role == "user" else "Assistant"
         lines.append(f"{label}: {msg.content}")
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Keyword-based intent classification (moved from policy.py, Phase 8a)
+# ---------------------------------------------------------------------------
+
+
+def _intent_match_signals(prompt_text: str) -> dict[str, bool]:
+    q = str(prompt_text or "").strip().lower()
+    if not q:
+        return {
+            "enforcement": False,
+            "requirements": False,
+            "classification": False,
+            "scope": False,
+        }
+
+    enforcement = any(k in q for k in _INTENT_ENFORCEMENT_KEYWORDS_SUBSTR) or any(
+        re.search(rf"(?i)\\b{re.escape(w)}\\b", q)
+        for w in _INTENT_ENFORCEMENT_KEYWORDS_EXACT
+    )
+    requirements = any(k in q for k in _INTENT_REQUIREMENTS_KEYWORDS_STRONG_SUBSTR) or (
+        any(k in q for k in _INTENT_REQUIREMENTS_KEYWORDS_WEAK_SUBSTR)
+        and any(
+            k in q
+            for k in (
+                "krav",
+                "kræver",
+                "kræves",
+                "skal",
+                "must",
+                "should",
+                "hvordan",
+                "overhold",
+                "efterlev",
+                "implement",
+            )
+        )
+    )
+    classification = any(k in q for k in _INTENT_CLASSIFICATION_KEYWORDS_SUBSTR)
+    scope = any(k in q for k in _INTENT_SCOPE_KEYWORDS_STRONG_SUBSTR)
+    return {
+        "enforcement": bool(enforcement),
+        "requirements": bool(requirements),
+        "classification": bool(classification),
+        "scope": bool(scope),
+    }
+
+
+def _detect_intent_cues(prompt_text: str) -> dict[str, Any]:
+    """Return matched cue tokens for observability.
+
+    This is *not* a new classifier; it mirrors existing deterministic heuristics
+    but provides explainability (matched tokens) for audit/debug.
+    """
+
+    q = str(prompt_text or "").strip().lower()
+    if not q:
+        return {
+            "requirements_cues_detected": False,
+            "requirements_cues_matched": [],
+            "enforcement_cues_detected": False,
+            "enforcement_cues_matched": [],
+        }
+
+    enforcement_matched = [k for k in _INTENT_ENFORCEMENT_KEYWORDS_SUBSTR if k in q]
+    enforcement_word_matched: list[str] = []
+    for w in _INTENT_ENFORCEMENT_KEYWORDS_EXACT:
+        try:
+            if re.search(rf"(?i)\b{re.escape(w)}\b", q):
+                enforcement_word_matched.append(str(w))
+        except Exception:  # noqa: BLE001
+            if str(w).lower() in q:
+                enforcement_word_matched.append(str(w))
+    enforcement_matched = sorted(set([*enforcement_matched, *enforcement_word_matched]))
+
+    req_strong = [k for k in _INTENT_REQUIREMENTS_KEYWORDS_STRONG_SUBSTR if k in q]
+    req_weak = [k for k in _INTENT_REQUIREMENTS_KEYWORDS_WEAK_SUBSTR if k in q]
+    req_verbs = [k for k in _INTENT_REQUIREMENTS_KEYWORDS_VERBS if k in q]
+    requirements_detected = bool(req_strong) or (bool(req_weak) and bool(req_verbs))
+    requirements_matched = sorted(set([*req_strong, *req_weak, *req_verbs]))
+
+    return {
+        "requirements_cues_detected": bool(requirements_detected),
+        "requirements_cues_matched": list(requirements_matched),
+        "enforcement_cues_detected": bool(enforcement_matched),
+        "enforcement_cues_matched": list(enforcement_matched),
+    }
+
+
+def classify_question_intent(prompt_text: str) -> ClaimIntent:
+    """Classify the user's intent for claim-stage gating.
+
+    Deterministic, heuristic-only, and intentionally small.
+    """
+
+    q = str(prompt_text or "").strip().lower()
+    if not q:
+        return ClaimIntent.GENERAL
+
+    # NOTE: Order matters. We prefer the most safety-sensitive intents first.
+    signals = _intent_match_signals(q)
+    if signals["enforcement"]:
+        return ClaimIntent.ENFORCEMENT
+
+    if signals["requirements"]:
+        return ClaimIntent.REQUIREMENTS
+
+    if signals["classification"]:
+        return ClaimIntent.CLASSIFICATION
+
+    # SCOPE is specifically about the law's applicability/anvendelsesområde.
+    # Avoid treating phrases like "Hvornår gælder retten til ..." as scope.
+    if any(k in q for k in _INTENT_SCOPE_KEYWORDS_STRONG_SUBSTR):
+        return ClaimIntent.SCOPE
+
+    if "gælder" in q:
+        # Generic: treat "gælder <law/corpus>" as scope when the question explicitly
+        # mentions any known corpus alias/display name from the registry.
+        try:
+            project_root = Path(__file__).resolve().parents[2]
+            resolver = load_resolver_for_project_root(str(project_root))
+            if resolver.any_alias_in(normalize_alias(q)):
+                return ClaimIntent.SCOPE
+        except Exception:  # noqa: BLE001
+            pass
+
+    return ClaimIntent.GENERAL
+
+
+def classify_question_intent_with_router(
+    prompt_text: str,
+    *,
+    enable_router: bool = True,
+    last_exchange: list | None = None,
+    query_was_rewritten: bool = False,
+) -> tuple[ClaimIntent, dict]:
+    """Classify intent using keyword heuristics + LLM router for disambiguation.
+
+    This is the recommended function to use. It:
+    1. Uses fast keyword heuristics to get candidate intent
+    2. If candidate is a gated intent (CLASSIFICATION, ENFORCEMENT, REQUIREMENTS, SCOPE),
+       calls LLM router to check if question is about LAW_CONTENT vs USER_SYSTEM
+    3. Overrides to GENERAL if question is about law content (not user's own system)
+
+    Args:
+        prompt_text: The user's question
+        enable_router: If False, skip LLM call (useful for testing)
+        last_exchange: Optional last user+assistant exchange for context augmentation.
+        query_was_rewritten: Whether the query was changed by the rewriter.
+
+    Returns:
+        Tuple of (final_intent, debug_info)
+    """
+    # First: fast keyword heuristics
+    candidate = classify_question_intent(prompt_text)
+
+    # Then: LLM disambiguation if gated
+    return disambiguate_intent(
+        prompt_text,
+        candidate,
+        enable_router=enable_router,
+        last_exchange=last_exchange,
+        query_was_rewritten=query_was_rewritten,
+    )
+
+
+def _apply_answer_policy_to_claim_intent(
+    *,
+    resolved_profile: UserProfile,
+    classifier_intent: ClaimIntent,
+    policy: AnchorPolicy | None,
+    question: str | None = None,
+) -> tuple[ClaimIntent, dict[str, Any]]:
+    """Apply config-driven answer_policy to claim-stage intent.
+
+    This is used to prevent off-topic ENGINEERING answers when retrieval is good but
+    heuristic enforcement signals would otherwise override requirements-oriented planning.
+    """
+
+    dbg: dict[str, Any] = {
+        "classifier_intent": str(
+            getattr(classifier_intent, "value", classifier_intent) or ""
+        ),
+        "policy_present": bool(policy is not None),
+        "policy_intent_category": None,
+        "final_intent": str(
+            getattr(classifier_intent, "value", classifier_intent) or ""
+        ),
+        "override_applied": False,
+    }
+
+    if policy is None:
+        return classifier_intent, dbg
+
+    # If policy explicitly sets intent_category, we may override the classifier.
+    # Currently only supports overriding ENFORCEMENT -> REQUIREMENTS if the policy says so.
+    ap = getattr(policy, "answer_policy", None)
+    if ap is None:
+        return classifier_intent, dbg
+
+    policy_intent = str(getattr(ap, "intent_category", "") or "").strip().upper()
+    dbg["policy_intent_category"] = policy_intent
+
+    if not policy_intent:
+        return classifier_intent, dbg
+
+    if classifier_intent == ClaimIntent.ENFORCEMENT and policy_intent == "REQUIREMENTS":
+        # Override: The user asked about enforcement (e.g. "bøde"), but the policy
+        # dictates this is a requirements question (e.g. "Hvad er kravene?").
+        # This happens when enforcement keywords appear in a requirements context.
+        dbg["override_applied"] = True
+        dbg["final_intent"] = "REQUIREMENTS"
+        dbg["requirements_cues_detected"] = True
+        return ClaimIntent.REQUIREMENTS, dbg
+
+    return classifier_intent, dbg
+
+
+# ---------------------------------------------------------------------------
+# LLM-based disambiguation
+# ---------------------------------------------------------------------------
 
 
 def disambiguate_intent(
@@ -226,7 +462,7 @@ def disambiguate_intent(
         "context_augmented": False,
         "query_was_rewritten": query_was_rewritten,
     }
-    
+
     # Route all gated intents - they all can have false positives when
     # the question is about law content rather than user's own system
     gated_intents = {

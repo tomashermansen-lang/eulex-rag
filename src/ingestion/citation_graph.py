@@ -10,13 +10,13 @@ cross-references like "jf. artikel 5", "se artikel 10, stk. 2", etc.
 
 Usage:
     from src.ingestion.citation_graph import CitationGraph
-    
+
     # Build graph for any corpus
     graph = CitationGraph.from_corpus("ai-act")  # or "gdpr", "dora", etc.
-    
+
     # Find related articles
     related = graph.get_related_articles("6", max_depth=1)
-    
+
     # Build graphs for all corpora
     for corpus_id in ["ai-act", "gdpr", "dora"]:
         graph = CitationGraph.from_corpus(corpus_id)
@@ -79,6 +79,7 @@ try:
         _INTENT_REQUIREMENTS_KEYWORDS_STRONG_SUBSTR,
         _INTENT_SCOPE_KEYWORDS_STRONG_SUBSTR,
     )
+
     _ROLE_KEYWORD_MAP: dict[str, list[str]] = {
         "scope": _INTENT_SCOPE_KEYWORDS_STRONG_SUBSTR,
         "definitions": _INTENT_DEFINITIONS_KEYWORDS_SUBSTR,
@@ -106,7 +107,9 @@ class CitationNode:
     title: str = ""
     chapter: str | None = None
     mention_count: int = 0  # How often this article is mentioned elsewhere
-    roles: list[str] = field(default_factory=list)  # Detected roles: scope, definitions, etc.
+    roles: list[str] = field(
+        default_factory=list
+    )  # Detected roles: scope, definitions, etc.
 
     def to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {
@@ -289,7 +292,9 @@ class CitationGraph:
             # Extract numeric part of article ID for sorting
             art_num = 999
             try:
-                art_num = int("".join(c for c in node.article_id if c.isdigit()) or "999")
+                art_num = int(
+                    "".join(c for c in node.article_id if c.isdigit()) or "999"
+                )
             except ValueError:
                 pass
             matching.append((node.article_id, art_num, node.mention_count))
@@ -300,8 +305,8 @@ class CitationGraph:
 
     def get_foundational_articles(self) -> dict[str, list[str]]:
         """Get foundational articles organized by role.
-        
-        These are the articles that should typically be included when 
+
+        These are the articles that should typically be included when
         answering questions about a topic. Returns dict like:
         {
             "scope": ["2"],
@@ -324,21 +329,21 @@ class CitationGraph:
         include_foundational_roles: list[str] | None = None,
     ) -> list[str]:
         """Get additional articles to include based on what was retrieved.
-        
+
         This is the key function for prod - given retrieved articles,
         figure out what else should be included automatically.
-        
+
         Args:
             retrieved_articles: Articles found by initial retrieval
             include_foundational_roles: Roles to always include (e.g., ["scope", "definitions"])
                                        If None, uses smart defaults based on what was retrieved.
-        
+
         Returns:
             List of additional article IDs to inject into context.
         """
         expansion: list[str] = []
         retrieved_set = set(a.upper() for a in retrieved_articles)
-        
+
         # 1. If a classification article is retrieved, include scope + definitions
         if include_foundational_roles is None:
             include_foundational_roles = []
@@ -349,23 +354,24 @@ class CitationGraph:
                     # Classification questions need scope and definitions
                     include_foundational_roles.extend(["scope", "definitions"])
                     break
-        
+
         # 2. Add foundational articles for requested roles
         for role in include_foundational_roles:
             for art in self.get_articles_by_role(role)[:2]:  # Max 2 per role
                 if art not in retrieved_set and art not in expansion:
                     expansion.append(art)
-        
+
         # 3. Add directly cited articles from retrieved articles
         # Import config-based limits (defaults align with Anthropic best practice)
         try:
             from ..engine.citation_expansion import get_seed_limit, get_max_expansion
+
             seed_limit = get_seed_limit()
             max_exp = get_max_expansion()
         except ImportError:
             seed_limit = 20
             max_exp = 10
-        
+
         for art in retrieved_articles[:seed_limit]:
             art_upper = art.upper()
             for related, weight in self.get_related_articles(art_upper, min_weight=0.3):
@@ -375,7 +381,7 @@ class CitationGraph:
                         break
             if len(expansion) >= max_exp:
                 break
-        
+
         return expansion[:max_exp]
 
     def get_co_cited_articles(
@@ -401,7 +407,9 @@ class CitationGraph:
         for article in articles[1:]:
             other = {
                 a
-                for a, score in self.get_related_articles(article, min_weight=min_weight)
+                for a, score in self.get_related_articles(
+                    article, min_weight=min_weight
+                )
             }
             candidates &= other
 
@@ -496,20 +504,20 @@ class CitationGraph:
 
 def _detect_roles_from_text(text: str, title: str = "") -> list[str]:
     """Detect article roles from chunk text and title.
-    
+
     Uses keyword lists from constants.py (single source of truth).
     Returns list of role names like ["scope", "definitions"].
     """
     combined = f"{title} {text}".lower()
     detected: list[str] = []
-    
+
     for role, keywords in _ROLE_KEYWORD_MAP.items():
         for kw in keywords:
             if kw.lower() in combined:
                 if role not in detected:
                     detected.append(role)
                 break  # One keyword match is enough for this role
-    
+
     return detected
 
 
@@ -526,7 +534,7 @@ def _build_graph_from_chunks(
 
     # Track co-occurrences per chunk
     chunk_mentions: list[set[str]] = []
-    
+
     # Track detected roles per article (accumulated across chunks)
     article_roles: dict[str, set[str]] = defaultdict(set)
 
@@ -583,7 +591,7 @@ def _build_graph_from_chunks(
                 # Fallback to keyword detection (backwards compatibility)
                 roles = _detect_roles_from_text(chunk_text, chunk_title)
             article_roles[chunk_node].update(roles)
-            
+
             graph.add_node(
                 CitationNode(
                     article_id=chunk_node,
@@ -649,7 +657,9 @@ def _build_graph_from_chunks(
             article_id = str(article_ref).upper()
             mentioned_articles.add(article_id)
             graph.add_node(
-                CitationNode(article_id=article_id, node_type="article", mention_count=1)
+                CitationNode(
+                    article_id=article_id, node_type="article", mention_count=1
+                )
             )
 
         # Include annex mentions (important for high-risk classification)
@@ -722,7 +732,9 @@ def _iter_chunks(path: Path) -> Iterator[dict[str, Any]]:
                 logger.warning("Failed to parse chunk line: %s...", line[:50])
 
 
-def load_citation_graph(corpus_id: str, data_dir: Path | str | None = None) -> CitationGraph | None:
+def load_citation_graph(
+    corpus_id: str, data_dir: Path | str | None = None
+) -> CitationGraph | None:
     """Load a pre-built citation graph for a corpus.
 
     Returns None if the graph file doesn't exist.

@@ -36,6 +36,12 @@ model_capabilities:
 # RAG Pipeline Settings
 # =============================================================================
 rag:
+  # Default top_k for query results (env RAG_TOP_K can override)
+  default_top_k: 3
+
+  # Minimum citable chunks required for ENGINEERING evidence gating
+  min_citable_required: 2
+
   # Retrieval pool size - candidates to fetch before reranking
   retrieval_pool_size: 50
 
@@ -46,6 +52,7 @@ rag:
   # Distance-based abstain guardrails
   max_distance: 1.25           # Soft threshold - triggers low-evidence warning
   hard_max_distance: 1.3       # Hard threshold - abstains if best result exceeds this
+  low_evidence_max_distance: 1.35  # Relaxed threshold when allow_low_evidence_answer is set
 
   # Hybrid Rerank: Combined scoring with 4 factors
   # score = α*vec_sim + β*bm25 + γ*citation + δ*role
@@ -66,6 +73,15 @@ rag:
   sibling_expansion:
     enabled: true
     max_siblings: 2           # additional chunks to fetch per location (before + after)
+
+  # Streaming preparation
+  streaming_initial_hits: 5         # Top hits before expansion merge
+  streaming_excerpt_max_chars: 150  # Max characters for reference excerpt
+
+  # Chapter summary retrieval
+  chapter_summary_min_k: 8          # Minimum retrieval pool for chapter summaries
+  chapter_summary_fallback_k: 12    # Fallback k when top_k parse fails
+  chapter_summary_max_k: 20         # Cap on retrieval pool for chapter summaries
 
   # Context Positioning ("Sandwich" pattern)
   # Addresses "Lost in the Middle" problem by placing most relevant chunks at start/end
@@ -139,6 +155,12 @@ citation_expansion:
 # =============================================================================
 eval:
   default_concurrency: 5      # default parallel eval workers, set to 1 with wise judge and 5 with standard judge
+  regression_threshold_pp: 2    # Max allowed regression in percentage points
+  baseline_path: data/evals/runs/baseline_pre_case_law.json  # Default baseline output path
+  scorer_metric_mapping:        # Maps eval scorer names to baseline metric keys
+    anchor_presence: retrieval_precision
+    faithfulness: faithfulness
+    answer_relevancy: relevancy
 
   # Model escalation: retry failed cases with a more capable model
   # Balances cost efficiency (cheap primary) with quality (capable fallback)
@@ -199,6 +221,101 @@ dashboard:
   health_thresholds: [95, 80, 60]  # 4-tier: green ≥95, yellow ≥80, orange ≥60, red <60
   ai_analysis_model: "gpt-4o"  # Model for AI-powered metrics analysis
   max_runs_scan: 50            # Max run files to scan per data source (performance cap)
+
+# =============================================================================
+# Case Law Settings (CJEU case law integration)
+# =============================================================================
+case_law:
+  enabled: false                    # Master toggle — false = all functions return empty
+
+  # Client subsection (CELLAR SPARQL client)
+  client:
+    sparql_endpoint: "https://publications.europa.eu/webapi/rdf/sparql"
+    request_timeout_secs: 30          # Per-request timeout
+    max_retries: 3                    # Retry attempts on transient errors
+    request_delay_secs: 1.0           # Minimum delay between requests (polite rate limit)
+    base_retry_delay_secs: 1.0        # Base delay for exponential backoff (doubles each retry)
+    max_backoff_secs: 60.0            # Maximum backoff delay cap (prevents unbounded sleep on many retries)
+    user_agent: "EuLex-RAG-Framework/1.0 (CellarClient)"  # User-Agent header for SPARQL requests
+    eurlex_html_base_url: "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:"  # Base URL for EUR-Lex HTML documents
+    max_response_bytes: 10485760  # 10 MB — limit for streamed HTML downloads
+
+  # CLI defaults
+  default_output_dir: "data/processed/case_law"  # Override with --out-dir
+  default_language: "en"                          # Override with --language
+
+  # Document type detection from CELEX substrings
+  celex_document_type_mapping:
+    "CJ": "judgment"
+    "CC": "ag_opinion"
+    "CO": "order"
+
+  # Parser subsection
+  parser:
+    section_heading_patterns:
+      summary:
+        - "Summary"
+        - "Headnotes"
+      grounds:
+        - "Grounds"
+        - "Grounds of the judgment"
+        - "Grounds of the order"
+        - "Motifs"
+      operative_part:
+        - "Operative part"
+        - "On those grounds"
+        - "Dispositif"
+      keywords:
+        - "Keywords"
+      parties:
+        - "Parties"
+      subject:
+        - "Subject of the case"
+        - "Subject"
+      costs:
+        - "Costs"
+        - "Decision on costs"
+
+    article_reference_patterns:
+      - "Article\\s+(\\d+)(?:\\(\\d+\\))*(?:\\([a-z]\\))*\\s+of\\s+Regulation\\s+(?:\\(EU\\)\\s+)?(?:No\\s+)?(\\d{4}/\\d{1,5}|\\d{4}/\\d{4})"
+      - "Article\\s+(\\d+)(?:\\(\\d+\\))*(?:\\([a-z]\\))*\\s+of\\s+Directive\\s+(?:\\(EU\\)\\s+)?(?:No\\s+)?(\\d{4}/\\d{1,5}|\\d{4}/\\d{4})"
+      - "Article\\s+(\\d+)(?:\\(\\d+\\))*(?:\\([a-z]\\))*\\s+of\\s+Decision\\s+(?:\\(EU\\)\\s+)?(?:No\\s+)?(\\d{4}/\\d{1,5}|\\d{4}/\\d{4})"
+
+    corpus_celex_mapping:
+      "32016R0679": "gdpr"
+      "32024R1689": "ai_act"
+      "32022R2065": "dsa"
+      "32022R1925": "dma"
+      "32023R1114": "mica"
+      "32022R2554": "dora"
+
+  # Chunking subsection (case law chunk parameters)
+  chunking:
+    chunk_tokens: 500
+    min_chunk_tokens: 100
+    overlap_tokens: 50
+    non_breaking_abbreviations: ["Art.", "No.", "p.", "cf.", "para."]
+
+  # Enrichment subsection (case law enrichment roles)
+  enrichment:
+    enrichment_roles:
+      - interpretation
+      - application
+      - principle
+      - procedural
+      - remedy
+
+  # Court derivation from ECLI
+  court_mapping:
+    C: "CJEU"
+    T: "General Court"
+
+  # Section merge groups (short section merging boundaries)
+  section_groups:
+    procedural: ["parties", "subject", "keywords"]
+    substantive: ["summary", "grounds", "costs"]
+    dispositive: ["operative_part"]
+    fallback: ["full_text"]
 
 # =============================================================================
 # File Paths (relative to repo root)

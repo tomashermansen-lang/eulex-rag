@@ -3,8 +3,6 @@
 TDD: These tests are written BEFORE the implementation.
 """
 
-import pytest
-
 
 class TestGoldenCaseCrossLaw:
     """Tests for cross-law fields in GoldenCase."""

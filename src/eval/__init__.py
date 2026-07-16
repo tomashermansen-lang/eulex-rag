@@ -14,10 +14,11 @@ Usage:
     python -m src.eval.eval_runner --law ai-act --skip-llm
     python -m src.eval.eval_runner --law ai-act --pipeline-analysis
 """
+
 # Lazy imports to avoid circular dependencies
 __all__ = [
     "AnchorScorer",
-    "ContractScorer", 
+    "ContractScorer",
     "PipelineBreakdownScorer",
     "ProgressReporter",
     "FailureReporter",
@@ -28,11 +29,14 @@ __all__ = [
 def __getattr__(name: str):
     if name in ("AnchorScorer", "ContractScorer", "PipelineBreakdownScorer"):
         from .scorers import AnchorScorer, ContractScorer, PipelineBreakdownScorer
+
         return locals()[name]
     if name in ("ProgressReporter", "FailureReporter"):
         from .reporters import ProgressReporter, FailureReporter
+
         return locals()[name]
     if name == "run_eval":
         from .eval_runner import run_eval
+
         return run_eval
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

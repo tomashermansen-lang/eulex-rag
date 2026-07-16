@@ -1,0 +1,216 @@
+- id: eucc-cir-2024-482-01-retrieval-certificering
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvad fastsætter forordningen om certificering af IKT-produkter?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:5
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke artikel om certificering af
+      IKT-produkter.
+- id: eucc-cir-2024-482-02-retrieval-tillidsniveauer
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvilke tillidsniveauer kan certificeringsorganerne udstede?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:4
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke artikel om tillidsniveauer.
+- id: eucc-cir-2024-482-03-retrieval-selvvurdering
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Er selvvurdering af overensstemmelse tilladt ifølge forordningen?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:6
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke artikel om selvvurdering.
+- id: eucc-cir-2024-482-04-retrieval-gyldighedsperiode
+  profile: LEGAL
+  test_types:
+  - retrieval
+  origin: auto
+  prompt: Hvordan fastsætter certificeringsorganet gyldighedsperioden for en EUCC-attest?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at systemet kan finde den specifikke artikel om gyldighedsperioden.
+- id: eucc-cir-2024-482-05-faithfulness-certificeringskrav
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvilke krav skal være opfyldt for at få udstedt en EUCC-attest?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:9
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er korrekt og kan verificeres mod artikel 9.
+- id: eucc-cir-2024-482-06-faithfulness-revision
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Under hvilke omstændigheder kan en EUCC-attest revideres?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er korrekt og kan verificeres mod artikel 13.
+- id: eucc-cir-2024-482-07-faithfulness-tilbagekaldelse
+  profile: LEGAL
+  test_types:
+  - faithfulness
+  origin: auto
+  prompt: Hvad er betingelserne for tilbagekaldelse af en EUCC-attest?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:14
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret er korrekt og kan verificeres mod artikel 14.
+- id: eucc-cir-2024-482-08-relevancy-certificeringsorgan
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvilke krav skal et certificeringsorgan opfylde for at kunne udstede EUCC-attester?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:21
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret direkte adresserer kravene til certificeringsorganer.
+- id: eucc-cir-2024-482-09-relevancy-ITSEF
+  profile: ENGINEERING
+  test_types:
+  - relevancy
+  origin: auto
+  prompt: Hvilke krav gælder for en ITSEF, der udfører evalueringer på højt tillidsniveau?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:22
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester at svaret direkte adresserer kravene til ITSEF.
+- id: eucc-cir-2024-482-10-abstention-udstedelse
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Kan en EUCC-attest udstedes uden at ansøgeren har indsendt alle nødvendige
+    oplysninger?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester at systemet nægter at svare, da spørgsmålet ligger uden for lovens
+      scope.
+- id: eucc-cir-2024-482-11-abstention-sikkerhed
+  profile: ENGINEERING
+  test_types:
+  - abstention
+  origin: auto
+  prompt: Hvad er de specifikke sikkerhedskrav for produkter uden for IKT-kategorien?
+  expected:
+    allow_empty_references: true
+    must_have_article_support_for_normative: false
+    must_include_any_of: []
+    must_not_include_any_of: []
+    behavior: abstain
+    notes: Tester at systemet nægter at svare, da spørgsmålet omhandler produkter
+      uden for lovens scope.
+- id: eucc-cir-2024-482-12-robustness-omformulering
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er proceduren for at revidere en EUCC-attest?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere omformulering af spørgsmålet.
+- id: eucc-cir-2024-482-13-robustness-stavefejl
+  profile: ENGINEERING
+  test_types:
+  - robustness
+  origin: auto
+  prompt: Hvad er gyldighedsperioden for en EUCC-attest?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:12
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at håndtere stavefejl i spørgsmålet.
+- id: eucc-cir-2024-482-14-multi_hop-certificering-ITSEF
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvilke krav skal både certificeringsorganer og ITSEF opfylde for at kunne
+    udføre evalueringer?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:21
+    - article:22
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler.
+- id: eucc-cir-2024-482-15-multi_hop-tilbagekaldelse-revision
+  profile: ENGINEERING
+  test_types:
+  - multi_hop
+  origin: auto
+  prompt: Hvad er proceduren for tilbagekaldelse og revision af en EUCC-attest?
+  expected:
+    allow_empty_references: false
+    must_have_article_support_for_normative: true
+    must_include_any_of:
+    - article:13
+    - article:14
+    must_not_include_any_of: []
+    behavior: answer
+    notes: Tester systemets evne til at kombinere information fra flere artikler om
+      revision og tilbagekaldelse.

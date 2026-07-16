@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 import math
 from dataclasses import dataclass
-from typing import Callable
+from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +238,8 @@ def _apply_confidence_gating(
         if len(suggest_corpora) > config.max_suggest_corpora:
             logger.info(
                 "ABSTAIN: %d corpora above suggest threshold (max %d) — query too vague",
-                len(suggest_corpora), config.max_suggest_corpora,
+                len(suggest_corpora),
+                config.max_suggest_corpora,
             )
             return DiscoveryResult(
                 matches=tuple(matches),
@@ -300,7 +301,10 @@ def discover_corpora(
     # Stage 2: Retrieval probe
     try:
         probe_matches = _stage_retrieval_probe(
-            question, corpus_ids, probe_fn, config,
+            question,
+            corpus_ids,
+            probe_fn,
+            config,
         )
     except Exception:
         logger.error("Discovery probe failed entirely", exc_info=True)
@@ -308,20 +312,20 @@ def discover_corpora(
 
     # Stage 3: LLM disambiguation (optional)
     llm_matches: list[DiscoveryMatch] = []
-    if (
-        config.llm_disambiguation
-        and llm_fn is not None
-        and len(probe_matches) >= 2
-    ):
+    if config.llm_disambiguation and llm_fn is not None and len(probe_matches) >= 2:
         top_two = probe_matches[:2]
         gap = top_two[0].confidence - top_two[1].confidence
         if gap < config.ambiguity_margin:
             try:
                 llm_matches = _stage_llm_disambiguation(
-                    question, probe_matches[:5], llm_fn,
+                    question,
+                    probe_matches[:5],
+                    llm_fn,
                 )
             except Exception:
-                logger.warning("LLM disambiguation failed, using probe results", exc_info=True)
+                logger.warning(
+                    "LLM disambiguation failed, using probe results", exc_info=True
+                )
 
     # Merge stages
     merged = _merge_stages(alias_matches, probe_matches, llm_matches)
@@ -365,3 +369,126 @@ def _stage_llm_disambiguation(
 
     result.sort(key=lambda m: m.confidence, reverse=True)
     return result
+
+
+# ---------------------------------------------------------------------------
+# Step 6.5: Stage function extracted from RAGEngine._execute_corpus_discovery
+# ---------------------------------------------------------------------------
+
+
+def execute_corpus_discovery_stage(
+    *,
+    question: str,
+    run_meta: dict,
+    available_corpora_fn: Callable[[], list[str]],
+    get_collection_for_corpus_fn: Callable[[str], Any],
+    retriever: Any,
+    llm_fn: Callable | None = None,
+) -> tuple[str, list[str], dict | None]:
+    """Execute corpus discovery to determine which corpora to query.
+
+    Args:
+        question: The user question.
+        run_meta: Run metadata dict (mutated with discovery results).
+        available_corpora_fn: Returns list of corpus IDs.
+        get_collection_for_corpus_fn: Returns ChromaDB collection for a corpus.
+        retriever: Retriever instance for probe queries.
+        llm_fn: Optional LLM function for disambiguation.
+
+    Returns:
+        (resolved_scope, resolved_corpora, early_return_payload_or_none).
+        If early_return_payload is not None, caller should return it immediately.
+    """
+    from ..common.config_loader import get_discovery_settings
+    from ..common.corpus_registry import normalize_corpus_id
+    from .corpus_resolver import load_resolver_for_project_root
+    from pathlib import Path
+
+    disc_raw = get_discovery_settings()
+    disc_config = DiscoveryConfig(
+        enabled=disc_raw.get("enabled", True),
+        probe_top_k=int(disc_raw.get("probe_top_k", 10)),
+        auto_threshold=float(disc_raw.get("auto_threshold", 0.75)),
+        suggest_threshold=float(disc_raw.get("suggest_threshold", 0.65)),
+        ambiguity_margin=float(disc_raw.get("ambiguity_margin", 0.10)),
+        max_corpora=int(disc_raw.get("max_corpora", 5)),
+        llm_disambiguation=bool(disc_raw.get("llm_disambiguation", True)),
+        w_similarity=float(
+            disc_raw.get("scoring_weights", {}).get("w_similarity", 0.50)
+        ),
+        w_best=float(disc_raw.get("scoring_weights", {}).get("w_best", 0.50)),
+        max_suggest_corpora=int(disc_raw.get("max_suggest_corpora", 3)),
+    )
+
+    all_corpus_ids = available_corpora_fn()
+    project_root = str(Path(__file__).resolve().parents[2])
+    resolver = load_resolver_for_project_root(project_root)
+
+    # Adapter: map resolver's normalized keys to config keys.
+    _norm_to_cfg: dict[str, str] = {normalize_corpus_id(k): k for k in all_corpus_ids}
+
+    class _ConfigKeyResolver:
+        def __init__(self, inner: object, key_map: dict[str, str]) -> None:
+            self._inner = inner
+            self._map = key_map
+
+        def mentioned_corpus_keys(self, text: str) -> list[str]:
+            norm_keys = self._inner.mentioned_corpus_keys(text)  # type: ignore[attr-defined]
+            return [self._map.get(k, k) for k in norm_keys]
+
+    adapted_resolver = _ConfigKeyResolver(resolver, _norm_to_cfg)
+
+    def _probe_fn(q: str, cid: str, k: int) -> list[tuple[dict, float]]:
+        coll = get_collection_for_corpus_fn(cid)
+        _ids, _docs, metas, dists = retriever._query_collection_raw(
+            collection=coll,
+            question=q,
+            k=k,
+            where={"corpus_id": cid},
+            track_state=False,
+        )
+        return list(zip(metas, dists, strict=False))
+
+    disc_result = discover_corpora(
+        question=question,
+        corpus_ids=all_corpus_ids,
+        probe_fn=_probe_fn,
+        resolver=adapted_resolver,
+        config=disc_config,
+        llm_fn=llm_fn if disc_config.llm_disambiguation else None,
+    )
+
+    run_meta["discovery"] = {
+        "matches": [
+            {
+                "corpus_id": m.corpus_id,
+                "confidence": m.confidence,
+                "reason": m.reason,
+                "display_name": resolver.display_name_for(m.corpus_id) or m.corpus_id,
+            }
+            for m in disc_result.matches
+        ],
+        "resolved_scope": disc_result.resolved_scope,
+        "resolved_corpora": list(disc_result.resolved_corpora),
+        "gate": disc_result.gate,
+    }
+
+    if disc_result.gate == "ABSTAIN":
+        run_meta["abstain"] = {
+            "abstained": True,
+            "reason": "Kan ikke med sikkerhed identificere den relevante lovgivning. Vælg venligst en eller flere love manuelt.",
+        }
+        return (
+            "discover",
+            [],
+            {
+                "answer": "",
+                "references": [],
+                "reference_lines": [],
+                "retrieval": {},
+                "run": run_meta,
+                "prompt": "",
+            },
+        )
+
+    return disc_result.resolved_scope, list(disc_result.resolved_corpora), None

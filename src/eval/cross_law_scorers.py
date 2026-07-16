@@ -302,7 +302,9 @@ class RoutingPrecisionScorer:
         passed = precision >= 0.80
 
         if passed:
-            message = f"Routed to {len(correctly_routed)}/{len(expected_laws)} expected laws"
+            message = (
+                f"Routed to {len(correctly_routed)}/{len(expected_laws)} expected laws"
+            )
         else:
             missing = expected_laws - context_corpora
             message = f"Missing laws: {', '.join(sorted(missing))}"

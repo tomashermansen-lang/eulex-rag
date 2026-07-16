@@ -128,7 +128,9 @@ class TestCrossLawSuiteManagerCRUD:
         result = manager.get_suite("nonexistent_suite")
         assert result is None
 
-    def test_csm_003_create_suite_saves_to_yaml(self, manager, sample_suite, temp_evals_dir):
+    def test_csm_003_create_suite_saves_to_yaml(
+        self, manager, sample_suite, temp_evals_dir
+    ):
         """create_suite should persist suite as YAML file."""
         manager.create_suite(sample_suite)
 
@@ -138,6 +140,7 @@ class TestCrossLawSuiteManagerCRUD:
 
         # Verify content is valid YAML
         import yaml
+
         with open(expected_file) as f:
             data = yaml.safe_load(f)
         assert data["id"] == sample_suite.id
@@ -176,7 +179,9 @@ class TestCrossLawSuiteManagerCRUD:
         with pytest.raises(FileNotFoundError):
             manager.update_suite(fake_suite)
 
-    def test_csm_005_delete_suite_removes_file(self, manager, sample_suite, temp_evals_dir):
+    def test_csm_005_delete_suite_removes_file(
+        self, manager, sample_suite, temp_evals_dir
+    ):
         """delete_suite should remove the YAML file."""
         manager.create_suite(sample_suite)
 
@@ -254,6 +259,7 @@ cases:
 
         # Should be valid YAML
         import yaml
+
         data = yaml.safe_load(yaml_str)
         assert data["id"] == sample_suite.id
         assert data["name"] == sample_suite.name
@@ -817,7 +823,10 @@ cases:
 
         with pytest.raises(SuiteValidationError) as exc_info:
             manager.create_suite(suite)
-        assert "cra" in str(exc_info.value).lower() or "subset" in str(exc_info.value).lower()
+        assert (
+            "cra" in str(exc_info.value).lower()
+            or "subset" in str(exc_info.value).lower()
+        )
 
     def test_ce_008_duplicate_case_copies_new_fields(self, manager):
         """CE-008: duplicate_case copies difficulty."""

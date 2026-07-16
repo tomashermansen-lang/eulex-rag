@@ -1,5 +1,5 @@
 """Tests for prompt_builder module."""
-import pytest
+
 from typing import Dict, Any, Tuple
 
 from src.engine.prompt_builder import (
@@ -16,7 +16,10 @@ from src.engine.retrieval_pipeline import SelectedChunk, RetrievedChunk
 
 def _make_mock_format_fn():
     """Create a simple format metadata function for testing."""
-    def format_fn(meta: Dict[str, Any], doc: str) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
+
+    def format_fn(
+        meta: Dict[str, Any], doc: str
+    ) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
         article = meta.get("article", "")
         annex = meta.get("annex", "")
         recital = meta.get("recital", "")
@@ -38,6 +41,7 @@ def _make_mock_format_fn():
         }
         validation = {"valid": True}
         return reference, sanitized, validation
+
     return format_fn
 
 
@@ -79,11 +83,13 @@ class TestExtractRawAnchors:
         assert result == ["annex:iii"]
 
     def test_multiple_anchors(self):
-        result = _extract_raw_anchors_from_meta({
-            "article": "5",
-            "recital": "10",
-            "annex": "II",
-        })
+        result = _extract_raw_anchors_from_meta(
+            {
+                "article": "5",
+                "recital": "10",
+                "annex": "II",
+            }
+        )
         assert sorted(result) == ["annex:ii", "article:5", "recital:10"]
 
 
@@ -91,16 +97,25 @@ class TestBuildReferencesStructured:
     """Tests for build_references_structured."""
 
     def test_empty_included(self):
-        refs, blocks, structured = build_references_structured([], _make_mock_format_fn())
+        refs, blocks, structured = build_references_structured(
+            [], _make_mock_format_fn()
+        )
         assert refs == []
         assert blocks == []
         assert structured == []
 
     def test_single_chunk(self):
         included = [
-            ("This is the document text.", {"article": "6", "corpus_id": "test"}, "chunk-1", None)
+            (
+                "This is the document text.",
+                {"article": "6", "corpus_id": "test"},
+                "chunk-1",
+                None,
+            )
         ]
-        refs, blocks, structured = build_references_structured(included, _make_mock_format_fn())
+        refs, blocks, structured = build_references_structured(
+            included, _make_mock_format_fn()
+        )
 
         assert len(refs) == 1
         assert refs[0] == "[1] Artikel 6"
@@ -119,7 +134,9 @@ class TestBuildReferencesStructured:
             ("Doc 2", {"annex": "III"}, "chunk-2", None),
             ("Doc 3", {"recital": "10"}, "chunk-3", "precise-ref"),
         ]
-        refs, blocks, structured = build_references_structured(included, _make_mock_format_fn())
+        refs, blocks, structured = build_references_structured(
+            included, _make_mock_format_fn()
+        )
 
         assert len(refs) == 3
         assert "[1] Artikel 5" in refs[0]
@@ -332,7 +349,11 @@ class TestBuildDiscoveryPreamble:
         result = build_discovery_preamble(
             gate="SUGGEST",
             matches=[
-                {"corpus_id": "data_act", "confidence": 0.68, "display_name": "Data Act"},
+                {
+                    "corpus_id": "data_act",
+                    "confidence": 0.68,
+                    "display_name": "Data Act",
+                },
             ],
         )
         assert "Data Act" in result
@@ -349,7 +370,9 @@ class TestBuildDiscoveryPreamble:
 
         result = build_discovery_preamble(
             gate="AUTO",
-            matches=[{"corpus_id": "ai_act", "confidence": 0.9, "display_name": "AI-Act"}],
+            matches=[
+                {"corpus_id": "ai_act", "confidence": 0.9, "display_name": "AI-Act"}
+            ],
             template_auto="Found law: {law_names}",
         )
         assert result == "Found law: AI-Act"

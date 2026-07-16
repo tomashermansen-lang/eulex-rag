@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 import yaml
 
 from .llm_client import make_openai_client
-from . import helpers
+from . import metadata_helpers
 from .types import RAGEngineError
 from ..common.config_loader import get_sibling_expansion_settings
 
@@ -75,7 +75,9 @@ def apply_score_floor(
     # Load defaults from config if not provided
     if floor_threshold is None or floor_boost is None:
         cfg_threshold, cfg_boost = get_floor_config()
-        floor_threshold = floor_threshold if floor_threshold is not None else cfg_threshold
+        floor_threshold = (
+            floor_threshold if floor_threshold is not None else cfg_threshold
+        )
         floor_boost = floor_boost if floor_boost is not None else cfg_boost
 
     # Identify protected chunks: initial hits with high confidence
@@ -147,12 +149,14 @@ def get_initial_protected_hits(
         if distance < threshold:
             chunk_id = (meta or {}).get("chunk_id")
             if chunk_id:
-                protected.append({
-                    "chunk_id": chunk_id,
-                    "distance": distance,
-                    "initial_rank": i,
-                    "metadata": meta,
-                })
+                protected.append(
+                    {
+                        "chunk_id": chunk_id,
+                        "distance": distance,
+                        "initial_rank": i,
+                        "metadata": meta,
+                    }
+                )
 
     if protected:
         logger.debug(
@@ -168,9 +172,11 @@ def get_initial_protected_hits(
 # Retrieval pass tracking helpers (extracted from RAGEngine.answer_structured)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class RetrievalPassInfo:
     """Debug info for a single retrieval pass."""
+
     pass_name: str
     planned_where: Dict[str, Any] | None
     planned_collection_type: str
@@ -227,33 +233,48 @@ class RetrievalPassTracker:
             planned_where: The where clause that was planned.
             planned_collection_type: 'toc' or 'chunk'.
         """
-        self.passes.append({
-            "pass_name": str(pass_name),
-            "planned_where": deepcopy(planned_where) if planned_where is not None else None,
-            "planned_collection_type": str(planned_collection_type),
-            "effective_where": deepcopy(getattr(self.retriever, "_last_effective_where", None)),
-            "effective_collection": getattr(self.retriever, "_last_effective_collection_name", None),
-            "effective_collection_type": getattr(self.retriever, "_last_effective_collection_type", None),
-            "retrieved_ids": list(getattr(self.retriever, "_last_retrieved_ids", []) or []),
-            "distances": distances_summary(list(getattr(self.retriever, "_last_distances", []) or [])),
-        })
+        self.passes.append(
+            {
+                "pass_name": str(pass_name),
+                "planned_where": deepcopy(planned_where)
+                if planned_where is not None
+                else None,
+                "planned_collection_type": str(planned_collection_type),
+                "effective_where": deepcopy(
+                    getattr(self.retriever, "_last_effective_where", None)
+                ),
+                "effective_collection": getattr(
+                    self.retriever, "_last_effective_collection_name", None
+                ),
+                "effective_collection_type": getattr(
+                    self.retriever, "_last_effective_collection_type", None
+                ),
+                "retrieved_ids": list(
+                    getattr(self.retriever, "_last_retrieved_ids", []) or []
+                ),
+                "distances": distances_summary(
+                    list(getattr(self.retriever, "_last_distances", []) or [])
+                ),
+            }
+        )
 
     def get_passes(self) -> List[Dict[str, Any]]:
         """Return all recorded passes."""
         return list(self.passes)
 
+
 class Retriever:
     def __init__(self, collection: Any, embedding_model: str):
         self.collection = collection
         self.embedding_model = embedding_model
-        
+
         # Audit state
         self._last_retrieved_ids: List[str] = []
         self._last_retrieved_metadatas: List[Dict[str, Any]] = []
         self._last_effective_where: Dict[str, Any] | None = None
         self._last_effective_collection_name: str | None = None
         self._last_effective_collection_type: str | None = None
-        
+
         # Sibling expansion tracking
         self._last_sibling_expansion: Dict[str, Any] = {}
 
@@ -350,8 +371,12 @@ class Retriever:
         # Capture the effective filter & collection for audit/debug (deep-copied).
         # Only track state for primary queries, not injection/expansion queries.
         if track_state:
-            self._last_effective_where = deepcopy(effective_where) if effective_where is not None else None
-            self._last_effective_collection_name = self._collection_name_best_effort(collection)
+            self._last_effective_where = (
+                deepcopy(effective_where) if effective_where is not None else None
+            )
+            self._last_effective_collection_name = self._collection_name_best_effort(
+                collection
+            )
             self._last_effective_collection_type = self._collection_type(collection)
 
         query_embedding = self._embed([question])[0]
@@ -363,14 +388,20 @@ class Retriever:
         results = collection.query(**kwargs)
 
         ids = results.get("ids", [[]])[0] if isinstance(results, dict) else []
-        documents = results.get("documents", [[]])[0] if isinstance(results, dict) else []
-        metadatas = results.get("metadatas", [[]])[0] if isinstance(results, dict) else []
-        distances = results.get("distances", [[]])[0] if isinstance(results, dict) else []
+        documents = (
+            results.get("documents", [[]])[0] if isinstance(results, dict) else []
+        )
+        metadatas = (
+            results.get("metadatas", [[]])[0] if isinstance(results, dict) else []
+        )
+        distances = (
+            results.get("distances", [[]])[0] if isinstance(results, dict) else []
+        )
 
         safe_ids = [str(item) for item in (ids or [])]
         safe_docs = [str(d or "") for d in (documents or [])]
         # Normalize metadata at read-time to eliminate case-sensitivity issues
-        safe_metas = [helpers.normalize_metadata(m) for m in (metadatas or [])]
+        safe_metas = [metadata_helpers.normalize_metadata(m) for m in (metadatas or [])]
 
         safe_distances: list[float] = []
         for d in distances or []:
@@ -393,13 +424,17 @@ class Retriever:
         ids, documents, metadatas, safe_distances = self._query_collection_raw(
             collection=collection, question=question, k=k, where=where
         )
-        
+
         original_count = len(ids)
-        
+
         # Apply sibling expansion if enabled
         sibling_settings = get_sibling_expansion_settings()
-        should_expand = expand_siblings if expand_siblings is not None else sibling_settings.get("enabled", False)
-        
+        should_expand = (
+            expand_siblings
+            if expand_siblings is not None
+            else sibling_settings.get("enabled", False)
+        )
+
         if should_expand and ids:
             max_siblings = sibling_settings.get("max_siblings", 2)
             ids, documents, metadatas, safe_distances = self._expand_to_siblings(
@@ -425,14 +460,25 @@ class Retriever:
                 "expanded_count": original_count,
                 "siblings_added": 0,
             }
-        
+
         self._last_retrieved_ids = [str(item) for item in (ids or [])]
         # Normalize metadata at read-time to eliminate case-sensitivity issues
-        self._last_retrieved_metadatas = [helpers.normalize_metadata(meta) for meta in (metadatas or [])]
+        self._last_retrieved_metadatas = [
+            metadata_helpers.normalize_metadata(meta) for meta in (metadatas or [])
+        ]
         return list(zip(documents, metadatas)), safe_distances
 
-    def _query_collection(self, *, collection: Any, question: str, k: int, where: Dict[str, Any] | None = None):
-        hits, _ = self._query_collection_with_distances(collection=collection, question=question, k=k, where=where)
+    def _query_collection(
+        self,
+        *,
+        collection: Any,
+        question: str,
+        k: int,
+        where: Dict[str, Any] | None = None,
+    ):
+        hits, _ = self._query_collection_with_distances(
+            collection=collection, question=question, k=k, where=where
+        )
         return hits
 
     def _expand_to_siblings(
@@ -475,13 +521,17 @@ class Retriever:
             loc_id = (meta or {}).get("location_id", "")
             if loc_id and loc_id not in location_to_first_idx:
                 location_to_first_idx[loc_id] = idx
-                location_to_distance[loc_id] = distances[idx] if idx < len(distances) else 1.0
+                location_to_distance[loc_id] = (
+                    distances[idx] if idx < len(distances) else 1.0
+                )
 
         if not location_to_first_idx:
             return ids, documents, metadatas, distances
 
         # Query for sibling chunks for each unique location_id
-        siblings_by_location: Dict[str, List[Tuple[str, str, Dict[str, Any], float]]] = {}
+        siblings_by_location: Dict[
+            str, List[Tuple[str, str, Dict[str, Any], float]]
+        ] = {}
 
         for loc_id, original_distance in location_to_distance.items():
             try:
@@ -489,7 +539,7 @@ class Retriever:
                 where_clause = {"location_id": loc_id}
                 # Get a few more than max_siblings to account for the original chunk
                 fetch_count = max_siblings + 3
-                
+
                 results = collection.get(
                     where=where_clause,
                     include=["documents", "metadatas"],
@@ -499,14 +549,19 @@ class Retriever:
                 result_ids = results.get("ids", []) or []
                 result_docs = results.get("documents", []) or []
                 # Normalize sibling metadata at read-time
-                result_metas = [helpers.normalize_metadata(m) for m in (results.get("metadatas", []) or [])]
+                result_metas = [
+                    metadata_helpers.normalize_metadata(m)
+                    for m in (results.get("metadatas", []) or [])
+                ]
 
                 # Collect candidates excluding already-retrieved chunks
                 candidates: List[Tuple[int, str, str, Dict[str, Any]]] = []
                 for i, cid in enumerate(result_ids):
                     if cid not in seen_ids:
                         chunk_idx = result_metas[i].get("chunk_index", 0)
-                        candidates.append((chunk_idx, cid, result_docs[i], result_metas[i]))
+                        candidates.append(
+                            (chunk_idx, cid, result_docs[i], result_metas[i])
+                        )
 
                 # Sort by chunk_index and take max_siblings
                 candidates.sort(key=lambda x: x[0])
@@ -533,7 +588,9 @@ class Retriever:
         expanded_metas: List[Dict[str, Any]] = []
         expanded_distances: List[float] = []
 
-        for idx, (cid, doc, meta, dist) in enumerate(zip(ids, documents, metadatas, distances)):
+        for idx, (cid, doc, meta, dist) in enumerate(
+            zip(ids, documents, metadatas, distances)
+        ):
             # Add the original chunk
             expanded_ids.append(cid)
             expanded_docs.append(doc)
@@ -542,7 +599,10 @@ class Retriever:
 
             # If this is the first chunk for its location, add siblings after it
             loc_id = (meta or {}).get("location_id", "")
-            if loc_id in siblings_by_location and location_to_first_idx.get(loc_id) == idx:
+            if (
+                loc_id in siblings_by_location
+                and location_to_first_idx.get(loc_id) == idx
+            ):
                 for sib_id, sib_doc, sib_meta, sib_dist in siblings_by_location[loc_id]:
                     expanded_ids.append(sib_id)
                     expanded_docs.append(sib_doc)
@@ -603,11 +663,11 @@ class Retriever:
         ids_list: List[str] | None = None,
     ) -> Tuple[
         List[Tuple[str, Dict[str, Any]]],  # precise hits
-        List[float],                        # precise distances
-        List[str],                          # precise ids
+        List[float],  # precise distances
+        List[str],  # precise ids
         List[Tuple[str, Dict[str, Any]]],  # imprecise hits
-        List[float],                        # imprecise distances
-        List[str],                          # imprecise ids
+        List[float],  # imprecise distances
+        List[str],  # imprecise ids
     ]:
         """Split hits into precise (has article/annex/chapter) vs imprecise."""
         precise = []
@@ -624,7 +684,7 @@ class Retriever:
             if ids_list is not None and i < len(ids_list):
                 cid = ids_list[i]
             else:
-                cid = m.get("chunk_id") or m.get("doc_id") or f"hit-{i+1}"
+                cid = m.get("chunk_id") or m.get("doc_id") or f"hit-{i + 1}"
             if is_precise:
                 precise.append((doc, meta))
                 precise_d.append(did)
@@ -641,11 +701,11 @@ class Retriever:
         dists: List[float],
     ) -> Tuple[
         List[Tuple[str, Dict[str, Any]]],  # precise hits
-        List[float],                        # precise distances
-        List[str],                          # precise ids
+        List[float],  # precise distances
+        List[str],  # precise ids
         List[Tuple[str, Dict[str, Any]]],  # imprecise hits
-        List[float],                        # imprecise distances
-        List[str],                          # imprecise ids
+        List[float],  # imprecise distances
+        List[str],  # imprecise ids
     ]:
         """Split hits into precise (has article/annex/chapter) vs imprecise (simplified version without ids_list)."""
         precise = []
@@ -658,7 +718,7 @@ class Retriever:
             m = dict(meta or {})
             is_precise = bool(m.get("article") or m.get("annex") or m.get("chapter"))
             did = dists[i] if i < len(dists) else None
-            cid = m.get("chunk_id") or m.get("doc_id") or f"hit-{i+1}"
+            cid = m.get("chunk_id") or m.get("doc_id") or f"hit-{i + 1}"
             if is_precise:
                 precise.append((doc, meta))
                 precise_d.append(did)
@@ -674,9 +734,11 @@ class Retriever:
 # Multi-anchor retrieval helper (extracted from RAGEngine.answer_structured)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class MultiAnchorResult:
     """Result of multi-anchor retrieval."""
+
     hits: List[Tuple[str, Dict[str, Any]]]
     distances: List[float]
     retrieved_ids: List[str]
@@ -715,10 +777,17 @@ def execute_multi_anchor_retrieval(
     for a in list(explicit_article_refs or []):
         scopes.append({"corpus_id": corpus_id, "article": str(a)})
     for ax in list(explicit_annex_refs or []):
-        scopes.append({"corpus_id": corpus_id, "annex": helpers.normalize_annex_for_chroma(ax)})
+        scopes.append(
+            {
+                "corpus_id": corpus_id,
+                "annex": metadata_helpers.normalize_annex_for_chroma(ax),
+            }
+        )
 
     if not scopes:
-        return MultiAnchorResult(hits=[], distances=[], retrieved_ids=[], retrieved_metadatas=[])
+        return MultiAnchorResult(
+            hits=[], distances=[], retrieved_ids=[], retrieved_metadatas=[]
+        )
 
     k_total = int(top_k)
     k_each = max(2, int(math.ceil(k_total / max(1, len(scopes)))))
@@ -734,7 +803,10 @@ def execute_multi_anchor_retrieval(
 
         for i, (doc, meta) in enumerate(list(h_sc or [])):
             m = dict(meta or {})
-            chunk_id = str(m.get("chunk_id") or "").strip() or str(ids_sc[i] if i < len(ids_sc) else "").strip()
+            chunk_id = (
+                str(m.get("chunk_id") or "").strip()
+                or str(ids_sc[i] if i < len(ids_sc) else "").strip()
+            )
             if not chunk_id:
                 continue
             dist = float(d_sc[i]) if i < len(d_sc) and d_sc[i] is not None else 1.0
@@ -795,9 +867,11 @@ def execute_multi_anchor_retrieval(
 # Retrieval Pipeline Result (extracted from RAGEngine.answer_structured)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class RetrievalPipelineResult:
     """Complete result of the retrieval pipeline."""
+
     hits: List[Tuple[str, Dict[str, Any]]]
     distances: List[float]
     retrieved_ids: List[str]
@@ -882,7 +956,9 @@ def execute_engineering_citable_prefer_pass(
     except Exception:  # noqa: BLE001
         # Fallback to larger k without citable filter
         try:
-            hits2, dists2, ids2, metas2 = query_fn(question=question, k=k2, where=where_for_retrieval)
+            hits2, dists2, ids2, metas2 = query_fn(
+                question=question, k=k2, where=where_for_retrieval
+            )
             if hits2:
                 pass_tracker.record_pass(
                     pass_name="engineering_citable_fallback",
@@ -911,7 +987,13 @@ def execute_anchor_hint_injection(
     current_metas: List[Dict[str, Any]],
     top_k: int,
     max_anchors: int = 10,
-) -> Tuple[List[Tuple[str, Dict[str, Any]]], List[float], List[str], List[Dict[str, Any]], Dict[str, Any]]:
+) -> Tuple[
+    List[Tuple[str, Dict[str, Any]]],
+    List[float],
+    List[str],
+    List[Dict[str, Any]],
+    Dict[str, Any],
+]:
     """Inject additional candidates by querying hinted anchors.
 
     This helps when TOC-scoped retrieval misses expected anchors entirely.
@@ -947,7 +1029,9 @@ def execute_anchor_hint_injection(
     retrieved_metas = list(current_metas)
 
     seen_ids = set(str(x) for x in retrieved_ids)
-    anchors_sorted = sorted({a for a in hint_anchors if isinstance(a, str) and a.strip()})[:max_anchors]
+    anchors_sorted = sorted(
+        {a for a in hint_anchors if isinstance(a, str) and a.strip()}
+    )[:max_anchors]
 
     for anchor in anchors_sorted:
         if ":" not in anchor:
@@ -959,11 +1043,13 @@ def execute_anchor_hint_injection(
             continue
 
         value_variants = sorted({value, value.lower(), value.upper()})
-        debug["injected_query_specs"].append({
-            "kind": str(kind),
-            "value": str(value),
-            "value_variants": list(value_variants),
-        })
+        debug["injected_query_specs"].append(
+            {
+                "kind": str(kind),
+                "value": str(value),
+                "value_variants": list(value_variants),
+            }
+        )
 
         for vv in value_variants:
             where_hint: Dict[str, Any] = {"corpus_id": corpus_id, kind: vv}
@@ -976,7 +1062,9 @@ def execute_anchor_hint_injection(
                     where=where_hint,
                 )
 
-                for hid, hdoc, hmeta, hd in zip(ids_h, docs_h, metas_h, dist_h, strict=False):
+                for hid, hdoc, hmeta, hd in zip(
+                    ids_h, docs_h, metas_h, dist_h, strict=False
+                ):
                     sid = str(hid)
                     if not sid or sid in seen_ids:
                         continue
@@ -1005,7 +1093,6 @@ class AnchorRescueResult:
 
 def _norm_anchor(a: str) -> str:
     """Normalize anchor string for comparison."""
-    import re
     return re.sub(r"\s+", "", str(a or "")).strip().lower()
 
 
@@ -1079,9 +1166,22 @@ def execute_anchor_rescue(
     retrieved_metas = list(retrieved_metas)
 
     try:
-        required_any_1 = set(normalize_anchor_list_fn(required_anchors_payload.get("must_include_any_of"), require_colon=True))
-        required_any_2 = set(normalize_anchor_list_fn(required_anchors_payload.get("must_include_any_of_2"), require_colon=True))
-        required_all = set(normalize_anchor_list_fn(required_anchors_payload.get("must_include_all_of"), require_colon=True))
+        required_any_1 = set(
+            normalize_anchor_list_fn(
+                required_anchors_payload.get("must_include_any_of"), require_colon=True
+            )
+        )
+        required_any_2 = set(
+            normalize_anchor_list_fn(
+                required_anchors_payload.get("must_include_any_of_2"),
+                require_colon=True,
+            )
+        )
+        required_all = set(
+            normalize_anchor_list_fn(
+                required_anchors_payload.get("must_include_all_of"), require_colon=True
+            )
+        )
         required_all_union = set().union(required_any_1, required_any_2, required_all)
 
         def _compute_missing(anchors_present: set) -> tuple:
@@ -1101,20 +1201,23 @@ def execute_anchor_rescue(
             retrieved_metas = [dict(m or {}) for _d, m in hits]
         if not retrieved_ids:
             retrieved_ids = [
-                str((m or {}).get("chunk_id") or f"hit-{i}") for i, (_d, m) in enumerate(hits)
+                str((m or {}).get("chunk_id") or f"hit-{i}")
+                for i, (_d, m) in enumerate(hits)
             ]
 
         n0 = min(len(retrieved_metas), len(retrieved_ids), len(hits))
         anchors_present_0: set = set()
         positions_0: Dict[str, List[int]] = {}
         for pos, meta in enumerate(retrieved_metas[:n0], start=1):
-            for a in (anchors_from_metadata_fn(meta) & required_all_union):
+            for a in anchors_from_metadata_fn(meta) & required_all_union:
                 anchors_present_0.add(a)
                 positions_0.setdefault(a, []).append(int(pos))
 
         missing_any_1, missing_any_2, missing_all = _compute_missing(anchors_present_0)
         debug["candidate_pool_size"] = len(hits)
-        debug["anchors_in_candidate_pool"] = {k: v for k, v in sorted(positions_0.items())}
+        debug["anchors_in_candidate_pool"] = {
+            k: v for k, v in sorted(positions_0.items())
+        }
         debug["missing_required_anchor_any_of"] = list(missing_any_1)
         debug["missing_required_anchor_any_of_2"] = list(missing_any_2)
         debug["missing_required_anchor_all_of"] = list(missing_all)
@@ -1153,13 +1256,15 @@ def execute_anchor_rescue(
         anchors_present_1: set = set()
         positions_1: Dict[str, List[int]] = {}
         for pos, meta in enumerate(retrieved_metas[:n1], start=1):
-            for a in (anchors_from_metadata_fn(meta) & required_all_union):
+            for a in anchors_from_metadata_fn(meta) & required_all_union:
                 anchors_present_1.add(a)
                 positions_1.setdefault(a, []).append(int(pos))
 
         missing_any_1, missing_any_2, missing_all = _compute_missing(anchors_present_1)
         debug["candidate_pool_size"] = len(hits)
-        debug["anchors_in_candidate_pool"] = {k: v for k, v in sorted(positions_1.items())}
+        debug["anchors_in_candidate_pool"] = {
+            k: v for k, v in sorted(positions_1.items())
+        }
         debug["missing_required_anchor_any_of"] = list(missing_any_1)
         debug["missing_required_anchor_any_of_2"] = list(missing_any_2)
         debug["missing_required_anchor_all_of"] = list(missing_all)
@@ -1168,7 +1273,9 @@ def execute_anchor_rescue(
         # STEP 3: inject anchor-filtered chunks for any still-missing anchors.
         injected_anchors: List[str] = []
         injected_added = 0
-        if (missing_any_1 or missing_any_2 or missing_all) and query_collection_raw_fn is not None:
+        if (
+            missing_any_1 or missing_any_2 or missing_all
+        ) and query_collection_raw_fn is not None:
             seen_ids = set(str(x) for x in retrieved_ids)
 
             # Choose concrete anchors to rescue deterministically.
@@ -1178,7 +1285,9 @@ def execute_anchor_rescue(
             if missing_any_2:
                 to_rescue.append(sorted(list(required_any_2))[0])
             to_rescue.extend(list(missing_all))
-            to_rescue = list(dict.fromkeys([_norm_anchor(a) for a in to_rescue if ":" in str(a)]))
+            to_rescue = list(
+                dict.fromkeys([_norm_anchor(a) for a in to_rescue if ":" in str(a)])
+            )
 
             for anchor in to_rescue:
                 try:
@@ -1198,7 +1307,9 @@ def execute_anchor_rescue(
                             k=min(max(top_k, 3), 10),
                             where=where_hint,
                         )
-                        for hid, hdoc, hmeta, hd in zip(ids_h, docs_h, metas_h, dist_h, strict=False):
+                        for hid, hdoc, hmeta, hd in zip(
+                            ids_h, docs_h, metas_h, dist_h, strict=False
+                        ):
                             sid = str(hid)
                             if not sid or sid in seen_ids:
                                 continue

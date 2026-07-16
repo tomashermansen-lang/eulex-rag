@@ -11,12 +11,6 @@ Covers:
 - Anchor hint bump order calculation
 """
 
-import os
-from pathlib import Path
-from unittest.mock import patch
-
-import pytest
-
 from src.engine.concept_config import (
     _normalize_anchor,
     _normalize_intent_key,
@@ -26,7 +20,6 @@ from src.engine.concept_config import (
     NormativeGuardPolicy,
     RescueRule,
     AnswerPolicy,
-    Policy,
     _parse_v2_normative_guard,
     _parse_v2_rescue_rules,
     _parse_v2_answer_policy,
@@ -34,10 +27,8 @@ from src.engine.concept_config import (
     extract_anchors_from_metadata,
     load_concept_config,
     anchor_hint_bumping_enabled,
-    get_hint_anchors,
     get_effective_policy,
     compute_anchor_hint_bump_order,
-    AnchorHintBumpResult,
 )
 
 
@@ -180,17 +171,13 @@ class TestNormativeGuardPolicy:
 
     def test_applies_to_specific_profile(self):
         """Profile matching with specific profiles."""
-        policy = NormativeGuardPolicy(
-            required_support="article", profiles=("LEGAL",)
-        )
+        policy = NormativeGuardPolicy(required_support="article", profiles=("LEGAL",))
         assert policy.applies_to_profile("LEGAL") is True
         assert policy.applies_to_profile("ENGINEERING") is False
 
     def test_case_insensitive_profile_matching(self):
         """Profile matching is case-insensitive."""
-        policy = NormativeGuardPolicy(
-            required_support="article", profiles=("LEGAL",)
-        )
+        policy = NormativeGuardPolicy(required_support="article", profiles=("LEGAL",))
         assert policy.applies_to_profile("legal") is True
         assert policy.applies_to_profile("Legal") is True
 
@@ -363,17 +350,21 @@ class TestParseV2AnswerPolicy:
     def test_handles_invalid_min_bullets(self):
         """Handles invalid min_section3_bullets values."""
         # Negative value
-        result = _parse_v2_answer_policy({
-            "intent_category": "REQUIREMENTS",
-            "min_section3_bullets": -1,
-        })
+        result = _parse_v2_answer_policy(
+            {
+                "intent_category": "REQUIREMENTS",
+                "min_section3_bullets": -1,
+            }
+        )
         assert result.min_section3_bullets is None
 
         # Non-numeric value
-        result = _parse_v2_answer_policy({
-            "intent_category": "REQUIREMENTS",
-            "min_section3_bullets": "not a number",
-        })
+        result = _parse_v2_answer_policy(
+            {
+                "intent_category": "REQUIREMENTS",
+                "min_section3_bullets": "not a number",
+            }
+        )
         assert result.min_section3_bullets is None
 
 
@@ -665,7 +656,10 @@ class TestGetEffectivePolicy:
         )
 
         # Should normalize to ["logging", "spaces"]
-        assert "logging" in policy.intent_keys_effective or policy.intent_keys_effective == ()
+        assert (
+            "logging" in policy.intent_keys_effective
+            or policy.intent_keys_effective == ()
+        )
 
     def test_records_requested_intent_keys(self, monkeypatch, tmp_path):
         """Records original requested intent keys."""

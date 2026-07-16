@@ -132,9 +132,7 @@ class TestComputeHistogramBins:
         assert total_count == 50
         # Bins must be contiguous
         for i in range(1, len(result)):
-            assert result[i]["range_start"] == pytest.approx(
-                result[i - 1]["range_end"]
-            )
+            assert result[i]["range_start"] == pytest.approx(result[i - 1]["range_end"])
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -7,13 +7,11 @@ apply_deferred_intent() function, and parallel timing.
 from __future__ import annotations
 
 import time
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Tuple
 from unittest.mock import MagicMock
 
-import pytest
 
 from src.engine.planning import (
-    AnswerContext,
     apply_deferred_intent,
     prepare_answer_context,
 )
@@ -30,8 +28,12 @@ def _make_mock_fns(
     intent_result: ClaimIntent = ClaimIntent.SCOPE,
 ) -> dict:
     """Create mock functions for prepare_answer_context()."""
+
     def classify_intent_fn(
-        question: str, *, last_exchange: list | None = None, query_was_rewritten: bool = False,
+        question: str,
+        *,
+        last_exchange: list | None = None,
+        query_was_rewritten: bool = False,
     ) -> Tuple[ClaimIntent, dict]:
         if intent_delay > 0:
             time.sleep(intent_delay)

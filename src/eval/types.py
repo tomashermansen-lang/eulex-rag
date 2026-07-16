@@ -29,6 +29,7 @@ class ExpectedBehavior:
         required_corpora: Tuple of corpus IDs that must be cited in the answer
             (for cross-law evaluation).
     """
+
     must_include_any_of: list[str] = field(default_factory=list)
     must_include_any_of_2: list[str] = field(default_factory=list)
     must_include_all_of: list[str] = field(default_factory=list)
@@ -72,6 +73,7 @@ class GoldenCase:
         synthesis_mode: Expected synthesis mode for cross-law queries:
             - "aggregation", "comparison", "unified", "routing", or None
     """
+
     id: str
     profile: str  # LEGAL|ENGINEERING
     prompt: str
@@ -81,4 +83,6 @@ class GoldenCase:
     # Cross-law evaluation fields (with defaults for backward compatibility)
     corpus_scope: str = "single"  # "single" | "explicit" | "all"
     target_corpora: tuple[str, ...] = ()
-    synthesis_mode: str | None = None  # "aggregation" | "comparison" | "unified" | "routing" | None
+    synthesis_mode: str | None = (
+        None  # "aggregation" | "comparison" | "unified" | "routing" | None
+    )

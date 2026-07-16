@@ -83,7 +83,9 @@ def test_chunk_html_extracts_paragraph_location_from_numbered_paragraphs_when_fl
     rows = list(
         chunk_html(
             html,
-            config=HtmlChunkingConfig(chunk_tokens=1000, overlap=0, flush_each_text_block=True),
+            config=HtmlChunkingConfig(
+                chunk_tokens=1000, overlap=0, flush_each_text_block=True
+            ),
             base_metadata={"source": "GDPR", "corpus_id": "gdpr"},
             reference_patterns=patterns,
             inline_location_patterns=inline,
@@ -117,12 +119,18 @@ def test_chunk_html_promotes_p_heading_lines_to_structure():
     rows = list(
         chunk_html(
             html,
-            config=HtmlChunkingConfig(chunk_tokens=1000, overlap=0, flush_each_text_block=True),
+            config=HtmlChunkingConfig(
+                chunk_tokens=1000, overlap=0, flush_each_text_block=True
+            ),
             base_metadata={"source": "GDPR", "corpus_id": "gdpr"},
             reference_patterns=patterns,
             inline_location_patterns={"paragraph": re.compile(r"^\s*(\d{1,3})\.\s+")},
             inline_location_requires={"paragraph": ("article",)},
-            initial_reference_state={"chapter": None, "article": None, "paragraph": None},
+            initial_reference_state={
+                "chapter": None,
+                "article": None,
+                "paragraph": None,
+            },
             reset_on={"article": ("paragraph",)},
         )
     )
@@ -135,7 +143,7 @@ def test_chunk_html_promotes_p_heading_lines_to_structure():
 
 
 def test_chunk_html_eurlex_structural_div_ids_set_structure_when_enabled():
-        html = """
+    html = """
         <html><body>
             <div id="cpt_I">
                 <div id="cpt_I.sct_1">
@@ -147,31 +155,33 @@ def test_chunk_html_eurlex_structural_div_ids_set_structure_when_enabled():
         </body></html>
         """
 
-        rows = list(
-                chunk_html(
-                        html,
-                        config=HtmlChunkingConfig(chunk_tokens=1000, overlap=0, flush_each_text_block=True),
-                        base_metadata={"source": "AI Act", "corpus_id": "ai-act"},
-                        initial_reference_state={
-                                "chapter": None,
-                                "section": None,
-                                "article": None,
-                                "paragraph": None,
-                                "litra": None,
-                                "annex": None,
-                        },
-                        enable_eurlex_structural_ids=True,
-                )
+    rows = list(
+        chunk_html(
+            html,
+            config=HtmlChunkingConfig(
+                chunk_tokens=1000, overlap=0, flush_each_text_block=True
+            ),
+            base_metadata={"source": "AI Act", "corpus_id": "ai-act"},
+            initial_reference_state={
+                "chapter": None,
+                "section": None,
+                "article": None,
+                "paragraph": None,
+                "litra": None,
+                "annex": None,
+            },
+            enable_eurlex_structural_ids=True,
         )
+    )
 
-        assert len(rows) == 1
-        meta = rows[0]["metadata"]
-        assert meta.get("chapter") == "I"
-        assert meta.get("section") == "1"
-        assert meta.get("article") == "5"
-        # Canonical location_id should encode structure deterministically.
-        assert "chapter:" in str(meta.get("location_id"))
-        assert "section:" in str(meta.get("location_id"))
-        assert "article:" in str(meta.get("location_id"))
-        # We do not inject synthetic heading text into the chunk payload.
-        assert "Chapter" not in rows[0]["text"]
+    assert len(rows) == 1
+    meta = rows[0]["metadata"]
+    assert meta.get("chapter") == "I"
+    assert meta.get("section") == "1"
+    assert meta.get("article") == "5"
+    # Canonical location_id should encode structure deterministically.
+    assert "chapter:" in str(meta.get("location_id"))
+    assert "section:" in str(meta.get("location_id"))
+    assert "article:" in str(meta.get("location_id"))
+    # We do not inject synthetic heading text into the chunk payload.
+    assert "Chapter" not in rows[0]["text"]

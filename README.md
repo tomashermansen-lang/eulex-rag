@@ -7,7 +7,7 @@
 
 A legal Q&A system for EU legislation that **refuses to answer when evidence is insufficient** — because in regulated domains, a wrong citation has real consequences.
 
-> Hybrid retrieval (vector + BM25 + citation graph) with fail-closed citation validation, 288 eval cases across 12 EU regulations, and LLM-as-judge quality scoring.
+> Hybrid retrieval (vector + BM25 + citation graph) with fail-closed citation validation, 288 eval cases across 13 EU regulations, and LLM-as-judge quality scoring.
 
 > **Note:** This is a proof of concept, not production software. Outputs require human review.
 
@@ -17,7 +17,7 @@ A legal Q&A system for EU legislation that **refuses to answer when evidence is 
 
 EU compliance teams need reliable answers about legislation — which articles apply, what the obligations are, how regulations interact. Getting this wrong has consequences: missed deadlines, incorrect filings, regulatory exposure.
 
-EuLex answers questions about EU regulations with verified article citations. It uses hybrid retrieval to find relevant legal text, validates every citation against source chunks, and abstains when evidence is insufficient rather than guessing. An evaluation pipeline with 281 regression test cases across 12 laws measures quality continuously.
+EuLex answers questions about EU regulations with verified article citations. It uses hybrid retrieval to find relevant legal text, validates every citation against source chunks, and abstains when evidence is insufficient rather than guessing. An evaluation pipeline with 281 regression test cases across 13 laws measures quality continuously.
 
 This project comes from a background in process automation and efficiency improvement of complex business processes — in capital markets (derivatives trading systems, post-trade workflows) and in development processes (CI/CD adoption, release governance). The same instinct applies: when a process has high consequences for errors, you build in verification gates and measure outcomes. Here, the "process" is retrieval-augmented generation, and the "verification gates" are citation validation, abstention scoring, and automated evaluation.
 
@@ -35,6 +35,7 @@ Built over 8 weeks as a proof of concept. Production would require security hard
 - **Cross-law retrieval with corpus discovery** — queries can span multiple EU regulations simultaneously using Reciprocal Rank Fusion. AI-powered corpus discovery auto-detects relevant laws from the question, with confidence-tiered routing (auto/suggest/abstain).
 - **Hybrid retrieval** — vector similarity + BM25 lexical matching + citation graph traversal. Each compensates for the others' blind spots.
 - **Self-service legislation ingestion** — add any EUR-Lex law through the browser UI with preflight checks, structure-aware chunking, LLM enrichment, and closed-loop verification.
+- **Case-law ingestion (CJEU)** — parser, chunker, and citation enrichment for Court of Justice judgments fetched from the EU CELLAR API, so the court decisions that interpret the indexed regulations can join the corpus.
 - **Eval metrics dashboard** — three-level health monitoring (trust overview → quality/performance/ingestion breakdown → drill-down) with trend detection, per-mode/per-difficulty analysis, and AI-powered insights streaming.
 - **User-editable eval suites** — domain experts can run evaluations, review results, and edit test cases directly in the UI, shifting quality ownership out of developer tooling.
 
@@ -165,14 +166,14 @@ See [COMMANDS.md](COMMANDS.md) for full command reference.
 |--------|-------|---------------|
 | **Automated tests** | 2,773 passed | 1,708 backend (pytest) + 1,065 frontend (vitest) |
 | **Test coverage** | 60% | Critical paths covered; required minimum 55% |
-| **Eval cases** | 281 | Regression test cases across 12 EU regulations (~99% auto-generated) |
+| **Eval cases** | 281 | Regression test cases across 13 EU regulations (~99% auto-generated) |
 | **Eval pass rate** | 99.2% | Regression detection rate after model escalation (gpt-4o-mini → gpt-5.2 for ~10% of cases) |
 | **LLM judge thresholds** | ≥75% faithfulness, ≥75% relevancy | Answer quality scoring |
 | **Engine modules** | 30 Python files | SOLID-structured: single responsibility, dependency inversion, no circular imports |
 
 ### Supported Legislation
 
-**12 EU laws currently indexed:** AI Act, GDPR, DORA, NIS2 (Directive + CIR), Data Act, ELAN, REARM-Europe, Reg-Sandkasser, Cyberrobusthed, EUCS (DR + CIR).
+**13 EU laws currently indexed:** AI Act, GDPR, DORA, NIS2 (Directive + CIR), Data Act, ELAN, REARM-Europe, Reg-Sandkasser, Cyberrobusthed, EUCS (DR + CIR), EUCC (CIR).
 
 The ingestion pipeline can add any EUR-Lex legislation that passes preflight checks.
 

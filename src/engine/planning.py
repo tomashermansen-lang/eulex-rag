@@ -1,17 +1,28 @@
 from __future__ import annotations
 
-import os
 import re
-from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Callable, Dict, List, Tuple, TYPE_CHECKING
 
-from . import helpers
+from . import metadata_helpers
+from . import query_helpers
 from .types import ClaimIntent, UserProfile, FocusType, FocusSelection
 
 if TYPE_CHECKING:
     from .policy import EffectivePolicy
+
+
+def normalize_user_profile(user_profile: UserProfile | str | None) -> UserProfile:
+    """Normalize a user_profile argument to UserProfile enum."""
+    if isinstance(user_profile, UserProfile):
+        return user_profile
+    raw = str(user_profile or "").strip().upper()
+    if raw in {"ENGINEERING", "DEV", "DEVELOPER"}:
+        return UserProfile.ENGINEERING
+    if raw == "LEGAL":
+        return UserProfile.LEGAL
+    return UserProfile.ANY
 
 
 @dataclass(frozen=True)
@@ -86,28 +97,42 @@ def detect_intent(*, question: str, focus: FocusSelection | None) -> Intent:
     if any(m in q for m in structure_markers):
         return Intent.STRUCTURE
 
-    if focus and focus.type == FocusType.CHAPTER and any(tok in q for tok in ("kapitlet", "dette kapitel")):
+    if (
+        focus
+        and focus.type == FocusType.CHAPTER
+        and any(tok in q for tok in ("kapitlet", "dette kapitel"))
+    ):
         # The user is referring to the selected chapter.
-        if any(tok in q for tok in ("sammenfat", "opsummer", "hvad handler", "hvad står")):
+        if any(
+            tok in q for tok in ("sammenfat", "opsummer", "hvad handler", "hvad står")
+        ):
             return Intent.CHAPTER_SUMMARY
         # Default: treat as chapter summary for vague "kapitlet" questions.
         if "kapitel" in q:
             return Intent.CHAPTER_SUMMARY
 
     # Explicit chapter reference in question.
-    if re.search(r"(?i)k\s*a\s*p\s*i\s*t\s*e\s*l\s*([0-9]+|[ivxlcdm]+)", question or ""):
-        if any(tok in q for tok in ("sammenfat", "opsummer", "hvad handler", "hvad står")):
+    if re.search(
+        r"(?i)k\s*a\s*p\s*i\s*t\s*e\s*l\s*([0-9]+|[ivxlcdm]+)", question or ""
+    ):
+        if any(
+            tok in q for tok in ("sammenfat", "opsummer", "hvad handler", "hvad står")
+        ):
             return Intent.CHAPTER_SUMMARY
 
     # Article summary.
     if re.search(r"(?i)a\s*r\s*t\s*i\s*k\s*e\s*l\s*(\d{1,3}[a-z]?)", question or ""):
-        if any(tok in q for tok in ("sammenfat", "opsummer", "hvad siger", "hvad står")):
+        if any(
+            tok in q for tok in ("sammenfat", "opsummer", "hvad siger", "hvad står")
+        ):
             return Intent.ARTICLE_SUMMARY
 
     return Intent.FREEFORM
 
 
-def focus_to_where(*, corpus_id: str, focus: FocusSelection | None) -> dict[str, Any] | None:
+def focus_to_where(
+    *, corpus_id: str, focus: FocusSelection | None
+) -> dict[str, Any] | None:
     if not focus:
         return {"corpus_id": corpus_id} if corpus_id else None
 
@@ -124,7 +149,7 @@ def focus_to_where(*, corpus_id: str, focus: FocusSelection | None) -> dict[str,
         return where
 
     if focus.type == FocusType.ANNEX and focus.annex:
-        where["annex"] = helpers.normalize_annex_for_chroma(focus.annex)
+        where["annex"] = metadata_helpers.normalize_annex_for_chroma(focus.annex)
         return where
 
     if focus.type == FocusType.SECTION and focus.section:
@@ -132,7 +157,7 @@ def focus_to_where(*, corpus_id: str, focus: FocusSelection | None) -> dict[str,
         if focus.chapter:
             where["chapter"] = str(focus.chapter)
         if focus.annex:
-            where["annex"] = helpers.normalize_annex_for_chroma(focus.annex)
+            where["annex"] = metadata_helpers.normalize_annex_for_chroma(focus.annex)
         return where
 
     # Fallback: corpus-only
@@ -141,10 +166,11 @@ def focus_to_where(*, corpus_id: str, focus: FocusSelection | None) -> dict[str,
 
 def default_top_k(*, user_profile: UserProfile, base_top_k: int) -> int:
     """Get default top_k from config based on user profile.
-    
+
     Uses max_context_legal / max_context_engineering from settings.yaml.
     """
     from ..common.config_loader import load_settings
+
     cfg = load_settings()
     if user_profile == UserProfile.LEGAL:
         return int(cfg.max_context_legal)
@@ -202,7 +228,7 @@ def refine_retrieval_plan(
         effective_where["corpus_id"] = corpus_id
 
     if "chapter" not in effective_where:
-        chapter_ref = helpers._extract_chapter_ref(question)
+        chapter_ref = query_helpers._extract_chapter_ref(question)
         if chapter_ref:
             canonical = str(chapter_ref).strip().upper()
             if canonical:
@@ -210,16 +236,18 @@ def refine_retrieval_plan(
 
     # Hard-scope to an explicit article ONLY when the question references exactly one article.
     # Multi-article prompts must not be hard-scoped to the first match.
-    explicit_article_refs = helpers._extract_article_refs(question)
-    multi_part_question = helpers._looks_like_multi_part_question(question)
-    explicit_annex_refs = helpers._extract_annex_refs(question)
-    multi_anchor_question = (len(explicit_article_refs) >= 2) or (len(explicit_annex_refs) >= 1)
+    explicit_article_refs = query_helpers._extract_article_refs(question)
+    multi_part_question = query_helpers._looks_like_multi_part_question(question)
+    explicit_annex_refs = query_helpers._extract_annex_refs(question)
+    multi_anchor_question = (len(explicit_article_refs) >= 2) or (
+        len(explicit_annex_refs) >= 1
+    )
     if "article" not in effective_where:
         if (not multi_part_question) and len(explicit_article_refs) == 1:
             effective_where["article"] = explicit_article_refs[0]
 
     if "recital" not in effective_where:
-        recital_ref = helpers._extract_recital_ref(question)
+        recital_ref = query_helpers._extract_recital_ref(question)
         if recital_ref:
             effective_where["recital"] = recital_ref
 
@@ -333,7 +361,9 @@ def prepare_answer_context(
 
     # Get effective policy with default intent
     policy_intent_keys = ["default", str(plan.intent.value)]
-    effective_policy = get_effective_policy_fn(corpus_id=corpus_id, intent_keys=list(policy_intent_keys))
+    effective_policy = get_effective_policy_fn(
+        corpus_id=corpus_id, intent_keys=list(policy_intent_keys)
+    )
 
     # Initialize run_meta
     run_meta: Dict[str, Any] = {
@@ -354,8 +384,12 @@ def prepare_answer_context(
         run_meta["anchor_hints"].update(
             {
                 "intent_used": list(policy_intent_keys),
-                "intent_effective": list(getattr(effective_policy, "intent_keys_effective", ()) or ()),
-                "policy_contributors": dict(getattr(effective_policy, "contributors", {}) or {}),
+                "intent_effective": list(
+                    getattr(effective_policy, "intent_keys_effective", ()) or ()
+                ),
+                "policy_contributors": dict(
+                    getattr(effective_policy, "contributors", {}) or {}
+                ),
             }
         )
 
@@ -371,15 +405,15 @@ def prepare_answer_context(
         if ap is not None:
             run_meta["anchor_hints"].setdefault("effective_policy", {})
             run_meta["anchor_hints"]["effective_policy"]["answer_policy"] = (
-                ap.to_debug_dict() if hasattr(ap, "to_debug_dict") else {"intent_category": str(getattr(ap, "intent_category", "") or "")}
+                ap.to_debug_dict()
+                if hasattr(ap, "to_debug_dict")
+                else {"intent_category": str(getattr(ap, "intent_category", "") or "")}
             )
     except Exception:  # noqa: BLE001
         pass
 
     # Determine claim-intent (or defer for pipeline overlap)
-    query_was_rewritten = (
-        original_query is not None and original_query != question
-    )
+    query_was_rewritten = original_query is not None and original_query != question
 
     if skip_intent_classification:
         claim_intent_final = ClaimIntent.GENERAL
@@ -416,17 +450,26 @@ def prepare_answer_context(
         run_meta.setdefault("claim_intent", {})
         run_meta["claim_intent"].update(
             {
-                "classifier": str(getattr(claim_intent_classifier, "value", claim_intent_classifier) or ""),
-                "final": str(getattr(claim_intent_final, "value", claim_intent_final) or ""),
+                "classifier": str(
+                    getattr(claim_intent_classifier, "value", claim_intent_classifier)
+                    or ""
+                ),
+                "final": str(
+                    getattr(claim_intent_final, "value", claim_intent_final) or ""
+                ),
                 "router": dict(router_debug or {}),
                 "policy": dict(claim_intent_dbg.get("policy") or {}),
             }
         )
 
     # Contract / eval-relevant knobs
-    run_meta["whether_contract_check_enabled"] = bool(contract_min_citations is not None)
+    run_meta["whether_contract_check_enabled"] = bool(
+        contract_min_citations is not None
+    )
     try:
-        run_meta["contract_min_citations"] = int(contract_min_citations) if contract_min_citations is not None else 0
+        run_meta["contract_min_citations"] = (
+            int(contract_min_citations) if contract_min_citations is not None else 0
+        )
     except Exception:  # noqa: BLE001
         run_meta["contract_min_citations"] = 0
 
@@ -468,7 +511,9 @@ def prepare_answer_context(
         corpus_candidates: List[str] = []
         if resolver_fn is not None:
             try:
-                corpus_candidates = list(resolver_fn().mentioned_corpus_keys(q_norm) or [])
+                corpus_candidates = list(
+                    resolver_fn().mentioned_corpus_keys(q_norm) or []
+                )
             except Exception:  # noqa: BLE001
                 corpus_candidates = []
 
@@ -524,7 +569,11 @@ def prepare_answer_context(
             "selected_corpus_norm": selected_corpus_norm,
             "profile": str(resolved_profile.value),
             "contract_check": bool(contract_min_citations is not None),
-            "expected_min_citations": (int(contract_min_citations) if contract_min_citations is not None else None),
+            "expected_min_citations": (
+                int(contract_min_citations)
+                if contract_min_citations is not None
+                else None
+            ),
             "query_norm": q_norm,
             "query_tokens": q_tokens,
             "corpus_candidates": corpus_candidates,
@@ -539,7 +588,9 @@ def prepare_answer_context(
         corpus_id=corpus_id,
         user_profile=resolved_profile,
         claim_intent=claim_intent_final,
-        requirements_cues_detected=bool((claim_intent_dbg or {}).get("requirements_cues_detected")),
+        requirements_cues_detected=bool(
+            (claim_intent_dbg or {}).get("requirements_cues_detected")
+        ),
     )
 
     explicit_article_refs = list(dbg_update.get("explicit_article_refs") or [])
@@ -596,9 +647,7 @@ def apply_deferred_intent(
         The same AnswerContext with updated claim_intent_final and run_meta
     """
     question = answer_ctx.ctx.question
-    query_was_rewritten = (
-        original_query is not None and original_query != question
-    )
+    query_was_rewritten = original_query is not None and original_query != question
     claim_intent_classifier, router_debug = classify_intent_fn(
         question,
         last_exchange=last_exchange,
@@ -620,8 +669,12 @@ def apply_deferred_intent(
     answer_ctx.run_meta.setdefault("claim_intent", {})
     answer_ctx.run_meta["claim_intent"].update(
         {
-            "classifier": str(getattr(claim_intent_classifier, "value", claim_intent_classifier) or ""),
-            "final": str(getattr(claim_intent_final, "value", claim_intent_final) or ""),
+            "classifier": str(
+                getattr(claim_intent_classifier, "value", claim_intent_classifier) or ""
+            ),
+            "final": str(
+                getattr(claim_intent_final, "value", claim_intent_final) or ""
+            ),
             "router": dict(router_debug or {}),
             "policy": dict(policy_dbg or {}),
             "deferred": True,
@@ -687,4 +740,3 @@ def prepare_multi_corpus_context(
         comparison_pairs=synthesis_context.comparison_pairs,
         routing_only=synthesis_context.routing_only,
     )
-

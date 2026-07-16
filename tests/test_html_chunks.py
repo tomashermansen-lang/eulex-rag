@@ -6,7 +6,6 @@ without full HTML parsing infrastructure.
 
 import json
 import re
-from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 import pytest
@@ -97,9 +96,7 @@ class TestPreflightResult:
 
     def test_summary_with_handled(self):
         """Summary includes handled structures."""
-        result = PreflightResult(
-            handled={"articles": 5, "chapters": 2}
-        )
+        result = PreflightResult(handled={"articles": 5, "chapters": 2})
         summary = result.summary()
         assert "Handled:" in summary
         assert "5x articles" in summary
@@ -107,19 +104,14 @@ class TestPreflightResult:
 
     def test_summary_with_unhandled(self):
         """Summary includes unhandled structures with warning marker."""
-        result = PreflightResult(
-            unhandled={"unclassified_table": 3}
-        )
+        result = PreflightResult(unhandled={"unclassified_table": 3})
         summary = result.summary()
         assert "⚠️ Unhandled:" in summary
         assert "3x unclassified_table" in summary
 
     def test_summary_with_both(self):
         """Summary includes both handled and unhandled."""
-        result = PreflightResult(
-            handled={"articles": 10},
-            unhandled={"figure": 2}
-        )
+        result = PreflightResult(handled={"articles": 10}, unhandled={"figure": 2})
         summary = result.summary()
         assert "Handled:" in summary
         assert "⚠️ Unhandled:" in summary
@@ -300,10 +292,7 @@ class TestExtractReferenceMentions:
     def test_excludes_current_state(self):
         """Excludes references matching current state."""
         text = "Artikel 6 henviser til artikel 6."
-        mentions = _extract_reference_mentions(
-            text,
-            reference_state={"article": "6"}
-        )
+        mentions = _extract_reference_mentions(text, reference_state={"article": "6"})
         # Should not include article 6 since it's the current location
         assert mentions.get("article", []) == []
 
@@ -586,21 +575,25 @@ class TestChunkHtml:
 
     def test_empty_html(self):
         """Empty HTML produces no chunks."""
-        chunks = list(chunk_html(
-            "",
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                "",
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         assert chunks == []
 
     def test_simple_paragraph(self):
         """Single paragraph produces one chunk."""
         html = "<p>Hello world, this is a test paragraph.</p>"
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         assert len(chunks) == 1
         assert "Hello world" in chunks[0]["text"]
         assert chunks[0]["metadata"]["corpus_id"] == "test"
@@ -609,11 +602,13 @@ class TestChunkHtml:
     def test_multiple_paragraphs(self):
         """Multiple paragraphs are combined within token limit."""
         html = "<p>Paragraph one.</p><p>Paragraph two.</p>"
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(chunk_tokens=500),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(chunk_tokens=500),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         # Should combine into one chunk if within token limit
         assert len(chunks) >= 1
         text = chunks[0]["text"]
@@ -626,43 +621,51 @@ class TestChunkHtml:
         <h1>Heading</h1>
         <p>Second paragraph</p>
         """
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         # Should have at least 2 chunks due to heading boundary
         assert len(chunks) >= 2
 
     def test_metadata_includes_doc_type(self):
         """Metadata includes doc_type='chunk'."""
         html = "<p>Test content</p>"
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         assert chunks[0]["metadata"]["doc_type"] == "chunk"
 
     def test_metadata_includes_chunk_id(self):
         """Metadata includes chunk_id."""
         html = "<p>Test content</p>"
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         assert "chunk_id" in chunks[0]["metadata"]
         assert chunks[0]["metadata"]["chunk_id"]  # Not empty
 
     def test_metadata_includes_location_id(self):
         """Metadata includes location_id."""
         html = "<p>Test content</p>"
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         assert "location_id" in chunks[0]["metadata"]
 
     def test_chunk_index_increments(self):
@@ -675,22 +678,26 @@ class TestChunkHtml:
         <h1>Section 3</h1>
         <p>Content 3</p>
         """
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         indices = [c["metadata"]["chunk_index"] for c in chunks]
         assert indices == list(range(len(chunks)))
 
     def test_flush_each_text_block(self):
         """flush_each_text_block creates chunk per paragraph."""
         html = "<p>Para 1</p><p>Para 2</p><p>Para 3</p>"
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(flush_each_text_block=True),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(flush_each_text_block=True),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         assert len(chunks) == 3
 
     def test_reference_patterns_extract_article(self):
@@ -699,15 +706,15 @@ class TestChunkHtml:
         <h2>Artikel 6</h2>
         <p>Content of article 6</p>
         """
-        reference_patterns = {
-            "article": re.compile(r"(?i)artikel\s*(\d+)")
-        }
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-            reference_patterns=reference_patterns,
-        ))
+        reference_patterns = {"article": re.compile(r"(?i)artikel\s*(\d+)")}
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+                reference_patterns=reference_patterns,
+            )
+        )
         assert len(chunks) >= 1
         # The chunk after the article heading should have article metadata
         article_chunk = chunks[-1]
@@ -719,15 +726,15 @@ class TestChunkHtml:
         <h2>Artikel 6</h2>
         <p>Content of article 6</p>
         """
-        reference_patterns = {
-            "article": re.compile(r"(?i)artikel\s*(\d+)")
-        }
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-            reference_patterns=reference_patterns,
-        ))
+        reference_patterns = {"article": re.compile(r"(?i)artikel\s*(\d+)")}
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+                reference_patterns=reference_patterns,
+            )
+        )
         # The chunk with article 6 should be citable
         article_chunks = [c for c in chunks if c["metadata"].get("article") == "6"]
         if article_chunks:
@@ -736,12 +743,14 @@ class TestChunkHtml:
     def test_initial_reference_state(self):
         """Initial reference state is applied."""
         html = "<p>Content in chapter II</p>"
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-            initial_reference_state={"chapter": "II"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+                initial_reference_state={"chapter": "II"},
+            )
+        )
         assert chunks[0]["metadata"].get("chapter") == "II"
 
 
@@ -751,10 +760,12 @@ class TestWriteJsonl:
     def test_writes_jsonl(self, tmp_path):
         """Writes JSONL to file."""
         output_path = tmp_path / "output.jsonl"
-        rows = iter([
-            {"text": "chunk1", "metadata": {"id": 1}},
-            {"text": "chunk2", "metadata": {"id": 2}},
-        ])
+        rows = iter(
+            [
+                {"text": "chunk1", "metadata": {"id": 1}},
+                {"text": "chunk2", "metadata": {"id": 2}},
+            ]
+        )
 
         write_jsonl(output_path, rows)
 
@@ -788,9 +799,11 @@ class TestWriteJsonl:
     def test_unicode_content(self, tmp_path):
         """Handles unicode content correctly."""
         output_path = tmp_path / "unicode.jsonl"
-        rows = iter([
-            {"text": "Dansk: æøå ÆØÅ", "metadata": {"lang": "da"}},
-        ])
+        rows = iter(
+            [
+                {"text": "Dansk: æøå ÆØÅ", "metadata": {"lang": "da"}},
+            ]
+        )
 
         write_jsonl(output_path, rows)
 
@@ -807,11 +820,13 @@ class TestChunkHtmlEurlexFeatures:
         html = """
         <div id="art_6"><p>Article 6 content</p></div>
         """
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+            )
+        )
         # Without enable_eurlex_structural_ids, the div id is not parsed
         assert len(chunks) >= 1
 
@@ -820,12 +835,14 @@ class TestChunkHtmlEurlexFeatures:
         html = """
         <div id="art_6"><p>Article 6 content</p></div>
         """
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-            enable_eurlex_structural_ids=True,
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+                enable_eurlex_structural_ids=True,
+            )
+        )
         assert len(chunks) >= 1
         # Should extract article from div id
         if chunks:
@@ -836,12 +853,14 @@ class TestChunkHtmlEurlexFeatures:
         html = """
         <div id="cpt_II"><p>Chapter II content</p></div>
         """
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-            enable_eurlex_structural_ids=True,
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+                enable_eurlex_structural_ids=True,
+            )
+        )
         if chunks:
             assert chunks[-1]["metadata"].get("chapter") == "II"
 
@@ -850,12 +869,13 @@ class TestChunkHtmlEurlexFeatures:
         html = """
         <div id="anx_III"><p>Annex III content</p></div>
         """
-        chunks = list(chunk_html(
-            html,
-            config=HtmlChunkingConfig(),
-            base_metadata={"corpus_id": "test", "source": "test.html"},
-            enable_eurlex_structural_ids=True,
-        ))
+        chunks = list(
+            chunk_html(
+                html,
+                config=HtmlChunkingConfig(),
+                base_metadata={"corpus_id": "test", "source": "test.html"},
+                enable_eurlex_structural_ids=True,
+            )
+        )
         if chunks:
             assert chunks[-1]["metadata"].get("annex") == "III"
-

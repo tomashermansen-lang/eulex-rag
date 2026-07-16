@@ -1,6 +1,5 @@
 """Tests for src/engine/helpers.py - Utility functions."""
 
-import pytest
 from src.engine.helpers import (
     normalize_anchor,
     normalize_annex_for_chroma,
@@ -69,7 +68,9 @@ class TestNormalizeAnchorList:
         assert normalize_anchor_list(["article:6", "ARTICLE:6"]) == ["article:6"]
 
     def test_require_colon(self):
-        assert normalize_anchor_list(["article:6", "bad"], require_colon=True) == ["article:6"]
+        assert normalize_anchor_list(["article:6", "bad"], require_colon=True) == [
+            "article:6"
+        ]
 
 
 class TestClassifyQueryIntent:
@@ -167,3 +168,116 @@ class TestAnchorsPresentFromHits:
         hits = [("doc", {"article": "6"})]
         result = anchors_present_from_hits(hits)
         assert "article:6" in result
+
+
+# ---------------------------------------------------------------------------
+# Step 6.2a: Module-level utility functions extracted from RAGEngine
+# ---------------------------------------------------------------------------
+
+from types import SimpleNamespace
+from unittest.mock import patch
+from src.engine.helpers import (
+    build_retrieval_state_dict,
+    build_hybrid_rerank_dict,
+    iso_utc_now,
+    best_effort_git_commit_short,
+    collection_name_best_effort,
+)
+
+
+class TestBuildRetrievalStateDict:
+    def test_builds_dict_from_retriever_state(self):
+        retriever = SimpleNamespace(
+            _last_effective_where={"article": "5"},
+            _last_effective_collection_name="ai-act_documents",
+            _last_effective_collection_type="chunks",
+            _last_retrieved_ids=["id1", "id2"],
+            _last_retrieved_metadatas=[{"a": 1}, {"a": 2}],
+        )
+        result = build_retrieval_state_dict(
+            retriever=retriever,
+            query_collection_name="ai-act_documents",
+            query_where={"article": "5"},
+            planned_where={"article": "5"},
+            planned_collection_type="chunks",
+        )
+        assert result["query_collection"] == "ai-act_documents"
+        assert result["query_where"] == {"article": "5"}
+        assert result["planned_collection_type"] == "chunks"
+        assert result["retrieved_ids"] == ["id1", "id2"]
+
+    def test_handles_missing_retriever_attrs(self):
+        retriever = SimpleNamespace()
+        result = build_retrieval_state_dict(
+            retriever=retriever,
+            query_collection_name=None,
+            query_where=None,
+            planned_where=None,
+            planned_collection_type="chunks",
+        )
+        assert result["retrieved_ids"] == []
+        assert result["effective_where"] is None
+
+
+class TestBuildHybridRerankDict:
+    def test_builds_dict_from_weights(self):
+        weights = SimpleNamespace(
+            alpha_vec=0.4, beta_bm25=0.3, gamma_cite=0.2, delta_role=0.1
+        )
+        result = build_hybrid_rerank_dict(
+            enable_hybrid_rerank=True,
+            ranking_weights=weights,
+            hybrid_vec_k=30,
+        )
+        assert result["enabled"] is True
+        assert result["weights"]["alpha_vec"] == 0.4
+        assert result["vec_k"] == 30
+
+
+class TestIsoUtcNow:
+    def test_returns_iso_string_ending_with_z(self):
+        result = iso_utc_now()
+        assert result.endswith("Z")
+        assert "T" in result
+
+
+class TestBestEffortGitCommitShort:
+    def test_returns_env_var_if_set(self):
+        with patch.dict("os.environ", {"GIT_COMMIT": "abc123def456789"}):
+            result = best_effort_git_commit_short()
+            assert result == "abc123def456"
+
+    def test_truncates_to_12_chars(self):
+        with patch.dict("os.environ", {"GIT_COMMIT": "a" * 40}):
+            result = best_effort_git_commit_short()
+            assert len(result) == 12
+
+
+class TestCollectionNameBestEffort:
+    def test_returns_collection_name_when_same_object(self):
+        coll = SimpleNamespace(name="test_documents")
+        result = collection_name_best_effort(
+            collection=coll,
+            engine_collection=coll,
+            engine_collection_name="my_collection",
+        )
+        assert result == "my_collection"
+
+    def test_returns_name_attr_for_different_collection(self):
+        coll = SimpleNamespace(name="other_documents")
+        engine_coll = SimpleNamespace(name="engine_documents")
+        result = collection_name_best_effort(
+            collection=coll,
+            engine_collection=engine_coll,
+            engine_collection_name="engine_collection",
+        )
+        assert result == "other_documents"
+
+    def test_returns_none_for_no_name(self):
+        coll = SimpleNamespace()
+        result = collection_name_best_effort(
+            collection=coll,
+            engine_collection=None,
+            engine_collection_name=None,
+        )
+        assert result is None

@@ -64,10 +64,10 @@ class ArticleSpec:
     """A specific article selected as an anchor seed for inverted generation."""
 
     corpus_id: str
-    article_id: str        # "6", "ANNEX:III"
-    anchor_key: str        # "article:6", "annex:III"
+    article_id: str  # "6", "ANNEX:III"
+    anchor_key: str  # "article:6", "annex:III"
     title: str
-    content_snippet: str   # First ~400 chars of article text
+    content_snippet: str  # First ~400 chars of article text
 
 
 @dataclass(frozen=True)
@@ -75,7 +75,7 @@ class ArticleGroup:
     """A group of articles from different corpora sharing a thematic role."""
 
     articles: tuple[ArticleSpec, ...]
-    shared_role: str       # "scope", "obligations", etc.
+    shared_role: str  # "scope", "obligations", etc.
 
 
 # ---------------------------------------------------------------------------
@@ -129,13 +129,15 @@ def _build_specs_from_pool(
         else:
             anchor_key = f"{cid}:article:{top_aid}"
 
-        specs.append(ArticleSpec(
-            corpus_id=cid,
-            article_id=top_aid,
-            anchor_key=anchor_key,
-            title=title,
-            content_snippet=snippet,
-        ))
+        specs.append(
+            ArticleSpec(
+                corpus_id=cid,
+                article_id=top_aid,
+                anchor_key=anchor_key,
+                title=title,
+                content_snippet=snippet,
+            )
+        )
     return specs
 
 
@@ -213,7 +215,11 @@ def _select_anchor_articles(
         data_dir = str(Path(__file__).resolve().parents[2] / "data" / "processed")
 
     # Filter to corpora with available graphs
-    available = {cid: g for cid, g in graph_cache.items() if g is not None and cid in target_corpora}
+    available = {
+        cid: g
+        for cid, g in graph_cache.items()
+        if g is not None and cid in target_corpora
+    }
     if len(available) < 2:
         return []
 
@@ -239,8 +245,10 @@ def _select_anchor_articles(
         deep_per_corpus: dict[str, list[str]] = {}
         for cid, aids in candidates_per_corpus.items():
             deep = [
-                aid for aid in aids
-                if aid.startswith("ANNEX:") or _article_num(aid) > _EARLY_ARTICLE_THRESHOLD
+                aid
+                for aid in aids
+                if aid.startswith("ANNEX:")
+                or _article_num(aid) > _EARLY_ARTICLE_THRESHOLD
             ]
             if deep:
                 deep_per_corpus[cid] = deep
@@ -249,8 +257,10 @@ def _select_anchor_articles(
         early_per_corpus: dict[str, list[str]] = {}
         for cid, aids in candidates_per_corpus.items():
             early = [
-                aid for aid in aids
-                if not aid.startswith("ANNEX:") and _article_num(aid) <= _EARLY_ARTICLE_THRESHOLD
+                aid
+                for aid in aids
+                if not aid.startswith("ANNEX:")
+                and _article_num(aid) <= _EARLY_ARTICLE_THRESHOLD
             ]
             if early:
                 early_per_corpus[cid] = early
@@ -270,7 +280,9 @@ def _select_anchor_articles(
                 alt_pool = early_per_corpus
             elif not has_deep_group:
                 # No deep group possible → use best available per corpus
-                alt_pool = {cid: aids[:1] for cid, aids in candidates_per_corpus.items()}
+                alt_pool = {
+                    cid: aids[:1] for cid, aids in candidates_per_corpus.items()
+                }
             else:
                 alt_pool = {}
 
@@ -290,20 +302,26 @@ def _select_anchor_articles(
                     top_aid = aids[0]
                     node = graph.nodes.get(top_aid)
                     title = node.title if node else ""
-                    chunk_text = _load_article_chunks(data_dir, cid, [top_aid], max_chars=400)
+                    chunk_text = _load_article_chunks(
+                        data_dir, cid, [top_aid], max_chars=400
+                    )
                     snippet = chunk_text.get(top_aid, title)
                     anchor_key = f"{cid}:article:{top_aid}"
-                    all_specs.append(ArticleSpec(
-                        corpus_id=cid,
-                        article_id=top_aid,
-                        anchor_key=anchor_key,
-                        title=title,
-                        content_snippet=snippet,
-                    ))
+                    all_specs.append(
+                        ArticleSpec(
+                            corpus_id=cid,
+                            article_id=top_aid,
+                            anchor_key=anchor_key,
+                            title=title,
+                            content_snippet=snippet,
+                        )
+                    )
                     break
 
         if len(all_specs) >= 2:
-            groups.append(ArticleGroup(articles=tuple(all_specs), shared_role="foundational"))
+            groups.append(
+                ArticleGroup(articles=tuple(all_specs), shared_role="foundational")
+            )
 
     return groups[:max_groups]
 
@@ -374,7 +392,8 @@ def _validate_anchors(
     """
     # If no graphs available at all, skip validation
     available_graphs = [
-        graph_cache.get(cid) for cid in expected_corpora
+        graph_cache.get(cid)
+        for cid in expected_corpora
         if graph_cache.get(cid) is not None
     ]
     if not available_graphs:
@@ -411,12 +430,15 @@ def _validate_anchors(
         if found:
             validated.append(anchor)
         else:
-            logger.warning("Dropped invalid anchor %s (not found in %s)", anchor, expected_corpora)
+            logger.warning(
+                "Dropped invalid anchor %s (not found in %s)", anchor, expected_corpora
+            )
 
     if not validated and anchors:
         logger.error(
             "All anchors dropped for case with corpora %s: %s",
-            expected_corpora, anchors,
+            expected_corpora,
+            anchors,
         )
 
     return tuple(validated)
@@ -517,7 +539,9 @@ async def generate_cross_law_cases(
                 max_cases=request.max_cases,
             )
         # Fall back to standard if no article groups found
-        logger.warning("Inverted generation: no article groups found, falling back to standard")
+        logger.warning(
+            "Inverted generation: no article groups found, falling back to standard"
+        )
 
     # Standard generation path
     try:
@@ -570,7 +594,10 @@ async def _generate_inverted_cases(
 
     for group in groups:
         prompt = _build_inverted_prompt(
-            group, corpus_metadata, synthesis_mode, num_cases=cases_per_group,
+            group,
+            corpus_metadata,
+            synthesis_mode,
+            num_cases=cases_per_group,
         )
 
         try:
@@ -615,7 +642,8 @@ async def _generate_inverted_cases(
             else:
                 # Fallback: all seed anchors filtered to matching corpora
                 case_anchors = tuple(
-                    a for a in seed_anchor_set
+                    a
+                    for a in seed_anchor_set
                     if any(a.startswith(f"{cid}:") for cid in case_corpora)
                 )
 
@@ -631,7 +659,7 @@ async def _generate_inverted_cases(
     if not cases:
         raise CaseGenerationError("Inverted generation produced no cases")
 
-    return cases[:min(len(cases), MAX_CASES_LIMIT, max_cases)]
+    return cases[: min(len(cases), MAX_CASES_LIMIT, max_cases)]
 
 
 # ---------------------------------------------------------------------------
@@ -730,19 +758,27 @@ async def _call_llm_for_cases(
             max_tokens=3000,
         )
         if raw is None:
-            logger.warning("LLM returned None (attempt %d/%d)", attempt + 1, MAX_LLM_RETRIES)
+            logger.warning(
+                "LLM returned None (attempt %d/%d)", attempt + 1, MAX_LLM_RETRIES
+            )
             continue
 
         parsed = parse_json_response(raw)
         if parsed is None:
-            logger.warning("Failed to parse LLM response (attempt %d/%d)", attempt + 1, MAX_LLM_RETRIES)
+            logger.warning(
+                "Failed to parse LLM response (attempt %d/%d)",
+                attempt + 1,
+                MAX_LLM_RETRIES,
+            )
             continue
 
         cases = parsed.get("cases", [])
         if isinstance(cases, list) and len(cases) > 0:
             return cases
 
-        logger.warning("No cases in parsed response (attempt %d/%d)", attempt + 1, MAX_LLM_RETRIES)
+        logger.warning(
+            "No cases in parsed response (attempt %d/%d)", attempt + 1, MAX_LLM_RETRIES
+        )
 
     raise CaseGenerationError(
         f"Failed to generate cases after {MAX_LLM_RETRIES} attempts"
@@ -775,9 +811,7 @@ def _process_raw_cases(
         seen_ids.add(unique_id)
 
         # Parse raw anchors and corpora before validation
-        raw_anchors = tuple(
-            a.strip() for a in raw.get("expected_anchors", [])
-        )
+        raw_anchors = tuple(a.strip() for a in raw.get("expected_anchors", []))
         expected_corpora = tuple(raw.get("expected_corpora", []))
 
         # Validate anchors against citation graphs (R6)
@@ -1057,7 +1091,6 @@ def _distribute_by_synthesis_mode(
     result[last_mode] = max_cases - allocated
 
     return result
-
 
 
 # ---------------------------------------------------------------------------

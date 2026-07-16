@@ -12,7 +12,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Sequence
 import yaml
 
 
@@ -41,7 +40,9 @@ class CrossLawGoldenCase:
     prompt: str
     corpus_scope: str  # "single" | "explicit" | "all"
     target_corpora: tuple[str, ...]
-    synthesis_mode: str  # "aggregation" | "comparison" | "unified" | "routing" | "discovery"
+    synthesis_mode: (
+        str  # "aggregation" | "comparison" | "unified" | "routing" | "discovery"
+    )
     expected_anchors: tuple[str, ...]
     expected_corpora: tuple[str, ...]
     min_corpora_cited: int | None
@@ -60,7 +61,7 @@ class CrossLawGoldenCase:
     max_citations: int | None = None
     notes: str = ""
     # Quality evaluation fields (backward-compatible defaults)
-    difficulty: str | None = None           # "easy" | "medium" | "hard" | None
+    difficulty: str | None = None  # "easy" | "medium" | "hard" | None
     retrieval_confirmed: bool | None = None  # True/False/None (inverted generation)
 
 
@@ -267,10 +268,7 @@ class CrossLawSuiteManager:
         if suite is None:
             raise FileNotFoundError(f"Suite not found: {suite_id}")
 
-        new_cases = tuple(
-            case if c.id == case.id else c
-            for c in suite.cases
-        )
+        new_cases = tuple(case if c.id == case.id else c for c in suite.cases)
 
         updated = CrossLawEvalSuite(
             id=suite.id,
@@ -531,7 +529,9 @@ class CrossLawSuiteManager:
                 must_include_any_of=tuple(case_data.get("must_include_any_of", [])),
                 must_include_any_of_2=tuple(case_data.get("must_include_any_of_2", [])),
                 must_include_all_of=tuple(case_data.get("must_include_all_of", [])),
-                must_not_include_any_of=tuple(case_data.get("must_not_include_any_of", [])),
+                must_not_include_any_of=tuple(
+                    case_data.get("must_not_include_any_of", [])
+                ),
                 contract_check=case_data.get("contract_check", False),
                 min_citations=case_data.get("min_citations"),
                 max_citations=case_data.get("max_citations"),
@@ -548,6 +548,7 @@ class CrossLawSuiteManager:
             base = name.lower().replace(" ", "_").replace("-", "_")
             base = "".join(c for c in base if c.isalnum() or c == "_")
             import uuid
+
             suite_id = f"{base}_{uuid.uuid4().hex[:8]}"
 
         return CrossLawEvalSuite(

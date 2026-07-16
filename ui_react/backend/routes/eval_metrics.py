@@ -198,7 +198,13 @@ def compute_histogram_bins(
 
     # Edge case: all durations identical — return single bin
     if max_val == min_val:
-        return [{"range_start": round(min_val, 3), "range_end": round(max_val, 3), "count": len(seconds)}]
+        return [
+            {
+                "range_start": round(min_val, 3),
+                "range_end": round(max_val, 3),
+                "count": len(seconds),
+            }
+        ]
 
     bin_width = (max_val - min_val) / num_bins
 
@@ -206,12 +212,16 @@ def compute_histogram_bins(
     for i in range(num_bins):
         start = min_val + i * bin_width
         end = min_val + (i + 1) * bin_width
-        count = sum(1 for s in seconds if start <= s < end or (i == num_bins - 1 and s == end))
-        bins.append({
-            "range_start": round(start, 3),
-            "range_end": round(end, 3),
-            "count": count,
-        })
+        count = sum(
+            1 for s in seconds if start <= s < end or (i == num_bins - 1 and s == end)
+        )
+        bins.append(
+            {
+                "range_start": round(start, 3),
+                "range_end": round(end, 3),
+                "count": count,
+            }
+        )
 
     return bins
 
@@ -265,7 +275,9 @@ def aggregate_by_mode(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [
         {
             "mode": mode,
-            "pass_rate": (sum(passed_list) / len(passed_list)) * 100 if passed_list else 0.0,
+            "pass_rate": (sum(passed_list) / len(passed_list)) * 100
+            if passed_list
+            else 0.0,
             "total": len(passed_list),
             "passed": sum(passed_list),
         }
@@ -292,7 +304,9 @@ def aggregate_by_difficulty(cases: list[dict[str, Any]]) -> list[dict[str, Any]]
     return [
         {
             "difficulty": diff,
-            "pass_rate": (sum(passed_list) / len(passed_list)) * 100 if passed_list else 0.0,
+            "pass_rate": (sum(passed_list) / len(passed_list)) * 100
+            if passed_list
+            else 0.0,
             "total": len(passed_list),
             "passed": sum(passed_list),
         }
@@ -316,7 +330,9 @@ def aggregate_scorers(
     Returns:
         List of dicts with 'scorer', 'pass_rate', 'total', 'passed'.
     """
-    scorer_results: dict[str, dict[str, int]] = defaultdict(lambda: {"passed": 0, "total": 0})
+    scorer_results: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"passed": 0, "total": 0}
+    )
 
     for case in cases:
         scores = case.get("scores", {})
@@ -339,7 +355,9 @@ def aggregate_scorers(
     return [
         {
             "scorer": scorer,
-            "pass_rate": (data["passed"] / data["total"]) * 100 if data["total"] > 0 else 0.0,
+            "pass_rate": (data["passed"] / data["total"]) * 100
+            if data["total"] > 0
+            else 0.0,
             "total": data["total"],
             "passed": data["passed"],
         }
@@ -430,12 +448,14 @@ def compute_run_mode_latency(
             n = len(durations)
             p50_idx = int(0.5 * (n - 1))
             p95_idx = int(0.95 * (n - 1))
-            result_list.append({
-                "run_mode": mode,
-                "p50_seconds": round(durations[p50_idx] / 1000, 3),
-                "p95_seconds": round(durations[min(p95_idx, n - 1)] / 1000, 3),
-                "case_count": n,
-            })
+            result_list.append(
+                {
+                    "run_mode": mode,
+                    "p50_seconds": round(durations[p50_idx] / 1000, 3),
+                    "p95_seconds": round(durations[min(p95_idx, n - 1)] / 1000, 3),
+                    "case_count": n,
+                }
+            )
     # Any other modes not in the canonical order
     for mode, durations in sorted(groups.items()):
         if mode not in mode_order:
@@ -443,12 +463,16 @@ def compute_run_mode_latency(
             n = len(durations_sorted)
             p50_idx = int(0.5 * (n - 1))
             p95_idx = int(0.95 * (n - 1))
-            result_list.append({
-                "run_mode": mode,
-                "p50_seconds": round(durations_sorted[p50_idx] / 1000, 3),
-                "p95_seconds": round(durations_sorted[min(p95_idx, n - 1)] / 1000, 3),
-                "case_count": n,
-            })
+            result_list.append(
+                {
+                    "run_mode": mode,
+                    "p50_seconds": round(durations_sorted[p50_idx] / 1000, 3),
+                    "p95_seconds": round(
+                        durations_sorted[min(p95_idx, n - 1)] / 1000, 3
+                    ),
+                    "case_count": n,
+                }
+            )
     return result_list
 
 
@@ -487,11 +511,13 @@ def compute_latency_trend(
         if not durations or not ts:
             continue
 
-        points.append({
-            "timestamp": ts,
-            "median_ms": round(statistics.median(durations), 1),
-            "case_count": len(durations),
-        })
+        points.append(
+            {
+                "timestamp": ts,
+                "median_ms": round(statistics.median(durations), 1),
+                "case_count": len(durations),
+            }
+        )
 
     points.sort(key=lambda p: p["timestamp"])
     return points
@@ -526,11 +552,13 @@ def compute_latency_trend_by_run_mode(
         if not durations or not ts:
             continue
 
-        by_mode[mode].append({
-            "timestamp": ts,
-            "median_ms": round(statistics.median(durations), 1),
-            "case_count": len(durations),
-        })
+        by_mode[mode].append(
+            {
+                "timestamp": ts,
+                "median_ms": round(statistics.median(durations), 1),
+                "case_count": len(durations),
+            }
+        )
 
     # Sort each mode's points oldest-first
     for mode in by_mode:
@@ -579,18 +607,22 @@ def compute_rate_trends(
     for date_key in sorted(by_date):
         d = by_date[date_key]
         total = d["total"]
-        esc_trend.append({
-            "timestamp": f"{date_key}T00:00:00Z",
-            "rate": round(d["escalated"] / total * 100, 2) if total else 0.0,
-            "count": d["escalated"],
-            "total": total,
-        })
-        retry_trend.append({
-            "timestamp": f"{date_key}T00:00:00Z",
-            "rate": round(d["retried"] / total * 100, 2) if total else 0.0,
-            "count": d["retried"],
-            "total": total,
-        })
+        esc_trend.append(
+            {
+                "timestamp": f"{date_key}T00:00:00Z",
+                "rate": round(d["escalated"] / total * 100, 2) if total else 0.0,
+                "count": d["escalated"],
+                "total": total,
+            }
+        )
+        retry_trend.append(
+            {
+                "timestamp": f"{date_key}T00:00:00Z",
+                "rate": round(d["retried"] / total * 100, 2) if total else 0.0,
+                "count": d["retried"],
+                "total": total,
+            }
+        )
 
     return esc_trend, retry_trend
 
@@ -761,7 +793,9 @@ def _load_latest_cross_law_runs(max_scan: int) -> list[dict[str, Any]]:
         return []
 
     latest_by_suite: dict[str, dict[str, Any]] = {}
-    for path in sorted(runs_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)[:max_scan]:
+    for path in sorted(
+        runs_dir.glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True
+    )[:max_scan]:
         try:
             with open(path, encoding="utf-8") as f:
                 data = json.load(f)
@@ -769,7 +803,9 @@ def _load_latest_cross_law_runs(max_scan: int) -> list[dict[str, Any]]:
             if not suite_id:
                 continue
             existing = latest_by_suite.get(suite_id)
-            if existing is None or data.get("timestamp", "") > existing.get("timestamp", ""):
+            if existing is None or data.get("timestamp", "") > existing.get(
+                "timestamp", ""
+            ):
                 latest_by_suite[suite_id] = data
         except (json.JSONDecodeError, IOError):
             logger.warning("Failed to read cross-law run: %s", path)
@@ -954,7 +990,9 @@ def _extract_anchors(result: dict[str, Any]) -> tuple[list[str], list[str]]:
     if isinstance(anchor_score, dict):
         details = anchor_score.get("details", {})
         if isinstance(details, dict):
-            expected = details.get("expected_any_of", []) + details.get("expected_all_of", [])
+            expected = details.get("expected_any_of", []) + details.get(
+                "expected_all_of", []
+            )
 
     return actual, expected
 
@@ -973,12 +1011,14 @@ def _collect_single_law_cases(
     cases: list[dict[str, Any]] = []
     for run in single_law_runs:
         for result in run.get("results", []):
-            cases.append({
-                "case_id": result.get("case_id", ""),
-                "passed": result.get("passed", False),
-                "duration_ms": result.get("duration_ms", 0),
-                "scores": _normalize_scores(result.get("scores", {})),
-            })
+            cases.append(
+                {
+                    "case_id": result.get("case_id", ""),
+                    "passed": result.get("passed", False),
+                    "duration_ms": result.get("duration_ms", 0),
+                    "scores": _normalize_scores(result.get("scores", {})),
+                }
+            )
     return cases
 
 
@@ -996,17 +1036,19 @@ def _collect_cross_law_cases(
     cases: list[dict[str, Any]] = []
     for run in cross_law_runs:
         for result in run.get("results", []):
-            cases.append({
-                "case_id": result.get("case_id", ""),
-                "synthesis_mode": result.get("synthesis_mode"),
-                "difficulty": result.get("difficulty"),
-                "passed": result.get("passed", False),
-                "duration_ms": result.get("duration_ms", 0),
-                "scores": _normalize_scores(result.get("scores", {})),
-                "score_messages": _extract_score_messages(result.get("scores", {})),
-                "prompt": result.get("prompt", ""),
-                "target_corpora": result.get("target_corpora", []),
-            })
+            cases.append(
+                {
+                    "case_id": result.get("case_id", ""),
+                    "synthesis_mode": result.get("synthesis_mode"),
+                    "difficulty": result.get("difficulty"),
+                    "passed": result.get("passed", False),
+                    "duration_ms": result.get("duration_ms", 0),
+                    "scores": _normalize_scores(result.get("scores", {})),
+                    "score_messages": _extract_score_messages(result.get("scores", {})),
+                    "prompt": result.get("prompt", ""),
+                    "target_corpora": result.get("target_corpora", []),
+                }
+            )
     return cases
 
 
@@ -1098,7 +1140,9 @@ async def get_metrics_overview() -> MetricsOverviewResponse:
     """Level 1 trust overview — unified pass rate, health, trend."""
     config = get_settings_yaml()["dashboard"]
 
-    sl_runs = _load_latest_single_law_runs(config["max_runs_scan"], _get_active_law_ids())
+    sl_runs = _load_latest_single_law_runs(
+        config["max_runs_scan"], _get_active_law_ids()
+    )
     cl_runs = _load_latest_cross_law_runs(config["max_runs_scan"])
 
     # Build summary dicts for compute_unified_pass_rate
@@ -1108,8 +1152,7 @@ async def get_metrics_overview() -> MetricsOverviewResponse:
         if "summary" in r
     ]
     cl_summaries = [
-        {"total": r.get("total", 0), "passed": r.get("passed", 0)}
-        for r in cl_runs
+        {"total": r.get("total", 0), "passed": r.get("passed", 0)} for r in cl_runs
     ]
 
     unified_rate = compute_unified_pass_rate(sl_summaries, cl_summaries)
@@ -1170,8 +1213,12 @@ async def get_metrics_overview() -> MetricsOverviewResponse:
         coverages.append(coverage)
     ingested_coverages = [c for c in coverages if c > 0]
     na_count = len(coverages) - len(ingested_coverages)
-    ingestion_overall = statistics.mean(ingested_coverages) if ingested_coverages else 0.0
-    ingestion_health = compute_health_status(ingestion_overall, config["health_thresholds"])
+    ingestion_overall = (
+        statistics.mean(ingested_coverages) if ingested_coverages else 0.0
+    )
+    ingestion_health = compute_health_status(
+        ingestion_overall, config["health_thresholds"]
+    )
 
     return MetricsOverviewResponse(
         unified_pass_rate=round(unified_rate, 2),
@@ -1212,7 +1259,9 @@ async def get_metrics_quality() -> MetricsQualityResponse:
     config = get_settings_yaml()["dashboard"]
     corpora = _load_corpora()
 
-    sl_runs = _load_latest_single_law_runs(config["max_runs_scan"], _get_active_law_ids())
+    sl_runs = _load_latest_single_law_runs(
+        config["max_runs_scan"], _get_active_law_ids()
+    )
     cl_runs = _load_latest_cross_law_runs(config["max_runs_scan"])
     suite_names = _load_suite_names()
 
@@ -1223,13 +1272,15 @@ async def get_metrics_quality() -> MetricsQualityResponse:
         summary = run.get("summary", {})
         total = summary.get("total", 0)
         passed = summary.get("passed", 0)
-        per_law.append(LawPassRate(
-            law=law,
-            display_name=_get_display_name(law, corpora),
-            pass_rate=round((passed / total * 100) if total else 0.0, 2),
-            total=total,
-            passed=passed,
-        ))
+        per_law.append(
+            LawPassRate(
+                law=law,
+                display_name=_get_display_name(law, corpora),
+                pass_rate=round((passed / total * 100) if total else 0.0, 2),
+                total=total,
+                passed=passed,
+            )
+        )
 
     # Per-suite pass rates (cross-law)
     per_suite: list[SuitePassRate] = []
@@ -1237,20 +1288,27 @@ async def get_metrics_quality() -> MetricsQualityResponse:
         suite_id = run.get("suite_id", "unknown")
         total = run.get("total", 0)
         passed = run.get("passed", 0)
-        per_suite.append(SuitePassRate(
-            suite_id=suite_id,
-            name=suite_names.get(suite_id, suite_id),
-            pass_rate=round((passed / total * 100) if total else 0.0, 2),
-            total=total,
-            passed=passed,
-        ))
+        per_suite.append(
+            SuitePassRate(
+                suite_id=suite_id,
+                name=suite_names.get(suite_id, suite_id),
+                pass_rate=round((passed / total * 100) if total else 0.0, 2),
+                total=total,
+                passed=passed,
+            )
+        )
 
     # Single-law case-level scorer aggregation
     sl_cases = _collect_single_law_cases(sl_runs)
     sl_scorer_raw = aggregate_scorers(sl_cases)
     per_scorer_single_law = [
-        ScorerPassRate(scorer=s["scorer"], pass_rate=round(s["pass_rate"], 2),
-                       total=s["total"], passed=s["passed"], category="single_law")
+        ScorerPassRate(
+            scorer=s["scorer"],
+            pass_rate=round(s["pass_rate"], 2),
+            total=s["total"],
+            passed=s["passed"],
+            category="single_law",
+        )
         for s in sl_scorer_raw
     ]
 
@@ -1265,8 +1323,13 @@ async def get_metrics_quality() -> MetricsQualityResponse:
 
     scorer_raw = aggregate_scorers(cl_cases)
     per_scorer = [
-        ScorerPassRate(scorer=s["scorer"], pass_rate=round(s["pass_rate"], 2),
-                       total=s["total"], passed=s["passed"], category="cross_law")
+        ScorerPassRate(
+            scorer=s["scorer"],
+            pass_rate=round(s["pass_rate"], 2),
+            total=s["total"],
+            passed=s["passed"],
+            category="cross_law",
+        )
         for s in scorer_raw
     ]
 
@@ -1284,9 +1347,18 @@ async def get_metrics_quality() -> MetricsQualityResponse:
         generation_passed += ss.get("generation_passed", 0)
 
     stage_stats = StageBreakdown(
-        retrieval=round((retrieval_passed / retrieval_total * 100) if retrieval_total else 0.0, 2),
-        augmentation=round((augmentation_passed / augmentation_total * 100) if augmentation_total else 0.0, 2),
-        generation=round((generation_passed / generation_total * 100) if generation_total else 0.0, 2),
+        retrieval=round(
+            (retrieval_passed / retrieval_total * 100) if retrieval_total else 0.0, 2
+        ),
+        augmentation=round(
+            (augmentation_passed / augmentation_total * 100)
+            if augmentation_total
+            else 0.0,
+            2,
+        ),
+        generation=round(
+            (generation_passed / generation_total * 100) if generation_total else 0.0, 2
+        ),
     )
 
     # Escalation and retry rates
@@ -1306,8 +1378,12 @@ async def get_metrics_quality() -> MetricsQualityResponse:
         per_scorer=per_scorer,
         per_scorer_single_law=per_scorer_single_law,
         stage_stats=stage_stats,
-        escalation_rate=round((escalated / sl_total_cases * 100) if sl_total_cases else 0.0, 2),
-        retry_rate=round((retried / sl_total_cases * 100) if sl_total_cases else 0.0, 2),
+        escalation_rate=round(
+            (escalated / sl_total_cases * 100) if sl_total_cases else 0.0, 2
+        ),
+        retry_rate=round(
+            (retried / sl_total_cases * 100) if sl_total_cases else 0.0, 2
+        ),
     )
 
 
@@ -1339,19 +1415,31 @@ async def get_metrics_performance() -> MetricsPerformanceResponse:
             cl_durations_ms.append(d)
 
     total_cases = len(all_durations_ms)
-    percentiles_raw = compute_percentiles(all_durations_ms) if all_durations_ms else {"p50": 0.0, "p95": 0.0, "p99": 0.0}
+    percentiles_raw = (
+        compute_percentiles(all_durations_ms)
+        if all_durations_ms
+        else {"p50": 0.0, "p95": 0.0, "p99": 0.0}
+    )
     histogram_raw = compute_histogram_bins(all_durations_ms)
     mode_lat_raw = compute_mode_latency(cl_cases)
     diff_lat_raw = compute_difficulty_latency(cl_cases)
 
     # ── Single-law performance ─────────────────────────────────────────
-    sl_percentiles_raw = compute_percentiles(sl_durations_ms) if sl_durations_ms else {"p50": 0.0, "p95": 0.0, "p99": 0.0}
+    sl_percentiles_raw = (
+        compute_percentiles(sl_durations_ms)
+        if sl_durations_ms
+        else {"p50": 0.0, "p95": 0.0, "p99": 0.0}
+    )
     sl_histogram_raw = compute_histogram_bins(sl_durations_ms)
 
     # Escalation and retry rates (same computation as quality endpoint)
     sl_total_case_count = sum(r.get("summary", {}).get("total", 0) for r in sl_runs)
-    escalated = sum(r.get("escalation_stats", {}).get("cases_escalated", 0) for r in sl_runs)
-    retried = sum(r.get("retry_stats", {}).get("cases_with_retries", 0) for r in sl_runs)
+    escalated = sum(
+        r.get("escalation_stats", {}).get("cases_escalated", 0) for r in sl_runs
+    )
+    retried = sum(
+        r.get("retry_stats", {}).get("cases_with_retries", 0) for r in sl_runs
+    )
 
     # Load all historical SL runs (needed for run-mode latency + trends)
     all_sl_runs = _load_all_single_law_runs(config["max_runs_scan"], active_laws)
@@ -1378,8 +1466,12 @@ async def get_metrics_performance() -> MetricsPerformanceResponse:
     sl_perf = SLPerformance(
         percentiles=Percentiles(**sl_percentiles_raw),
         total_cases=len(sl_durations_ms),
-        escalation_rate=round((escalated / sl_total_case_count * 100) if sl_total_case_count else 0.0, 2),
-        retry_rate=round((retried / sl_total_case_count * 100) if sl_total_case_count else 0.0, 2),
+        escalation_rate=round(
+            (escalated / sl_total_case_count * 100) if sl_total_case_count else 0.0, 2
+        ),
+        retry_rate=round(
+            (retried / sl_total_case_count * 100) if sl_total_case_count else 0.0, 2
+        ),
         histogram_bins=[HistogramBin(**b) for b in sl_histogram_raw],
         latency_by_run_mode=[RunModeLatency(**m) for m in run_mode_lat_raw],
         trend=[LatencyTrendPoint(**p) for p in sl_trend_raw[-20:]],
@@ -1389,7 +1481,11 @@ async def get_metrics_performance() -> MetricsPerformanceResponse:
     )
 
     # ── Cross-law performance ──────────────────────────────────────────
-    cl_percentiles_raw = compute_percentiles(cl_durations_ms) if cl_durations_ms else {"p50": 0.0, "p95": 0.0, "p99": 0.0}
+    cl_percentiles_raw = (
+        compute_percentiles(cl_durations_ms)
+        if cl_durations_ms
+        else {"p50": 0.0, "p95": 0.0, "p99": 0.0}
+    )
     cl_histogram_raw = compute_histogram_bins(cl_durations_ms)
 
     # CL trend: load all runs (not just latest per suite)
@@ -1430,14 +1526,16 @@ async def get_metrics_ingestion() -> MetricsIngestionResponse:
         quality = meta.get("quality", {})
         coverage = quality.get("structure_coverage_pct", 0.0)
         coverages.append(coverage)
-        corpora_list.append(CorpusHealth(
-            corpus_id=corpus_id,
-            display_name=meta.get("display_name", corpus_id),
-            coverage=coverage,
-            unhandled=quality.get("unhandled_count", 0),
-            chunks=quality.get("chunk_count", 0),
-            is_ingested=meta.get("enabled", True),
-        ))
+        corpora_list.append(
+            CorpusHealth(
+                corpus_id=corpus_id,
+                display_name=meta.get("display_name", corpus_id),
+                coverage=coverage,
+                unhandled=quality.get("unhandled_count", 0),
+                chunks=quality.get("chunk_count", 0),
+                is_ingested=meta.get("enabled", True),
+            )
+        )
 
     # Exclude 0% coverage corpora (not yet ingested) from the overall calculation
     ingested_coverages = [c for c in coverages if c > 0]
@@ -1457,7 +1555,8 @@ async def get_metrics_ingestion() -> MetricsIngestionResponse:
 
 
 def _load_all_cross_law_runs_for_suite(
-    suite_id: str, max_scan: int,
+    suite_id: str,
+    max_scan: int,
 ) -> list[dict[str, Any]]:
     """Load all runs for a specific cross-law suite, sorted newest first.
 
@@ -1498,7 +1597,9 @@ async def get_law_detail(law: str) -> MetricsLawDetailResponse:
     corpora = _load_corpora()
 
     # Load all single-law runs for this law
-    sl_runs = _load_latest_single_law_runs(config["max_runs_scan"], _get_active_law_ids())
+    sl_runs = _load_latest_single_law_runs(
+        config["max_runs_scan"], _get_active_law_ids()
+    )
     law_runs = [r for r in sl_runs if r.get("meta", {}).get("law") == law]
 
     # Latest run for case results and scorer breakdown
@@ -1519,34 +1620,42 @@ async def get_law_detail(law: str) -> MetricsLawDetailResponse:
         for result in latest_run.get("results", []):
             scores = result.get("scores", {})
             for scorer, value in scores.items():
-                passed = value.get("passed", False) if isinstance(value, dict) else bool(value)
+                passed = (
+                    value.get("passed", False)
+                    if isinstance(value, dict)
+                    else bool(value)
+                )
                 scorer_totals[scorer]["total"] += 1
                 if passed:
                     scorer_totals[scorer]["passed"] += 1
 
             actual_anchors, expected_anchors = _extract_anchors(result)
             case_id = result.get("case_id", "")
-            latest_results.append(CaseResultSummary(
-                case_id=case_id,
-                passed=result.get("passed", False),
-                duration_ms=result.get("duration_ms", 0),
-                scores=_normalize_scores(result.get("scores", {})),
-                score_messages=_extract_score_messages(result.get("scores", {})),
-                anchors=actual_anchors,
-                expected_anchors=expected_anchors,
-                profile=result.get("profile", ""),
-                prompt=prompt_lookup.get(case_id, ""),
-            ))
+            latest_results.append(
+                CaseResultSummary(
+                    case_id=case_id,
+                    passed=result.get("passed", False),
+                    duration_ms=result.get("duration_ms", 0),
+                    scores=_normalize_scores(result.get("scores", {})),
+                    score_messages=_extract_score_messages(result.get("scores", {})),
+                    anchors=actual_anchors,
+                    expected_anchors=expected_anchors,
+                    profile=result.get("profile", ""),
+                    prompt=prompt_lookup.get(case_id, ""),
+                )
+            )
 
         for scorer, data in sorted(scorer_totals.items()):
             rate = (data["passed"] / data["total"] * 100) if data["total"] else 0.0
-            scorer_breakdown.append(ScorerPassRate(
-                scorer=scorer,
-                pass_rate=round(rate, 2),
-                total=data["total"],
-                passed=data["passed"],
-                category="single_law",
-            ))
+            scorer_breakdown.append(
+                ScorerPassRate(
+                    scorer=scorer,
+                    pass_rate=round(rate, 2),
+                    total=data["total"],
+                    passed=data["passed"],
+                    category="single_law",
+                )
+            )
 
     return MetricsLawDetailResponse(
         law=law,
@@ -1571,11 +1680,13 @@ async def get_suite_detail(
     # Trend from all runs for this suite
     trend: list[TrendPoint] = []
     for run in reversed(suite_runs):  # oldest first
-        trend.append(TrendPoint(
-            run_id=run.get("run_id", ""),
-            timestamp=run.get("timestamp", ""),
-            pass_rate=round(run.get("pass_rate", 0.0) * 100, 2),
-        ))
+        trend.append(
+            TrendPoint(
+                run_id=run.get("run_id", ""),
+                timestamp=run.get("timestamp", ""),
+                pass_rate=round(run.get("pass_rate", 0.0) * 100, 2),
+            )
+        )
 
     # Latest run for detail
     latest = suite_runs[0] if suite_runs else None
@@ -1597,13 +1708,20 @@ async def get_suite_detail(
     if mode:
         filtered_cases = [c for c in filtered_cases if c.get("synthesis_mode") == mode]
     if difficulty:
-        filtered_cases = [c for c in filtered_cases if c.get("difficulty") == difficulty]
+        filtered_cases = [
+            c for c in filtered_cases if c.get("difficulty") == difficulty
+        ]
 
     # Scorer breakdown from filtered cases
     scorer_raw = aggregate_scorers(filtered_cases, mode_filter=mode)
     scorer_breakdown = [
-        ScorerPassRate(scorer=s["scorer"], pass_rate=s["pass_rate"],
-                       total=s["total"], passed=s["passed"], category="cross_law")
+        ScorerPassRate(
+            scorer=s["scorer"],
+            pass_rate=s["pass_rate"],
+            total=s["total"],
+            passed=s["passed"],
+            category="cross_law",
+        )
         for s in scorer_raw
     ]
 
@@ -1641,7 +1759,9 @@ async def get_scorer_detail(scorer: str) -> MetricsScorerDetailResponse:
     config = get_settings_yaml()["dashboard"]
     corpora = _load_corpora()
 
-    sl_runs = _load_latest_single_law_runs(config["max_runs_scan"], _get_active_law_ids())
+    sl_runs = _load_latest_single_law_runs(
+        config["max_runs_scan"], _get_active_law_ids()
+    )
 
     # Per-law pass rates for this specific scorer
     per_law_rates: list[LawPassRate] = []
@@ -1661,13 +1781,15 @@ async def get_scorer_detail(scorer: str) -> MetricsScorerDetailResponse:
                     passed += 1
 
         if total > 0:
-            per_law_rates.append(LawPassRate(
-                law=law,
-                display_name=_get_display_name(law, corpora),
-                pass_rate=round((passed / total * 100), 2),
-                total=total,
-                passed=passed,
-            ))
+            per_law_rates.append(
+                LawPassRate(
+                    law=law,
+                    display_name=_get_display_name(law, corpora),
+                    pass_rate=round((passed / total * 100), 2),
+                    total=total,
+                    passed=passed,
+                )
+            )
 
     return MetricsScorerDetailResponse(
         scorer=scorer,
@@ -1694,8 +1816,13 @@ async def get_mode_detail(mode: str) -> MetricsModeDetailResponse:
     # Applicable scorers — only scorers that appear in cases of this mode
     scorer_raw = aggregate_scorers(mode_cases, mode_filter=mode)
     applicable_scorers = [
-        ScorerPassRate(scorer=s["scorer"], pass_rate=s["pass_rate"],
-                       total=s["total"], passed=s["passed"], category="cross_law")
+        ScorerPassRate(
+            scorer=s["scorer"],
+            pass_rate=s["pass_rate"],
+            total=s["total"],
+            passed=s["passed"],
+            category="cross_law",
+        )
         for s in scorer_raw
     ]
 
@@ -1724,7 +1851,9 @@ async def get_mode_detail(mode: str) -> MetricsModeDetailResponse:
     )
 
 
-@router.get("/detail/difficulty/{difficulty}", response_model=MetricsDifficultyDetailResponse)
+@router.get(
+    "/detail/difficulty/{difficulty}", response_model=MetricsDifficultyDetailResponse
+)
 async def get_difficulty_detail(difficulty: str) -> MetricsDifficultyDetailResponse:
     """Level 3 per-difficulty drill-down — cases with this difficulty level."""
     config = get_settings_yaml()["dashboard"]
@@ -1827,22 +1956,48 @@ def _build_metrics_snapshot(
         if d is not None and d > 0:
             cl_durations_ms.append(d)
     all_durations_ms = sl_durations_ms + cl_durations_ms
-    percentiles = compute_percentiles(all_durations_ms) if all_durations_ms else {
-        "p50": 0.0, "p95": 0.0, "p99": 0.0,
-    }
-    sl_percentiles = compute_percentiles(sl_durations_ms) if sl_durations_ms else {
-        "p50": 0.0, "p95": 0.0, "p99": 0.0,
-    }
-    cl_percentiles = compute_percentiles(cl_durations_ms) if cl_durations_ms else {
-        "p50": 0.0, "p95": 0.0, "p99": 0.0,
-    }
+    percentiles = (
+        compute_percentiles(all_durations_ms)
+        if all_durations_ms
+        else {
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0,
+        }
+    )
+    sl_percentiles = (
+        compute_percentiles(sl_durations_ms)
+        if sl_durations_ms
+        else {
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0,
+        }
+    )
+    cl_percentiles = (
+        compute_percentiles(cl_durations_ms)
+        if cl_durations_ms
+        else {
+            "p50": 0.0,
+            "p95": 0.0,
+            "p99": 0.0,
+        }
+    )
 
     # Escalation & retry rates
     sl_total_case_count = sum(r.get("summary", {}).get("total", 0) for r in sl_runs)
-    escalated = sum(r.get("escalation_stats", {}).get("cases_escalated", 0) for r in sl_runs)
-    retried = sum(r.get("retry_stats", {}).get("cases_with_retries", 0) for r in sl_runs)
-    escalation_rate = round((escalated / sl_total_case_count * 100) if sl_total_case_count else 0.0, 2)
-    retry_rate = round((retried / sl_total_case_count * 100) if sl_total_case_count else 0.0, 2)
+    escalated = sum(
+        r.get("escalation_stats", {}).get("cases_escalated", 0) for r in sl_runs
+    )
+    retried = sum(
+        r.get("retry_stats", {}).get("cases_with_retries", 0) for r in sl_runs
+    )
+    escalation_rate = round(
+        (escalated / sl_total_case_count * 100) if sl_total_case_count else 0.0, 2
+    )
+    retry_rate = round(
+        (retried / sl_total_case_count * 100) if sl_total_case_count else 0.0, 2
+    )
 
     # Per-run-mode latency (SL)
     all_sl_runs = _load_all_single_law_runs(config["max_runs_scan"], active_laws)
@@ -1870,9 +2025,9 @@ def _build_metrics_snapshot(
             entry["html_tjek_pct"] = None
             na_count += 1
         html_tjek_details.append(entry)
-    html_tjek_overall = round(
-        statistics.mean(checked_coverages), 2
-    ) if checked_coverages else 0.0
+    html_tjek_overall = (
+        round(statistics.mean(checked_coverages), 2) if checked_coverages else 0.0
+    )
 
     # Per-law pass rates (SL)
     per_law: list[dict[str, Any]] = []
@@ -1881,12 +2036,16 @@ def _build_metrics_snapshot(
         summary = run.get("summary", {})
         law_total = summary.get("total", 0)
         law_passed = summary.get("passed", 0)
-        per_law.append({
-            "law": meta.get("law", "unknown"),
-            "pass_rate": round((law_passed / law_total * 100) if law_total else 0.0, 1),
-            "passed": law_passed,
-            "total": law_total,
-        })
+        per_law.append(
+            {
+                "law": meta.get("law", "unknown"),
+                "pass_rate": round(
+                    (law_passed / law_total * 100) if law_total else 0.0, 1
+                ),
+                "passed": law_passed,
+                "total": law_total,
+            }
+        )
 
     # Failing cases with scorer failure reasons (SL + CL, capped at 15)
     failing_cases: list[dict[str, Any]] = []
@@ -1898,22 +2057,26 @@ def _build_metrics_snapshot(
                 for scorer, value in result.get("scores", {}).items():
                     if isinstance(value, dict) and not value.get("passed", True):
                         failed_scorers[scorer] = value.get("message", "")[:120]
-                failing_cases.append({
-                    "law": law_name,
-                    "case_id": result.get("case_id", ""),
-                    "failed_scorers": failed_scorers,
-                })
+                failing_cases.append(
+                    {
+                        "law": law_name,
+                        "case_id": result.get("case_id", ""),
+                        "failed_scorers": failed_scorers,
+                    }
+                )
     for case in all_cases:
         if not case.get("passed", False):
             cl_failed: dict[str, str] = {}
             for scorer, value in case.get("score_messages", {}).items():
                 if value:
                     cl_failed[scorer] = str(value)[:120]
-            failing_cases.append({
-                "law": "cross-law",
-                "case_id": case.get("case_id", ""),
-                "failed_scorers": cl_failed,
-            })
+            failing_cases.append(
+                {
+                    "law": "cross-law",
+                    "case_id": case.get("case_id", ""),
+                    "failed_scorers": cl_failed,
+                }
+            )
 
     return {
         "unified_pass_rate": unified,
@@ -1953,7 +2116,7 @@ async def post_analyse() -> StreamingResponse:
             async for chunk in analyse_metrics_stream(snapshot):
                 yield f"data: {json.dumps({'type': 'token', 'text': chunk})}\n\n"
             yield f"data: {json.dumps({'type': 'complete'})}\n\n"
-        except Exception as exc:
+        except Exception:
             logger.exception("AI analysis stream error")
             yield f"data: {json.dumps({'type': 'error', 'error': 'Analyse kunne ikke gennemføres'})}\n\n"
 

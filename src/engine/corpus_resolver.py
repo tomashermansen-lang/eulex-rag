@@ -4,9 +4,14 @@ import re
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Iterable
+from typing import Any, Callable, Dict, Iterable, List
 
-from ..common.corpus_registry import default_registry_path, load_registry, normalize_alias, normalize_corpus_id
+from ..common.corpus_registry import (
+    default_registry_path,
+    load_registry,
+    normalize_alias,
+    normalize_corpus_id,
+)
 
 
 @dataclass(frozen=True)
@@ -66,7 +71,9 @@ class CorpusResolver:
                 seen.add(a2)
                 cleaned.append(a2)
 
-            info = CorpusInfo(corpus_key=key, display_name=display, aliases=tuple(cleaned))
+            info = CorpusInfo(
+                corpus_key=key, display_name=display, aliases=tuple(cleaned)
+            )
             by_key[key] = info
             for a in info.aliases:
                 patterns.append((key, _word_boundary_regex(a)))
@@ -101,7 +108,9 @@ class CorpusResolver:
                 found.add(key)
         return sorted(found)
 
-    def any_alias_in(self, text: str | None, *, keys: Iterable[str] | None = None) -> bool:
+    def any_alias_in(
+        self, text: str | None, *, keys: Iterable[str] | None = None
+    ) -> bool:
         q = normalize_alias(str(text or ""))
         if not q:
             return False
@@ -123,3 +132,75 @@ class CorpusResolver:
 @lru_cache(maxsize=8)
 def load_resolver_for_project_root(project_root: str) -> CorpusResolver:
     return CorpusResolver.from_project_root(Path(project_root))
+
+
+# ---------------------------------------------------------------------------
+# Step 6.2d: Module-level utilities extracted from RAGEngine
+# ---------------------------------------------------------------------------
+
+
+def infer_project_root(docs_path: str | Path | None) -> Path:
+    """Best-effort repo root discovery from docs_path.
+
+    Prefer a parent directory that contains data/processed/corpus_registry.json.
+    Falls back to the parent of docs_path.
+    """
+    try:
+        docs = Path(str(docs_path or ".")).resolve()
+    except Exception:  # noqa: BLE001
+        return Path.cwd()
+
+    for p in [docs] + list(docs.parents)[:6]:
+        candidate = p
+        try:
+            if candidate.name == "sample_docs" and candidate.parent.name == "data":
+                candidate = candidate.parent.parent
+        except Exception:  # noqa: BLE001
+            pass
+        if (candidate / "data" / "processed" / "corpus_registry.json").exists():
+            return candidate
+
+    try:
+        return docs.parent.parent
+    except Exception:  # noqa: BLE001
+        return docs.parent
+
+
+def best_effort_source_label(
+    meta: Dict[str, Any] | None,
+    *,
+    corpus_id: str = "",
+    resolver_fn: Callable[[], CorpusResolver] | None = None,
+) -> str:
+    """Best-effort human-readable source label from chunk metadata."""
+    m = dict(meta or {})
+    src = str(m.get("source") or "").strip()
+    if src:
+        return src
+
+    cid = str(m.get("corpus_id") or "").strip() or corpus_id
+    if resolver_fn is not None:
+        try:
+            dn = resolver_fn().display_name_for(cid)
+        except Exception:  # noqa: BLE001
+            dn = None
+        if dn:
+            return dn
+    return cid or "Unknown source"
+
+
+def available_corpora() -> List[str]:
+    """Get list of all available corpus IDs from config.
+
+    Returns config keys (e.g. 'ai-act') which match the corpus_id values
+    stored in ChromaDB document metadata.
+    """
+    from ..common.config_loader import load_settings
+
+    settings = load_settings()
+    if settings.corpora:
+        return list(settings.corpora.keys())
+    project_root = Path(__file__).resolve().parents[2]
+    registry_path = default_registry_path(project_root)
+    registry = load_registry(registry_path)
+    return list(registry.keys())

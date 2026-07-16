@@ -8,10 +8,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Protocol
 
-from .types import UserProfile, ClaimIntent
+from .types import UserProfile
 
 if TYPE_CHECKING:
-    from .planning import FocusSelection
+    pass
 
 
 class GenerationStrategy(Protocol):

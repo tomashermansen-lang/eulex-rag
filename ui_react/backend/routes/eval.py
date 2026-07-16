@@ -229,7 +229,9 @@ async def get_eval_overview() -> EvalOverviewResponse:
 
         # Calculate stats by test type
         # Initialize with all test types
-        test_type_counts: dict[str, dict[str, int]] = {tt: {"total": 0, "passed": 0} for tt in EVAL_TEST_TYPES}
+        test_type_counts: dict[str, dict[str, int]] = {
+            tt: {"total": 0, "passed": 0} for tt in EVAL_TEST_TYPES
+        }
 
         total_cases = len(cases)
         passed_count = 0
@@ -261,7 +263,9 @@ async def get_eval_overview() -> EvalOverviewResponse:
                     test_type = SCORER_TO_TEST_TYPE.get(scorer_name)
                     if test_type and test_type in ("faithfulness", "relevancy"):
                         test_type_counts[test_type]["total"] += 1
-                        if isinstance(score_data, dict) and score_data.get("passed", False):
+                        if isinstance(score_data, dict) and score_data.get(
+                            "passed", False
+                        ):
                             test_type_counts[test_type]["passed"] += 1
 
         # Build test type stats list
@@ -269,13 +273,17 @@ async def get_eval_overview() -> EvalOverviewResponse:
         for tt in EVAL_TEST_TYPES:
             counts = test_type_counts[tt]
             if counts["total"] > 0:
-                by_test_type.append(EvalTestTypeStats(
-                    test_type=tt,
-                    total=counts["total"],
-                    passed=counts["passed"],
-                    failed=counts["total"] - counts["passed"],
-                    pass_rate=counts["passed"] / counts["total"] if counts["total"] > 0 else 0.0,
-                ))
+                by_test_type.append(
+                    EvalTestTypeStats(
+                        test_type=tt,
+                        total=counts["total"],
+                        passed=counts["passed"],
+                        failed=counts["total"] - counts["passed"],
+                        pass_rate=counts["passed"] / counts["total"]
+                        if counts["total"] > 0
+                        else 0.0,
+                    )
+                )
 
         # Get last run timestamp and mode
         last_run = None
@@ -286,22 +294,26 @@ async def get_eval_overview() -> EvalOverviewResponse:
 
         pass_rate = passed_count / total_cases if total_cases > 0 else 0.0
 
-        laws_stats.append(EvalLawStats(
-            law=law,
-            display_name=_get_display_name(law),
-            total_cases=total_cases,
-            passed=passed_count,
-            failed=total_cases - passed_count,
-            pass_rate=pass_rate,
-            last_run=last_run,
-            last_run_mode=last_run_mode,
-            by_test_type=by_test_type,
-        ))
+        laws_stats.append(
+            EvalLawStats(
+                law=law,
+                display_name=_get_display_name(law),
+                total_cases=total_cases,
+                passed=passed_count,
+                failed=total_cases - passed_count,
+                pass_rate=pass_rate,
+                last_run=last_run,
+                last_run_mode=last_run_mode,
+                by_test_type=by_test_type,
+            )
+        )
 
         total_cases_all += total_cases
         total_passed_all += passed_count
 
-    overall_pass_rate = total_passed_all / total_cases_all if total_cases_all > 0 else 0.0
+    overall_pass_rate = (
+        total_passed_all / total_cases_all if total_cases_all > 0 else 0.0
+    )
 
     return EvalOverviewResponse(
         laws=laws_stats,
@@ -321,7 +333,11 @@ async def list_eval_runs(
 
     # Filter by law if specified
     if law:
-        all_runs = [(run_id, data) for run_id, data in all_runs if data.get("meta", {}).get("law") == law]
+        all_runs = [
+            (run_id, data)
+            for run_id, data in all_runs
+            if data.get("meta", {}).get("law") == law
+        ]
 
     # Apply limit
     all_runs = all_runs[:limit]
@@ -331,18 +347,20 @@ async def list_eval_runs(
         meta = data.get("meta", {})
         summary = data.get("summary", {})
 
-        runs.append(EvalRunSummary(
-            run_id=run_id,
-            law=meta.get("law", "unknown"),
-            timestamp=meta.get("timestamp", ""),
-            total=summary.get("total", 0),
-            passed=summary.get("passed", 0),
-            failed=summary.get("failed", 0),
-            pass_rate=summary.get("pass_rate", 0.0),
-            duration_seconds=meta.get("duration_seconds", 0.0),
-            trigger_source=meta.get("trigger_source", "cli"),
-            run_mode=meta.get("run_mode", "full"),
-        ))
+        runs.append(
+            EvalRunSummary(
+                run_id=run_id,
+                law=meta.get("law", "unknown"),
+                timestamp=meta.get("timestamp", ""),
+                total=summary.get("total", 0),
+                passed=summary.get("passed", 0),
+                failed=summary.get("failed", 0),
+                pass_rate=summary.get("pass_rate", 0.0),
+                duration_seconds=meta.get("duration_seconds", 0.0),
+                trigger_source=meta.get("trigger_source", "cli"),
+                run_mode=meta.get("run_mode", "full"),
+            )
+        )
 
     return EvalRunListResponse(runs=runs, total=len(runs))
 
@@ -381,23 +399,27 @@ async def get_eval_run_detail(run_id: str) -> EvalRunDetailResponse:
         if not result.get("passed", True):
             for scorer_name, score_data in result.get("scores", {}).items():
                 if isinstance(score_data, dict) and not score_data.get("passed", True):
-                    failure_reason = f"{scorer_name}: {score_data.get('message', 'failed')}"
+                    failure_reason = (
+                        f"{scorer_name}: {score_data.get('message', 'failed')}"
+                    )
                     break
 
-        results.append(EvalCaseResult(
-            case_id=case_id,
-            profile=result.get("profile", "LEGAL"),
-            prompt=golden_case.get("prompt", ""),
-            passed=result.get("passed", False),
-            test_types=golden_case.get("test_types", ["retrieval"]),
-            origin=golden_case.get("origin", "auto"),
-            duration_ms=result.get("duration_ms", 0.0),
-            scores=result.get("scores", {}),
-            failure_reason=failure_reason,
-            retry_count=result.get("retry_count", 0),
-            escalated=result.get("escalated", False),
-            escalation_model=result.get("escalation_model"),
-        ))
+        results.append(
+            EvalCaseResult(
+                case_id=case_id,
+                profile=result.get("profile", "LEGAL"),
+                prompt=golden_case.get("prompt", ""),
+                passed=result.get("passed", False),
+                test_types=golden_case.get("test_types", ["retrieval"]),
+                origin=golden_case.get("origin", "auto"),
+                duration_ms=result.get("duration_ms", 0.0),
+                scores=result.get("scores", {}),
+                failure_reason=failure_reason,
+                retry_count=result.get("retry_count", 0),
+                escalated=result.get("escalated", False),
+                escalation_model=result.get("escalation_model"),
+            )
+        )
 
     return EvalRunDetailResponse(
         run_id=run_id,
@@ -420,7 +442,9 @@ async def get_test_definition(law: str, case_id: str) -> dict:
     """
     golden_cases = _load_golden_cases(law)
     if not golden_cases:
-        raise HTTPException(status_code=404, detail=f"No eval cases found for law: {law}")
+        raise HTTPException(
+            status_code=404, detail=f"No eval cases found for law: {law}"
+        )
 
     # Find the specific case
     for case in golden_cases:
@@ -432,9 +456,15 @@ async def get_test_definition(law: str, case_id: str) -> dict:
                 "test_types": case.get("test_types", ["retrieval"]),
                 "origin": case.get("origin", "auto"),
                 "expected": {
-                    "must_include_any_of": case.get("expected", {}).get("must_include_any_of", []),
-                    "must_include_all_of": case.get("expected", {}).get("must_include_all_of", []),
-                    "must_not_include_any_of": case.get("expected", {}).get("must_not_include_any_of", []),
+                    "must_include_any_of": case.get("expected", {}).get(
+                        "must_include_any_of", []
+                    ),
+                    "must_include_all_of": case.get("expected", {}).get(
+                        "must_include_all_of", []
+                    ),
+                    "must_not_include_any_of": case.get("expected", {}).get(
+                        "must_not_include_any_of", []
+                    ),
                     "behavior": case.get("expected", {}).get("behavior"),
                 },
             }
@@ -485,12 +515,17 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
         max_primary_retries = escalation_settings.get("max_primary_retries", 3)
 
         # Load golden cases
-        queue.put(("event", {
-            "type": "stage",
-            "stage": "loading",
-            "message": "Indlæser test cases...",
-            "completed": False,
-        }))
+        queue.put(
+            (
+                "event",
+                {
+                    "type": "stage",
+                    "stage": "loading",
+                    "message": "Indlæser test cases...",
+                    "completed": False,
+                },
+            )
+        )
 
         # Find golden cases file path
         evals_dir = _get_evals_dir()
@@ -503,33 +538,45 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
         if request.case_ids:
             cases = [c for c in cases if c.id in set(request.case_ids)]
         if request.limit:
-            cases = cases[:request.limit]
+            cases = cases[: request.limit]
 
         total = len(cases)
-        queue.put(("event", {
-            "type": "stage",
-            "stage": "loading",
-            "message": f"Indlæst {total} test cases",
-            "completed": True,
-        }))
+        queue.put(
+            (
+                "event",
+                {
+                    "type": "stage",
+                    "stage": "loading",
+                    "message": f"Indlæst {total} test cases",
+                    "completed": True,
+                },
+            )
+        )
 
         # Send start event with total and concurrency info
-        queue.put(("event", {
-            "type": "start",
-            "law": request.law,
-            "run_mode": request.run_mode,
-            "total": total,
-            "concurrency": max_workers,
-            "escalation_enabled": escalation_enabled,
-            "message": f"Kører eval for {request.law} (concurrency: {max_workers})",
-        }))
+        queue.put(
+            (
+                "event",
+                {
+                    "type": "start",
+                    "law": request.law,
+                    "run_mode": request.run_mode,
+                    "total": total,
+                    "concurrency": max_workers,
+                    "escalation_enabled": escalation_enabled,
+                    "message": f"Kører eval for {request.law} (concurrency: {max_workers})",
+                },
+            )
+        )
 
         # Update running state
-        _running_evals[request.law].update({
-            "stage": "running",
-            "total": total,
-            "progress": f"Kører {total} test cases...",
-        })
+        _running_evals[request.law].update(
+            {
+                "stage": "running",
+                "total": total,
+                "progress": f"Kører {total} test cases...",
+            }
+        )
 
         # Thread-safe tracking
         results: list = []
@@ -577,7 +624,9 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
                         case_id=case.id,
                         profile=case.profile,
                         passed=False,
-                        scores={"error": Score(passed=False, score=0.0, message=str(e))},
+                        scores={
+                            "error": Score(passed=False, score=0.0, message=str(e))
+                        },
                         duration_ms=(time.time() - case_start) * 1000,
                         retry_count=attempt,
                     )
@@ -590,7 +639,7 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
                 passed=last_result.passed,
                 scores=last_result.scores,
                 duration_ms=(time.time() - case_start) * 1000,
-                retrieval_metrics=getattr(last_result, 'retrieval_metrics', {}),
+                retrieval_metrics=getattr(last_result, "retrieval_metrics", {}),
                 retry_count=max_primary_retries,
                 escalated=False,
             )
@@ -625,7 +674,11 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
                     case_id=case.id,
                     profile=case.profile,
                     passed=False,
-                    scores={"error": Score(passed=False, score=0.0, message=f"Escalation failed: {e}")},
+                    scores={
+                        "error": Score(
+                            passed=False, score=0.0, message=f"Escalation failed: {e}"
+                        )
+                    },
                     duration_ms=(time.time() - case_start) * 1000,
                     retry_count=max_primary_retries,
                     escalated=True,
@@ -635,17 +688,24 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
         # =====================================================================
         # PHASE 1: Run all cases with primary model (parallel)
         # =====================================================================
-        queue.put(("event", {
-            "type": "phase",
-            "phase": 1,
-            "message": f"Phase 1: Parallel execution ({max_workers} workers)",
-        }))
+        queue.put(
+            (
+                "event",
+                {
+                    "type": "phase",
+                    "phase": 1,
+                    "message": f"Phase 1: Parallel execution ({max_workers} workers)",
+                },
+            )
+        )
 
         use_parallel = max_workers > 1
 
         if use_parallel:
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                future_to_case = {executor.submit(process_case, case): case for case in cases}
+                future_to_case = {
+                    executor.submit(process_case, case): case for case in cases
+                }
 
                 for future in as_completed(future_to_case):
                     case = future_to_case[future]
@@ -656,7 +716,9 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
                             case_id=case.id,
                             profile=case.profile,
                             passed=False,
-                            scores={"error": Score(passed=False, score=0.0, message=str(e))},
+                            scores={
+                                "error": Score(passed=False, score=0.0, message=str(e))
+                            },
                             duration_ms=0,
                         )
 
@@ -671,7 +733,57 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
                             failures.append(result)
 
                         # Report case result
-                        queue.put(("event", {
+                        queue.put(
+                            (
+                                "event",
+                                {
+                                    "type": "case_result",
+                                    "case_id": case.id,
+                                    "case_num": case_counter[0],
+                                    "total": total,
+                                    "passed": result.passed,
+                                    "duration_ms": result.duration_ms,
+                                    "scores": {
+                                        name: {
+                                            "passed": score.passed,
+                                            "score": score.score,
+                                            "message": score.message,
+                                        }
+                                        for name, score in result.scores.items()
+                                    },
+                                    "failure_reason": None
+                                    if result.passed
+                                    else next(
+                                        (
+                                            f"{n}: {s.message}"
+                                            for n, s in result.scores.items()
+                                            if not s.passed
+                                        ),
+                                        "Unknown",
+                                    ),
+                                    "running_passed": passed_counter[0],
+                                    "running_failed": failed_counter[0],
+                                    "retry_count": getattr(result, "retry_count", 0),
+                                },
+                            )
+                        )
+        else:
+            # Sequential execution
+            for case in cases:
+                result = process_case(case)
+                results.append(result)
+                case_counter[0] += 1
+
+                if result.passed:
+                    passed_counter[0] += 1
+                else:
+                    failed_counter[0] += 1
+                    failures.append(result)
+
+                queue.put(
+                    (
+                        "event",
+                        {
                             "type": "case_result",
                             "case_id": case.id,
                             "case_num": case_counter[0],
@@ -686,57 +798,31 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
                                 }
                                 for name, score in result.scores.items()
                             },
-                            "failure_reason": None if result.passed else next(
-                                (f"{n}: {s.message}" for n, s in result.scores.items() if not s.passed),
-                                "Unknown"
+                            "failure_reason": None
+                            if result.passed
+                            else next(
+                                (
+                                    f"{n}: {s.message}"
+                                    for n, s in result.scores.items()
+                                    if not s.passed
+                                ),
+                                "Unknown",
                             ),
                             "running_passed": passed_counter[0],
                             "running_failed": failed_counter[0],
-                            "retry_count": getattr(result, 'retry_count', 0),
-                        }))
-        else:
-            # Sequential execution
-            for case in cases:
-                result = process_case(case)
-                results.append(result)
-                case_counter[0] += 1
-
-                if result.passed:
-                    passed_counter[0] += 1
-                else:
-                    failed_counter[0] += 1
-                    failures.append(result)
-
-                queue.put(("event", {
-                    "type": "case_result",
-                    "case_id": case.id,
-                    "case_num": case_counter[0],
-                    "total": total,
-                    "passed": result.passed,
-                    "duration_ms": result.duration_ms,
-                    "scores": {
-                        name: {
-                            "passed": score.passed,
-                            "score": score.score,
-                            "message": score.message,
-                        }
-                        for name, score in result.scores.items()
-                    },
-                    "failure_reason": None if result.passed else next(
-                        (f"{n}: {s.message}" for n, s in result.scores.items() if not s.passed),
-                        "Unknown"
-                    ),
-                    "running_passed": passed_counter[0],
-                    "running_failed": failed_counter[0],
-                    "retry_count": getattr(result, 'retry_count', 0),
-                }))
+                            "retry_count": getattr(result, "retry_count", 0),
+                        },
+                    )
+                )
 
         # Update running state after Phase 1
-        _running_evals[request.law].update({
-            "passed": passed_counter[0],
-            "failed": failed_counter[0],
-            "progress": f"{passed_counter[0]}/{total} bestået, {failed_counter[0]} fejlet",
-        })
+        _running_evals[request.law].update(
+            {
+                "passed": passed_counter[0],
+                "failed": failed_counter[0],
+                "progress": f"{passed_counter[0]}/{total} bestået, {failed_counter[0]} fejlet",
+            }
+        )
 
         # =====================================================================
         # PHASE 2: Escalate failed cases to fallback model (sequential)
@@ -750,16 +836,23 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
                 faith_score = failed_result.scores.get("faithfulness")
                 relevancy_score = failed_result.scores.get("answer_relevancy")
                 # Only escalate generation failures, not retrieval failures
-                if (faith_score and not faith_score.passed) or (relevancy_score and not relevancy_score.passed):
+                if (faith_score and not faith_score.passed) or (
+                    relevancy_score and not relevancy_score.passed
+                ):
                     if failed_result.case_id in case_lookup:
                         cases_to_escalate.append(case_lookup[failed_result.case_id])
 
             if cases_to_escalate:
-                queue.put(("event", {
-                    "type": "phase",
-                    "phase": 2,
-                    "message": f"Phase 2: Escalating {len(cases_to_escalate)} failed cases to {fallback_model} (concurrency: 1)",
-                }))
+                queue.put(
+                    (
+                        "event",
+                        {
+                            "type": "phase",
+                            "phase": 2,
+                            "message": f"Phase 2: Escalating {len(cases_to_escalate)} failed cases to {fallback_model} (concurrency: 1)",
+                        },
+                    )
+                )
 
                 for case in cases_to_escalate:
                     escalated_result = process_escalation_case(case)
@@ -775,28 +868,44 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
                             break
 
                     # Update failures list
-                    failures = [f for f in failures if f.case_id != escalated_result.case_id]
+                    failures = [
+                        f for f in failures if f.case_id != escalated_result.case_id
+                    ]
                     if not escalated_result.passed:
                         failures.append(escalated_result)
 
                     # Report escalation result
-                    queue.put(("event", {
-                        "type": "escalation_result",
-                        "case_id": case.id,
-                        "passed": escalated_result.passed,
-                        "duration_ms": escalated_result.duration_ms,
-                        "escalation_model": fallback_model,
-                        "running_passed": passed_counter[0],
-                        "running_failed": failed_counter[0],
-                    }))
+                    queue.put(
+                        (
+                            "event",
+                            {
+                                "type": "escalation_result",
+                                "case_id": case.id,
+                                "passed": escalated_result.passed,
+                                "duration_ms": escalated_result.duration_ms,
+                                "escalation_model": fallback_model,
+                                "running_passed": passed_counter[0],
+                                "running_failed": failed_counter[0],
+                            },
+                        )
+                    )
 
         duration = time.time() - start_time
 
         # Build summary and save results
-        stage_stats = PipelineStageStats.from_results(results) if results else PipelineStageStats()
+        stage_stats = (
+            PipelineStageStats.from_results(results)
+            if results
+            else PipelineStageStats()
+        )
 
         # Save results to JSON file
-        from src.eval.reporters import EvalSummary, JsonReporter, RetryStats, EscalationStats
+        from src.eval.reporters import (
+            EvalSummary,
+            JsonReporter,
+            RetryStats,
+            EscalationStats,
+        )
         from datetime import timezone
 
         # Calculate retry and escalation statistics
@@ -804,8 +913,8 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
         escalation_stats = EscalationStats()
 
         for r in results:
-            retry_count = getattr(r, 'retry_count', 0)
-            escalated = getattr(r, 'escalated', False)
+            retry_count = getattr(r, "retry_count", 0)
+            escalated = getattr(r, "escalated", False)
 
             if retry_count > 0:
                 retry_stats.cases_with_retries += 1
@@ -861,41 +970,46 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
         save_with_run_mode(stable_path)
 
         # Send completion event with stage stats
-        queue.put(("event", {
-            "type": "complete",
-            "law": request.law,
-            "total": total,
-            "passed": passed_counter[0],
-            "failed": failed_counter[0],
-            "pass_rate": passed_counter[0] / total if total > 0 else 0.0,
-            "duration_seconds": duration,
-            "concurrency": max_workers,
-            "stage_stats": {
-                "retrieval": {
-                    "total": stage_stats.retrieval_total,
-                    "passed": stage_stats.retrieval_passed,
+        queue.put(
+            (
+                "event",
+                {
+                    "type": "complete",
+                    "law": request.law,
+                    "total": total,
+                    "passed": passed_counter[0],
+                    "failed": failed_counter[0],
+                    "pass_rate": passed_counter[0] / total if total > 0 else 0.0,
+                    "duration_seconds": duration,
+                    "concurrency": max_workers,
+                    "stage_stats": {
+                        "retrieval": {
+                            "total": stage_stats.retrieval_total,
+                            "passed": stage_stats.retrieval_passed,
+                        },
+                        "augmentation": {
+                            "total": stage_stats.augmentation_total,
+                            "passed": stage_stats.augmentation_passed,
+                        },
+                        "generation": {
+                            "total": stage_stats.generation_total,
+                            "passed": stage_stats.generation_passed,
+                        },
+                    },
+                    "retry_stats": {
+                        "cases_with_retries": retry_stats.cases_with_retries,
+                        "total_retries": retry_stats.total_retries,
+                        "cases_passed_on_retry": retry_stats.cases_passed_on_retry,
+                        "cases_failed_after_retries": retry_stats.cases_failed_after_retries,
+                    },
+                    "escalation_stats": {
+                        "cases_escalated": escalation_stats.cases_escalated,
+                        "cases_passed_on_escalation": escalation_stats.cases_passed_on_escalation,
+                        "cases_failed_after_escalation": escalation_stats.cases_failed_after_escalation,
+                    },
                 },
-                "augmentation": {
-                    "total": stage_stats.augmentation_total,
-                    "passed": stage_stats.augmentation_passed,
-                },
-                "generation": {
-                    "total": stage_stats.generation_total,
-                    "passed": stage_stats.generation_passed,
-                },
-            },
-            "retry_stats": {
-                "cases_with_retries": retry_stats.cases_with_retries,
-                "total_retries": retry_stats.total_retries,
-                "cases_passed_on_retry": retry_stats.cases_passed_on_retry,
-                "cases_failed_after_retries": retry_stats.cases_failed_after_retries,
-            },
-            "escalation_stats": {
-                "cases_escalated": escalation_stats.cases_escalated,
-                "cases_passed_on_escalation": escalation_stats.cases_passed_on_escalation,
-                "cases_failed_after_escalation": escalation_stats.cases_failed_after_escalation,
-            },
-        }))
+            )
+        )
 
         queue.put(("done", None))
 
@@ -909,7 +1023,9 @@ def _run_eval_in_thread(request: TriggerEvalRequest, queue: Queue) -> None:
         _running_evals.pop(request.law, None)
 
 
-async def _generate_eval_events(request: TriggerEvalRequest) -> AsyncGenerator[str, None]:
+async def _generate_eval_events(
+    request: TriggerEvalRequest,
+) -> AsyncGenerator[str, None]:
     """Generate SSE events for eval progress."""
     queue: Queue = Queue()
 
@@ -954,8 +1070,7 @@ async def trigger_eval(request: TriggerEvalRequest) -> StreamingResponse:
     golden_cases = _load_golden_cases(request.law)
     if not golden_cases:
         raise HTTPException(
-            status_code=404,
-            detail=f"No eval cases found for law: {request.law}"
+            status_code=404, detail=f"No eval cases found for law: {request.law}"
         )
 
     return StreamingResponse(
@@ -993,7 +1108,9 @@ def _case_dict_to_response(case: dict) -> EvalCaseResponse:
             max_citations=expected.get("max_citations"),
             behavior=expected.get("behavior", "answer"),
             allow_empty_references=expected.get("allow_empty_references", False),
-            must_have_article_support_for_normative=expected.get("must_have_article_support_for_normative", True),
+            must_have_article_support_for_normative=expected.get(
+                "must_have_article_support_for_normative", True
+            ),
             notes=expected.get("notes", ""),
         ),
     )
@@ -1040,7 +1157,9 @@ async def create_eval_case(law: str, case_data: EvalCaseCreate) -> EvalCaseRespo
 
 
 @router.put("/cases/{law}/{case_id}", response_model=EvalCaseResponse)
-async def update_eval_case(law: str, case_id: str, case_data: EvalCaseUpdate) -> EvalCaseResponse:
+async def update_eval_case(
+    law: str, case_id: str, case_data: EvalCaseUpdate
+) -> EvalCaseResponse:
     """Update an existing eval case."""
     try:
         # Build update dict with only provided fields
@@ -1072,7 +1191,9 @@ async def delete_eval_case(law: str, case_id: str) -> None:
         raise HTTPException(status_code=404, detail=f"Case not found: {case_id}")
 
 
-@router.post("/cases/{law}/{case_id}/duplicate", response_model=EvalCaseResponse, status_code=201)
+@router.post(
+    "/cases/{law}/{case_id}/duplicate", response_model=EvalCaseResponse, status_code=201
+)
 async def duplicate_eval_case(law: str, case_id: str) -> EvalCaseResponse:
     """Duplicate an eval case with a new ID."""
     try:
@@ -1120,7 +1241,9 @@ async def run_single_case(request: RunSingleCaseRequest) -> SingleCaseResultResp
         # Load existing case
         case_dict = get_case_by_id(request.law, request.case_id)
         if case_dict is None:
-            raise HTTPException(status_code=404, detail=f"Case not found: {request.case_id}")
+            raise HTTPException(
+                status_code=404, detail=f"Case not found: {request.case_id}"
+            )
 
         expected_dict = case_dict.get("expected", {})
         golden_case = GoldenCase(
@@ -1132,7 +1255,9 @@ async def run_single_case(request: RunSingleCaseRequest) -> SingleCaseResultResp
                 must_include_any_of=expected_dict.get("must_include_any_of", []),
                 must_include_any_of_2=expected_dict.get("must_include_any_of_2", []),
                 must_include_all_of=expected_dict.get("must_include_all_of", []),
-                must_not_include_any_of=expected_dict.get("must_not_include_any_of", []),
+                must_not_include_any_of=expected_dict.get(
+                    "must_not_include_any_of", []
+                ),
                 behavior=expected_dict.get("behavior", "answer"),
                 min_citations=expected_dict.get("min_citations"),
                 max_citations=expected_dict.get("max_citations"),
@@ -1150,7 +1275,9 @@ async def run_single_case(request: RunSingleCaseRequest) -> SingleCaseResultResp
                 must_include_any_of=expected_dict.get("must_include_any_of", []),
                 must_include_any_of_2=expected_dict.get("must_include_any_of_2", []),
                 must_include_all_of=expected_dict.get("must_include_all_of", []),
-                must_not_include_any_of=expected_dict.get("must_not_include_any_of", []),
+                must_not_include_any_of=expected_dict.get(
+                    "must_not_include_any_of", []
+                ),
                 behavior=expected_dict.get("behavior", "answer"),
                 min_citations=expected_dict.get("min_citations"),
                 max_citations=expected_dict.get("max_citations"),
@@ -1159,7 +1286,7 @@ async def run_single_case(request: RunSingleCaseRequest) -> SingleCaseResultResp
     else:
         raise HTTPException(
             status_code=422,
-            detail="Provide either case_id or inline definition (prompt + profile)"
+            detail="Provide either case_id or inline definition (prompt + profile)",
         )
 
     # Build config
@@ -1184,7 +1311,12 @@ async def run_single_case(request: RunSingleCaseRequest) -> SingleCaseResultResp
         # Now get the actual RAG response for display
         # We need to call ask() again to get the answer text
         from src.engine.planning import UserProfile
-        profile = UserProfile.ENGINEERING if golden_case.profile == "ENGINEERING" else UserProfile.LEGAL
+
+        profile = (
+            UserProfile.ENGINEERING
+            if golden_case.profile == "ENGINEERING"
+            else UserProfile.LEGAL
+        )
 
         rag_result = ask.ask(
             question=golden_case.prompt,
@@ -1199,17 +1331,19 @@ async def run_single_case(request: RunSingleCaseRequest) -> SingleCaseResultResp
         references = []
         for i, ref in enumerate(rag_result.references_structured):
             if isinstance(ref, dict):
-                references.append(Reference(
-                    idx=i + 1,
-                    display=ref.get("display", ""),
-                    chunk_text=ref.get("chunk_text", ref.get("text", "")),
-                    corpus_id=ref.get("corpus_id"),
-                    article=ref.get("article"),
-                    recital=ref.get("recital"),
-                    annex=ref.get("annex"),
-                    paragraph=ref.get("paragraph"),
-                    litra=ref.get("litra"),
-                ))
+                references.append(
+                    Reference(
+                        idx=i + 1,
+                        display=ref.get("display", ""),
+                        chunk_text=ref.get("chunk_text", ref.get("text", "")),
+                        corpus_id=ref.get("corpus_id"),
+                        article=ref.get("article"),
+                        recital=ref.get("recital"),
+                        annex=ref.get("annex"),
+                        paragraph=ref.get("paragraph"),
+                        litra=ref.get("litra"),
+                    )
+                )
 
         duration_ms = (time.perf_counter() - start_time) * 1000
 

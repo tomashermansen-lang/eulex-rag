@@ -12,7 +12,6 @@ Requirement mapping:
 from __future__ import annotations
 
 import asyncio
-import pytest
 from pathlib import Path
 import sys
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -36,7 +35,10 @@ from src.eval.cross_law_suite_manager import CrossLawGoldenCase
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _make_service(corpus_ids: set[str] | None = None, tmp_path: Path | None = None) -> CrossLawEvalService:
+
+def _make_service(
+    corpus_ids: set[str] | None = None, tmp_path: Path | None = None
+) -> CrossLawEvalService:
     """Create a CrossLawEvalService with mocked manager."""
     ids = corpus_ids or {"ai_act", "gdpr", "nis2", "dora"}
     svc = CrossLawEvalService(
@@ -72,13 +74,16 @@ async def _run_generate_cases(
     gen_case: GeneratedCase,
 ) -> None:
     """Run generate_cases with mocked dependencies."""
-    with patch(
-        "ui_react.backend.routes.eval_cross_law.generate_cross_law_cases",
-        new_callable=AsyncMock,
-        return_value=[gen_case],
-    ), patch(
-        "ui_react.backend.routes.eval_cross_law.assign_test_types",
-        return_value=[gen_case],
+    with (
+        patch(
+            "ui_react.backend.routes.eval_cross_law.generate_cross_law_cases",
+            new_callable=AsyncMock,
+            return_value=[gen_case],
+        ),
+        patch(
+            "ui_react.backend.routes.eval_cross_law.assign_test_types",
+            return_value=[gen_case],
+        ),
     ):
         await svc.generate_cases(request)
 
@@ -160,7 +165,9 @@ class TestMinCorporaCitedCaseLevel:
 class TestDiscoveryFallbackTestType:
     """11.7: _convert_case_to_golden() must route discovery → corpus_coverage (no extra scorer)."""
 
-    def test_p11_001_discovery_fallback_gets_corpus_coverage(self, tmp_path: Path) -> None:
+    def test_p11_001_discovery_fallback_gets_corpus_coverage(
+        self, tmp_path: Path
+    ) -> None:
         """Discovery case without explicit test_types gets corpus_coverage (shared)."""
         svc = _make_service(tmp_path=tmp_path)
 
@@ -284,8 +291,6 @@ class TestSuiteStatsModeCounts:
 # Manual test bug fix: difficulty assignment during generation
 # ---------------------------------------------------------------------------
 
-from src.eval.eval_case_generator import GeneratedCase
-
 
 class TestGenerateCasesAssignsDifficulty:
     """Bug fix: generate_cases must assign difficulty to generated cases."""
@@ -309,11 +314,13 @@ class TestGenerateCasesAssignsDifficulty:
 
         # assign_difficulty should return "easy" for 2 corpora + 1 anchor + comparison
         from src.eval.eval_case_generator import assign_difficulty
+
         difficulty = assign_difficulty(gen_case)
         assert difficulty == "easy"
 
         # The CrossLawGoldenCase constructed from it should carry the difficulty
         from src.eval.cross_law_suite_manager import CrossLawGoldenCase
+
         case = CrossLawGoldenCase(
             id=gen_case.id,
             prompt=gen_case.prompt,
@@ -363,7 +370,9 @@ class TestGeneratedCaseQuality:
             f"Discovery should not set min_corpora_cited, got {golden_case.min_corpora_cited}"
         )
 
-    def test_non_discovery_min_corpora_cited_allows_one_miss(self, tmp_path: Path) -> None:
+    def test_non_discovery_min_corpora_cited_allows_one_miss(
+        self, tmp_path: Path
+    ) -> None:
         """Non-discovery cases should allow one missing corpus (len - 1, min 1)."""
         svc = _make_service(tmp_path=tmp_path)
 
@@ -523,7 +532,12 @@ class TestTestTypesPassthrough:
             synthesis_mode="comparison",
             expected_corpora=("ai_act", "gdpr"),
             expected_anchors=(),
-            test_types=("comparison_completeness", "retrieval", "faithfulness", "relevancy"),
+            test_types=(
+                "comparison_completeness",
+                "retrieval",
+                "faithfulness",
+                "relevancy",
+            ),
         )
 
         request = GenerateCasesRequest(
@@ -533,19 +547,26 @@ class TestTestTypesPassthrough:
             generation_strategy="standard",
         )
 
-        with patch(
-            "ui_react.backend.routes.eval_cross_law.generate_cross_law_cases",
-            new_callable=AsyncMock,
-            return_value=[gen_case_raw],
-        ), patch(
-            "ui_react.backend.routes.eval_cross_law.assign_test_types",
-            return_value=[gen_case_with_types],
+        with (
+            patch(
+                "ui_react.backend.routes.eval_cross_law.generate_cross_law_cases",
+                new_callable=AsyncMock,
+                return_value=[gen_case_raw],
+            ),
+            patch(
+                "ui_react.backend.routes.eval_cross_law.assign_test_types",
+                return_value=[gen_case_with_types],
+            ),
         ):
             asyncio.run(svc.generate_cases(request))
 
         golden_case = svc.manager.add_case.call_args[0][1]
-        assert golden_case.test_types == ("comparison_completeness", "retrieval", "faithfulness", "relevancy"), \
-            f"Expected test_types from assign_test_types, got: {golden_case.test_types}"
+        assert golden_case.test_types == (
+            "comparison_completeness",
+            "retrieval",
+            "faithfulness",
+            "relevancy",
+        ), f"Expected test_types from assign_test_types, got: {golden_case.test_types}"
 
 
 class TestInvertedGenerationKeepsAnchors:
@@ -577,7 +598,9 @@ class TestInvertedGenerationKeepsAnchors:
         golden_case = svc.manager.add_case.call_args[0][1]
         assert golden_case.expected_anchors == ("article:6", "article:35")
 
-    def test_inverted_cases_mirror_anchors_to_must_include_any_of(self, tmp_path: Path) -> None:
+    def test_inverted_cases_mirror_anchors_to_must_include_any_of(
+        self, tmp_path: Path
+    ) -> None:
         """Inverted generation must copy anchors to must_include_any_of for UI visibility."""
         svc = _make_service(tmp_path=tmp_path)
 
@@ -600,7 +623,10 @@ class TestInvertedGenerationKeepsAnchors:
         asyncio.run(_run_generate_cases(svc, request, gen_case))
 
         golden_case = svc.manager.add_case.call_args[0][1]
-        assert golden_case.must_include_any_of == ("ai_act:article:6", "gdpr:article:35")
+        assert golden_case.must_include_any_of == (
+            "ai_act:article:6",
+            "gdpr:article:35",
+        )
 
     def test_standard_cases_still_strip_anchors(self, tmp_path: Path) -> None:
         """Standard generation: anchors should still be stripped."""
@@ -655,7 +681,10 @@ class TestCalibration:
             },
         )
 
-        with patch("ui_react.backend.routes.eval_cross_law.ask_service", return_value=mock_result):
+        with patch(
+            "ui_react.backend.routes.eval_cross_law.ask_service",
+            return_value=mock_result,
+        ):
             calibrated = asyncio.run(svc._calibrate_case(case))
 
         assert calibrated.retrieval_confirmed is True
@@ -689,7 +718,10 @@ class TestCalibration:
             },
         )
 
-        with patch("ui_react.backend.routes.eval_cross_law.ask_service", return_value=mock_result):
+        with patch(
+            "ui_react.backend.routes.eval_cross_law.ask_service",
+            return_value=mock_result,
+        ):
             calibrated = asyncio.run(svc._calibrate_case(case))
 
         assert calibrated.retrieval_confirmed is False
@@ -714,7 +746,10 @@ class TestCalibration:
             origin="auto-generated",
         )
 
-        with patch("ui_react.backend.routes.eval_cross_law.ask_service", side_effect=Exception("timeout")):
+        with patch(
+            "ui_react.backend.routes.eval_cross_law.ask_service",
+            side_effect=Exception("timeout"),
+        ):
             calibrated = asyncio.run(svc._calibrate_case(case))
 
         assert calibrated.retrieval_confirmed is None
@@ -803,7 +838,10 @@ class TestCalibration:
             },
         )
 
-        with patch("ui_react.backend.routes.eval_cross_law.ask_service", return_value=mock_result):
+        with patch(
+            "ui_react.backend.routes.eval_cross_law.ask_service",
+            return_value=mock_result,
+        ):
             calibrated = asyncio.run(svc._calibrate_case(case))
 
         assert calibrated.retrieval_confirmed is True
@@ -839,7 +877,10 @@ class TestCalibration:
             },
         )
 
-        with patch("ui_react.backend.routes.eval_cross_law.ask_service", return_value=mock_result):
+        with patch(
+            "ui_react.backend.routes.eval_cross_law.ask_service",
+            return_value=mock_result,
+        ):
             calibrated = asyncio.run(svc._calibrate_case(case))
 
         assert calibrated.retrieval_confirmed is False

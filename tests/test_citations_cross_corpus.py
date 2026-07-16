@@ -3,9 +3,6 @@
 TDD: These tests are written BEFORE the implementation.
 """
 
-import pytest
-from unittest.mock import MagicMock
-
 
 class TestCorpusAwareDeduplication:
     """Tests for corpus-aware deduplication in citations."""
@@ -44,7 +41,12 @@ class TestCorpusAwareDeduplication:
         # Create references with same article in same corpus (different chunks)
         references_structured_all = [
             {"idx": 1, "chunk_id": "chunk_1", "article": "6", "corpus_id": "ai_act"},
-            {"idx": 2, "chunk_id": "chunk_2", "article": "6", "corpus_id": "ai_act"},  # Same article+corpus
+            {
+                "idx": 2,
+                "chunk_id": "chunk_2",
+                "article": "6",
+                "corpus_id": "ai_act",
+            },  # Same article+corpus
         ]
 
         result = apply_hard_reference_gating(

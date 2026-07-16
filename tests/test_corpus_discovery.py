@@ -46,10 +46,12 @@ class FakeCorpusResolver:
 
 @pytest.fixture
 def resolver_with_gdpr_and_ai_act() -> FakeCorpusResolver:
-    return FakeCorpusResolver({
-        "gdpr": ["gdpr", "databeskyttelsesforordningen"],
-        "ai_act": ["ai-act", "ai act", "ai-forordningen"],
-    })
+    return FakeCorpusResolver(
+        {
+            "gdpr": ["gdpr", "databeskyttelsesforordningen"],
+            "ai_act": ["ai-act", "ai act", "ai-forordningen"],
+        }
+    )
 
 
 @pytest.fixture
@@ -124,17 +126,23 @@ class TestDataTypes:
 
 class TestAliasDetection:
     def test_single_match(self, resolver_with_gdpr_and_ai_act) -> None:
-        matches = _stage_alias_detection("Hvad siger GDPR om databehandleraftaler?", resolver_with_gdpr_and_ai_act)
+        matches = _stage_alias_detection(
+            "Hvad siger GDPR om databehandleraftaler?", resolver_with_gdpr_and_ai_act
+        )
         assert len(matches) == 1
         assert matches[0].corpus_id == "gdpr"
 
     def test_multiple_matches(self, resolver_with_gdpr_and_ai_act) -> None:
-        matches = _stage_alias_detection("Sammenlign GDPR og AI-Act", resolver_with_gdpr_and_ai_act)
+        matches = _stage_alias_detection(
+            "Sammenlign GDPR og AI-Act", resolver_with_gdpr_and_ai_act
+        )
         corpus_ids = {m.corpus_id for m in matches}
         assert corpus_ids == {"gdpr", "ai_act"}
 
     def test_no_match_returns_empty(self, resolver_with_gdpr_and_ai_act) -> None:
-        matches = _stage_alias_detection("Hvad er reglerne for datadeling?", resolver_with_gdpr_and_ai_act)
+        matches = _stage_alias_detection(
+            "Hvad er reglerne for datadeling?", resolver_with_gdpr_and_ai_act
+        )
         assert matches == []
 
     def test_confidence_is_one(self, resolver_with_gdpr_and_ai_act) -> None:
@@ -156,17 +164,19 @@ class TestAliasDetection:
 class TestRetrievalProbe:
     def test_single_dominant_corpus(self, default_config: DiscoveryConfig) -> None:
         # ai_act has very close results, gdpr has distant results
-        probe_fn = make_probe_fn({
-            "ai_act": [
-                ({"chunk_id": "a1"}, 0.2),  # sim=0.833
-                ({"chunk_id": "a2"}, 0.3),  # sim=0.769
-                ({"chunk_id": "a3"}, 0.4),  # sim=0.714
-            ],
-            "gdpr": [
-                ({"chunk_id": "g1"}, 2.0),  # sim=0.333
-                ({"chunk_id": "g2"}, 3.0),  # sim=0.250
-            ],
-        })
+        probe_fn = make_probe_fn(
+            {
+                "ai_act": [
+                    ({"chunk_id": "a1"}, 0.2),  # sim=0.833
+                    ({"chunk_id": "a2"}, 0.3),  # sim=0.769
+                    ({"chunk_id": "a3"}, 0.4),  # sim=0.714
+                ],
+                "gdpr": [
+                    ({"chunk_id": "g1"}, 2.0),  # sim=0.333
+                    ({"chunk_id": "g2"}, 3.0),  # sim=0.250
+                ],
+            }
+        )
         matches = _stage_retrieval_probe(
             "facial recognition rules",
             ["ai_act", "gdpr"],
@@ -180,16 +190,18 @@ class TestRetrievalProbe:
 
     def test_multi_corpus_balanced(self, default_config: DiscoveryConfig) -> None:
         # Both corpora have similar close results
-        probe_fn = make_probe_fn({
-            "nis2": [
-                ({"chunk_id": "n1"}, 0.3),
-                ({"chunk_id": "n2"}, 0.4),
-            ],
-            "dora": [
-                ({"chunk_id": "d1"}, 0.35),
-                ({"chunk_id": "d2"}, 0.45),
-            ],
-        })
+        probe_fn = make_probe_fn(
+            {
+                "nis2": [
+                    ({"chunk_id": "n1"}, 0.3),
+                    ({"chunk_id": "n2"}, 0.4),
+                ],
+                "dora": [
+                    ({"chunk_id": "d1"}, 0.35),
+                    ({"chunk_id": "d2"}, 0.45),
+                ],
+            }
+        )
         matches = _stage_retrieval_probe(
             "incident reporting",
             ["nis2", "dora"],
@@ -203,10 +215,12 @@ class TestRetrievalProbe:
 
     def test_all_low_similarity(self, default_config: DiscoveryConfig) -> None:
         # All results very distant
-        probe_fn = make_probe_fn({
-            "ai_act": [({"chunk_id": "a1"}, 10.0)],  # sim=0.091
-            "gdpr": [({"chunk_id": "g1"}, 10.0)],     # sim=0.091
-        })
+        probe_fn = make_probe_fn(
+            {
+                "ai_act": [({"chunk_id": "a1"}, 10.0)],  # sim=0.091
+                "gdpr": [({"chunk_id": "g1"}, 10.0)],  # sim=0.091
+            }
+        )
         matches = _stage_retrieval_probe(
             "something vague",
             ["ai_act", "gdpr"],
@@ -228,13 +242,15 @@ class TestRetrievalProbe:
 
     def test_100_pct_dominance(self, default_config: DiscoveryConfig) -> None:
         # Only one corpus returns results
-        probe_fn = make_probe_fn({
-            "ai_act": [
-                ({"chunk_id": "a1"}, 0.2),
-                ({"chunk_id": "a2"}, 0.3),
-            ],
-            "gdpr": [],
-        })
+        probe_fn = make_probe_fn(
+            {
+                "ai_act": [
+                    ({"chunk_id": "a1"}, 0.2),
+                    ({"chunk_id": "a2"}, 0.3),
+                ],
+                "gdpr": [],
+            }
+        )
         matches = _stage_retrieval_probe(
             "facial recognition",
             ["ai_act", "gdpr"],
@@ -246,9 +262,11 @@ class TestRetrievalProbe:
         assert "ai_act" in corpus_ids
 
     def test_reason_is_retrieval_probe(self, default_config: DiscoveryConfig) -> None:
-        probe_fn = make_probe_fn({
-            "ai_act": [({"chunk_id": "a1"}, 0.3)],
-        })
+        probe_fn = make_probe_fn(
+            {
+                "ai_act": [({"chunk_id": "a1"}, 0.3)],
+            }
+        )
         matches = _stage_retrieval_probe(
             "facial recognition",
             ["ai_act"],
@@ -307,11 +325,15 @@ class TestScoring:
         score = _score_corpus(distances, default_config)
         assert 0.0 <= score <= 1.0
 
-    def test_score_corpus_empty_returns_zero(self, default_config: DiscoveryConfig) -> None:
+    def test_score_corpus_empty_returns_zero(
+        self, default_config: DiscoveryConfig
+    ) -> None:
         score = _score_corpus([], default_config)
         assert score == 0.0
 
-    def test_score_corpus_close_results_high(self, default_config: DiscoveryConfig) -> None:
+    def test_score_corpus_close_results_high(
+        self, default_config: DiscoveryConfig
+    ) -> None:
         # Very close results
         close_score = _score_corpus([0.1, 0.15, 0.2], default_config)
         # Distant results
@@ -328,7 +350,9 @@ class TestLLMDisambiguation:
     def test_not_triggered_clear_winner(self, default_config: DiscoveryConfig) -> None:
         # When top candidate is clearly ahead, LLM should not be called
         candidates = [
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.85, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.85, reason="retrieval_probe"
+            ),
             DiscoveryMatch(corpus_id="gdpr", confidence=0.40, reason="retrieval_probe"),
         ]
         call_count = 0
@@ -341,10 +365,12 @@ class TestLLMDisambiguation:
         result = discover_corpora(
             question="facial recognition rules",
             corpus_ids=["ai_act", "gdpr"],
-            probe_fn=make_probe_fn({
-                "ai_act": [({"chunk_id": "a1"}, 0.1)] * 5,
-                "gdpr": [({"chunk_id": "g1"}, 2.0)] * 2,
-            }),
+            probe_fn=make_probe_fn(
+                {
+                    "ai_act": [({"chunk_id": "a1"}, 0.1)] * 5,
+                    "gdpr": [({"chunk_id": "g1"}, 2.0)] * 2,
+                }
+            ),
             resolver=FakeCorpusResolver({}),
             config=default_config,
             llm_fn=llm_fn,
@@ -364,10 +390,12 @@ class TestLLMDisambiguation:
         result = discover_corpora(
             question="ambiguous question",
             corpus_ids=["ai_act", "gdpr"],
-            probe_fn=make_probe_fn({
-                "ai_act": [({"chunk_id": "a1"}, 0.5)] * 3,
-                "gdpr": [({"chunk_id": "g1"}, 0.55)] * 3,
-            }),
+            probe_fn=make_probe_fn(
+                {
+                    "ai_act": [({"chunk_id": "a1"}, 0.5)] * 3,
+                    "gdpr": [({"chunk_id": "g1"}, 0.55)] * 3,
+                }
+            ),
             resolver=FakeCorpusResolver({}),
             config=config,
             llm_fn=llm_fn,
@@ -382,10 +410,12 @@ class TestLLMDisambiguation:
         result = discover_corpora(
             question="ambiguous question",
             corpus_ids=["ai_act", "gdpr"],
-            probe_fn=make_probe_fn({
-                "ai_act": [({"chunk_id": "a1"}, 0.5)] * 3,
-                "gdpr": [({"chunk_id": "g1"}, 0.55)] * 3,
-            }),
+            probe_fn=make_probe_fn(
+                {
+                    "ai_act": [({"chunk_id": "a1"}, 0.5)] * 3,
+                    "gdpr": [({"chunk_id": "g1"}, 0.55)] * 3,
+                }
+            ),
             resolver=FakeCorpusResolver({}),
             config=default_config,
             llm_fn=llm_fn,
@@ -403,7 +433,9 @@ class TestMergeStages:
         alias = [DiscoveryMatch(corpus_id="gdpr", confidence=1.0, reason="alias_match")]
         probe = [
             DiscoveryMatch(corpus_id="gdpr", confidence=0.7, reason="retrieval_probe"),
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.6, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.6, reason="retrieval_probe"
+            ),
         ]
         merged = _merge_stages(alias, probe, [])
         gdpr = next(m for m in merged if m.corpus_id == "gdpr")
@@ -412,13 +444,17 @@ class TestMergeStages:
 
     def test_deduplicates(self) -> None:
         alias = [DiscoveryMatch(corpus_id="gdpr", confidence=1.0, reason="alias_match")]
-        probe = [DiscoveryMatch(corpus_id="gdpr", confidence=0.7, reason="retrieval_probe")]
+        probe = [
+            DiscoveryMatch(corpus_id="gdpr", confidence=0.7, reason="retrieval_probe")
+        ]
         merged = _merge_stages(alias, probe, [])
         assert len([m for m in merged if m.corpus_id == "gdpr"]) == 1
 
     def test_sorted_by_confidence_desc(self) -> None:
         probe = [
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.6, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.6, reason="retrieval_probe"
+            ),
             DiscoveryMatch(corpus_id="gdpr", confidence=0.9, reason="retrieval_probe"),
             DiscoveryMatch(corpus_id="dora", confidence=0.3, reason="retrieval_probe"),
         ]
@@ -436,7 +472,9 @@ class TestConfidenceGating:
     def test_auto_single_no_suggest(self, default_config: DiscoveryConfig) -> None:
         """One AUTO corpus, others below SUGGEST → only AUTO corpus used."""
         matches = [
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.85, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.85, reason="retrieval_probe"
+            ),
             DiscoveryMatch(corpus_id="gdpr", confidence=0.30, reason="retrieval_probe"),
         ]
         result = _apply_confidence_gating(matches, default_config)
@@ -444,7 +482,9 @@ class TestConfidenceGating:
         assert result.resolved_scope == "explicit"
         assert result.resolved_corpora == ("ai_act",)
 
-    def test_auto_only_includes_auto_tier_in_resolved(self, default_config: DiscoveryConfig) -> None:
+    def test_auto_only_includes_auto_tier_in_resolved(
+        self, default_config: DiscoveryConfig
+    ) -> None:
         """AUTO gate should only include AUTO-tier corpora in resolved_corpora.
 
         Scenario: alias match for GDPR (1.0), retrieval probe finds NIS2 (0.55)
@@ -481,7 +521,9 @@ class TestConfidenceGating:
 
     def test_suggest(self, default_config: DiscoveryConfig) -> None:
         matches = [
-            DiscoveryMatch(corpus_id="data_act", confidence=0.68, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="data_act", confidence=0.68, reason="retrieval_probe"
+            ),
             DiscoveryMatch(corpus_id="gdpr", confidence=0.55, reason="retrieval_probe"),
         ]
         result = _apply_confidence_gating(matches, default_config)
@@ -489,7 +531,9 @@ class TestConfidenceGating:
 
     def test_abstain(self, default_config: DiscoveryConfig) -> None:
         matches = [
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.38, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.38, reason="retrieval_probe"
+            ),
             DiscoveryMatch(corpus_id="gdpr", confidence=0.31, reason="retrieval_probe"),
         ]
         result = _apply_confidence_gating(matches, default_config)
@@ -499,7 +543,9 @@ class TestConfidenceGating:
 
     def test_at_auto_boundary(self, default_config: DiscoveryConfig) -> None:
         matches = [
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.75, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.75, reason="retrieval_probe"
+            ),
         ]
         result = _apply_confidence_gating(matches, default_config)
         assert result.gate == "AUTO"
@@ -507,7 +553,9 @@ class TestConfidenceGating:
 
     def test_at_suggest_boundary(self, default_config: DiscoveryConfig) -> None:
         matches = [
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.65, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.65, reason="retrieval_probe"
+            ),
         ]
         result = _apply_confidence_gating(matches, default_config)
         assert result.gate == "SUGGEST"
@@ -537,7 +585,9 @@ class TestConfidenceGating:
         assert result.gate == "ABSTAIN"
         assert result.resolved_corpora == ()
 
-    def test_abstain_on_vague_query_many_suggest(self, default_config: DiscoveryConfig) -> None:
+    def test_abstain_on_vague_query_many_suggest(
+        self, default_config: DiscoveryConfig
+    ) -> None:
         """3+ corpora above SUGGEST but none reaching AUTO → ABSTAIN.
 
         Vague queries like 'hvad er loven' match every legal corpus moderately.
@@ -547,19 +597,29 @@ class TestConfidenceGating:
         matches = [
             DiscoveryMatch(corpus_id="gdpr", confidence=0.70, reason="retrieval_probe"),
             DiscoveryMatch(corpus_id="nis2", confidence=0.69, reason="retrieval_probe"),
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.68, reason="retrieval_probe"),
-            DiscoveryMatch(corpus_id="data_act", confidence=0.55, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.68, reason="retrieval_probe"
+            ),
+            DiscoveryMatch(
+                corpus_id="data_act", confidence=0.55, reason="retrieval_probe"
+            ),
         ]
         result = _apply_confidence_gating(matches, default_config)
         assert result.gate == "ABSTAIN"
         assert result.resolved_corpora == ()
 
-    def test_suggest_allowed_with_few_corpora(self, default_config: DiscoveryConfig) -> None:
+    def test_suggest_allowed_with_few_corpora(
+        self, default_config: DiscoveryConfig
+    ) -> None:
         """At most 2 corpora above SUGGEST (<=max_suggest_corpora) is legitimate."""
         matches = [
-            DiscoveryMatch(corpus_id="data_act", confidence=0.70, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="data_act", confidence=0.70, reason="retrieval_probe"
+            ),
             DiscoveryMatch(corpus_id="gdpr", confidence=0.68, reason="retrieval_probe"),
-            DiscoveryMatch(corpus_id="ai_act", confidence=0.40, reason="retrieval_probe"),
+            DiscoveryMatch(
+                corpus_id="ai_act", confidence=0.40, reason="retrieval_probe"
+            ),
         ]
         result = _apply_confidence_gating(matches, default_config)
         assert result.gate == "SUGGEST"
@@ -587,10 +647,12 @@ class TestDiscoverCorporaE2E:
         result = discover_corpora(
             question="Hvad er loven?",
             corpus_ids=["ai_act", "gdpr"],
-            probe_fn=make_probe_fn({
-                "ai_act": [({"chunk_id": "a1"}, 10.0)],
-                "gdpr": [({"chunk_id": "g1"}, 10.0)],
-            }),
+            probe_fn=make_probe_fn(
+                {
+                    "ai_act": [({"chunk_id": "a1"}, 10.0)],
+                    "gdpr": [({"chunk_id": "g1"}, 10.0)],
+                }
+            ),
             resolver=FakeCorpusResolver({}),
             config=default_config,
         )
@@ -607,7 +669,9 @@ class TestDiscoverCorporaE2E:
         assert result.gate == "ABSTAIN"
         assert result.resolved_corpora == ()
 
-    def test_probe_fn_error_returns_abstain(self, default_config: DiscoveryConfig) -> None:
+    def test_probe_fn_error_returns_abstain(
+        self, default_config: DiscoveryConfig
+    ) -> None:
         result = discover_corpora(
             question="facial recognition",
             corpus_ids=["ai_act"],
@@ -617,15 +681,19 @@ class TestDiscoverCorporaE2E:
         )
         assert result.gate == "ABSTAIN"
 
-    def test_results_sorted_by_confidence(self, default_config: DiscoveryConfig) -> None:
+    def test_results_sorted_by_confidence(
+        self, default_config: DiscoveryConfig
+    ) -> None:
         result = discover_corpora(
             question="something about laws",
             corpus_ids=["a", "b", "c"],
-            probe_fn=make_probe_fn({
-                "a": [({"chunk_id": "x"}, 0.5)] * 3,
-                "b": [({"chunk_id": "x"}, 0.2)] * 5,
-                "c": [({"chunk_id": "x"}, 1.5)] * 2,
-            }),
+            probe_fn=make_probe_fn(
+                {
+                    "a": [({"chunk_id": "x"}, 0.5)] * 3,
+                    "b": [({"chunk_id": "x"}, 0.2)] * 5,
+                    "c": [({"chunk_id": "x"}, 1.5)] * 2,
+                }
+            ),
             resolver=FakeCorpusResolver({}),
             config=default_config,
         )
@@ -633,7 +701,8 @@ class TestDiscoverCorporaE2E:
         assert confs == sorted(confs, reverse=True)
 
     def test_hyphenated_corpus_ids_work_with_alias_and_probe(
-        self, default_config: DiscoveryConfig,
+        self,
+        default_config: DiscoveryConfig,
     ) -> None:
         """Config-format corpus IDs (hyphenated) work correctly in discovery.
 
@@ -644,10 +713,12 @@ class TestDiscoverCorporaE2E:
         result = discover_corpora(
             question="Hvad siger AI-Act om højrisiko?",
             corpus_ids=["ai-act", "gdpr"],
-            probe_fn=make_probe_fn({
-                "ai-act": [({"chunk_id": "a1"}, 0.3)] * 5,  # good similarity
-                "gdpr": [({"chunk_id": "g1"}, 1.5)],  # poor similarity
-            }),
+            probe_fn=make_probe_fn(
+                {
+                    "ai-act": [({"chunk_id": "a1"}, 0.3)] * 5,  # good similarity
+                    "gdpr": [({"chunk_id": "g1"}, 1.5)],  # poor similarity
+                }
+            ),
             resolver=FakeCorpusResolver({"ai-act": ["ai-act", "ai act"]}),
             config=default_config,
         )
@@ -659,14 +730,18 @@ class TestDiscoverCorporaE2E:
         assert ai_act_matches[0].reason == "alias_match"
         assert "ai-act" in result.resolved_corpora
 
-    def test_stateless_same_input_same_output(self, default_config: DiscoveryConfig) -> None:
+    def test_stateless_same_input_same_output(
+        self, default_config: DiscoveryConfig
+    ) -> None:
         kwargs = dict(
             question="GDPR databehandleraftaler",
             corpus_ids=["gdpr", "ai_act"],
-            probe_fn=make_probe_fn({
-                "gdpr": [({"chunk_id": "g1"}, 0.3)],
-                "ai_act": [({"chunk_id": "a1"}, 1.5)],
-            }),
+            probe_fn=make_probe_fn(
+                {
+                    "gdpr": [({"chunk_id": "g1"}, 0.3)],
+                    "ai_act": [({"chunk_id": "a1"}, 1.5)],
+                }
+            ),
             resolver=FakeCorpusResolver({"gdpr": ["gdpr"]}),
             config=default_config,
         )

@@ -109,7 +109,9 @@ def contract_audit_detail(
     }
 
 
-def extract_idxs_from_structured(references_structured: Iterable[Any] | None) -> set[int]:
+def extract_idxs_from_structured(
+    references_structured: Iterable[Any] | None,
+) -> set[int]:
     out: set[int] = set()
     for ref in list(references_structured or []):
         if not isinstance(ref, dict):
@@ -123,7 +125,9 @@ def extract_idxs_from_structured(references_structured: Iterable[Any] | None) ->
     return out
 
 
-def extract_idxs_from_lines(reference_lines_or_references: Iterable[Any] | None) -> set[int]:
+def extract_idxs_from_lines(
+    reference_lines_or_references: Iterable[Any] | None,
+) -> set[int]:
     out: set[int] = set()
     for line in list(reference_lines_or_references or []):
         s = str(line or "")
@@ -182,7 +186,10 @@ def validate_engineering_contract(
             ContractViolation(
                 code="NORMATIVE_WITHOUT_BRACKET_CITATION",
                 message="Normative paragraph(s) without any [n] bracket citations.",
-                context={**base_ctx, "missing_citations": list(detail.get("missing_citations") or [])},
+                context={
+                    **base_ctx,
+                    "missing_citations": list(detail.get("missing_citations") or []),
+                },
             )
         )
 
@@ -258,7 +265,9 @@ def validate_engineering_contract(
             suspected = False
             if line_idxs:
                 max_line = max(line_idxs)
-                if line_idxs == set(range(1, max_line + 1)) and any(i > max_line for i in cited_idxs):
+                if line_idxs == set(range(1, max_line + 1)) and any(
+                    i > max_line for i in cited_idxs
+                ):
                     suspected = True
             violations.append(
                 ContractViolation(

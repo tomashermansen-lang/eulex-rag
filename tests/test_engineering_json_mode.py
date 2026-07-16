@@ -1,7 +1,7 @@
 import json
+from unittest.mock import MagicMock
 
 import pytest
-import yaml
 
 from src.engine.rag import RAGEngine
 from src.common.config_loader import clear_config_cache, RankingWeights
@@ -23,16 +23,15 @@ def _make_engine_with_two_citable_refs() -> RAGEngine:
 
     engine.max_distance = None
 
-    
-    
     engine._should_abstain = lambda *a, **k: None  # type: ignore[attr-defined]
 
-    engine.collection = object()
+    engine.collection = MagicMock()
     engine.collection_name = "ai-act_documents"
+    engine.chroma = MagicMock()
 
     def fake_query_with_where(question, k=None, *, where=None):  # noqa: ARG001
-        engine._last_retrieved_ids = ["cid-1", "cid-2"]
-        engine._last_retrieved_metadatas = [
+        engine.retriever._last_retrieved_ids = ["cid-1", "cid-2"]
+        engine.retriever._last_retrieved_metadatas = [
             {
                 "source": "AI Act",
                 "article": "12",
@@ -47,9 +46,13 @@ def _make_engine_with_two_citable_refs() -> RAGEngine:
             },
         ]
         engine._last_distances = [0.1, 0.11]
-        return [("doc 1", engine._last_retrieved_metadatas[0]), ("doc 2", engine._last_retrieved_metadatas[1])]
+        return [
+            ("doc 1", engine.retriever._last_retrieved_metadatas[0]),
+            ("doc 2", engine.retriever._last_retrieved_metadatas[1]),
+        ]
 
     engine.query_with_where = fake_query_with_where  # type: ignore[attr-defined]
+    engine.retriever._test_query_fn = fake_query_with_where
     return engine
 
 
@@ -61,17 +64,41 @@ def test_json_mode_unknown_field_triggers_repair_then_success(monkeypatch):
     calls: list[str] = []
 
     bad_with_unknown = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet i denne kontekst.", "citations": [1]},
-        "obligations": [{"title": "Artikel 12", "text": "Der gælder record-keeping.", "citations": [1]}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": [1]}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet i denne kontekst.",
+            "citations": [1],
+        },
+        "obligations": [
+            {
+                "title": "Artikel 12",
+                "text": "Der gælder record-keeping.",
+                "citations": [1],
+            }
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": [1]}
+        ],
         "open_questions": [],
         "unknown": "nope",
     }
 
     good = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet i denne kontekst.", "citations": [1]},
-        "obligations": [{"title": "Artikel 12", "text": "Der gælder record-keeping.", "citations": [1]}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": [1]}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet i denne kontekst.",
+            "citations": [1],
+        },
+        "obligations": [
+            {
+                "title": "Artikel 12",
+                "text": "Der gælder record-keeping.",
+                "citations": [1],
+            }
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": [1]}
+        ],
         "open_questions": [],
     }
 
@@ -81,7 +108,7 @@ def test_json_mode_unknown_field_triggers_repair_then_success(monkeypatch):
             return json.dumps(bad_with_unknown, ensure_ascii=False)
         return json.dumps(good, ensure_ascii=False)
 
-    engine._call_llm = fake_call_llm  # type: ignore[attr-defined]
+    engine._call_openai = fake_call_llm  # type: ignore[attr-defined]
 
     payload = RAGEngine.answer_structured(
         engine,
@@ -108,20 +135,38 @@ def test_json_mode_enrich_must_not_increase_bullet_counts(monkeypatch):
     calls: list[str] = []
 
     base = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet.", "citations": [1]},
-        "obligations": [{"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": [1]}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": [1]}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet.",
+            "citations": [1],
+        },
+        "obligations": [
+            {"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": [1]}
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": [1]}
+        ],
         "open_questions": [],
     }
 
     # Enrich tries to add a new obligation bullet -> should fail-closed deterministically.
     enrich_bad = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet.", "citations": [1, 2]},
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet.",
+            "citations": [1, 2],
+        },
         "obligations": [
             {"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": [1]},
-            {"title": "Artikel 14", "text": "Human oversight gælder.", "citations": [2]},
+            {
+                "title": "Artikel 14",
+                "text": "Human oversight gælder.",
+                "citations": [2],
+            },
         ],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": [1, 2]}],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": [1, 2]}
+        ],
         "open_questions": [],
     }
 
@@ -131,7 +176,7 @@ def test_json_mode_enrich_must_not_increase_bullet_counts(monkeypatch):
             return json.dumps(base, ensure_ascii=False)
         return json.dumps(enrich_bad, ensure_ascii=False)
 
-    engine._call_llm = fake_call_llm  # type: ignore[attr-defined]
+    engine._call_openai = fake_call_llm  # type: ignore[attr-defined]
 
     payload = RAGEngine.answer_structured(
         engine,
@@ -160,17 +205,37 @@ def test_json_mode_retry_budget_max_3_calls_worst_case(monkeypatch):
 
     # 2) repair returns valid schema but insufficient unique citations for min=2 -> triggers enrich
     repaired = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet.", "citations": [1]},
-        "obligations": [{"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": [1]}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": [1]}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet.",
+            "citations": [1],
+        },
+        "obligations": [
+            {"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": [1]}
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": [1]}
+        ],
         "open_questions": [],
     }
 
     # 3) enrich returns same bullet counts but adds citations to reach min=2
     enriched = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet.", "citations": [1, 2]},
-        "obligations": [{"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": [1, 2]}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": [1, 2]}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet.",
+            "citations": [1, 2],
+        },
+        "obligations": [
+            {
+                "title": "Artikel 12",
+                "text": "Record-keeping gælder.",
+                "citations": [1, 2],
+            }
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": [1, 2]}
+        ],
         "open_questions": [],
     }
 
@@ -182,7 +247,7 @@ def test_json_mode_retry_budget_max_3_calls_worst_case(monkeypatch):
             return json.dumps(repaired, ensure_ascii=False)
         return json.dumps(enriched, ensure_ascii=False)
 
-    engine._call_llm = fake_call_llm  # type: ignore[attr-defined]
+    engine._call_openai = fake_call_llm  # type: ignore[attr-defined]
 
     payload = RAGEngine.answer_structured(
         engine,
@@ -209,9 +274,21 @@ def test_json_mode_valid_json_with_citations_must_pass_downstream_gates(monkeypa
     calls: list[str] = []
 
     good = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet i denne kontekst.", "citations": [1, 2]},
-        "obligations": [{"title": "Artikel 12", "text": "Der gælder record-keeping.", "citations": [1]}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": [2]}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet i denne kontekst.",
+            "citations": [1, 2],
+        },
+        "obligations": [
+            {
+                "title": "Artikel 12",
+                "text": "Der gælder record-keeping.",
+                "citations": [1],
+            }
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": [2]}
+        ],
         "open_questions": [],
     }
 
@@ -219,7 +296,7 @@ def test_json_mode_valid_json_with_citations_must_pass_downstream_gates(monkeypa
         calls.append(prompt)
         return json.dumps(good, ensure_ascii=False)
 
-    engine._call_llm = fake_call_llm  # type: ignore[attr-defined]
+    engine._call_openai = fake_call_llm  # type: ignore[attr-defined]
 
     payload = RAGEngine.answer_structured(
         engine,
@@ -239,7 +316,9 @@ def test_json_mode_valid_json_with_citations_must_pass_downstream_gates(monkeypa
     assert run.get("json_parse_ok") is True
 
 
-def test_json_mode_schema_only_fallback_then_enrich_still_empty_fails_closed(monkeypatch):
+def test_json_mode_schema_only_fallback_then_enrich_still_empty_fails_closed(
+    monkeypatch,
+):
     monkeypatch.setenv("ENGINEERING_JSON_MODE", "1")
 
     engine = _make_engine_with_two_citable_refs()
@@ -248,17 +327,33 @@ def test_json_mode_schema_only_fallback_then_enrich_still_empty_fails_closed(mon
 
     # Base JSON is schema-correct but missing required citations -> triggers strict normativ_no_citation.
     base_missing = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet.", "citations": []},
-        "obligations": [{"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": []}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": []}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet.",
+            "citations": [],
+        },
+        "obligations": [
+            {"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": []}
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": []}
+        ],
         "open_questions": [],
     }
 
     # Enrich fails to add citations (still empty) -> must fail with the hardened reason.
     enrich_still_missing = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet.", "citations": []},
-        "obligations": [{"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": []}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": []}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet.",
+            "citations": [],
+        },
+        "obligations": [
+            {"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": []}
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": []}
+        ],
         "open_questions": [],
     }
 
@@ -268,7 +363,7 @@ def test_json_mode_schema_only_fallback_then_enrich_still_empty_fails_closed(mon
             return json.dumps(base_missing, ensure_ascii=False)
         return json.dumps(enrich_still_missing, ensure_ascii=False)
 
-    engine._call_llm = fake_call_llm  # type: ignore[attr-defined]
+    engine._call_openai = fake_call_llm  # type: ignore[attr-defined]
 
     payload = RAGEngine.answer_structured(
         engine,
@@ -299,16 +394,36 @@ def test_json_mode_schema_only_fallback_then_enrich_success(monkeypatch):
     calls: list[str] = []
 
     base_missing = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet.", "citations": []},
-        "obligations": [{"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": []}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": []}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet.",
+            "citations": [],
+        },
+        "obligations": [
+            {"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": []}
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": []}
+        ],
         "open_questions": [],
     }
 
     enriched = {
-        "classification": {"status": "JA", "text": "Systemet vurderes omfattet.", "citations": [1, 2]},
-        "obligations": [{"title": "Artikel 12", "text": "Record-keeping gælder.", "citations": [1, 2]}],
-        "system_requirements": [{"level": "SKAL", "text": "Implementere logging.", "citations": [1, 2]}],
+        "classification": {
+            "status": "JA",
+            "text": "Systemet vurderes omfattet.",
+            "citations": [1, 2],
+        },
+        "obligations": [
+            {
+                "title": "Artikel 12",
+                "text": "Record-keeping gælder.",
+                "citations": [1, 2],
+            }
+        ],
+        "system_requirements": [
+            {"level": "SKAL", "text": "Implementere logging.", "citations": [1, 2]}
+        ],
         "open_questions": [],
     }
 
@@ -318,7 +433,7 @@ def test_json_mode_schema_only_fallback_then_enrich_success(monkeypatch):
             return json.dumps(base_missing, ensure_ascii=False)
         return json.dumps(enriched, ensure_ascii=False)
 
-    engine._call_llm = fake_call_llm  # type: ignore[attr-defined]
+    engine._call_openai = fake_call_llm  # type: ignore[attr-defined]
 
     payload = RAGEngine.answer_structured(
         engine,
@@ -354,7 +469,7 @@ def test_non_json_mode_behavior_unchanged_for_plain_text_llm(monkeypatch):
         calls.append(prompt)
         return "1. Klassifikation og betingelser\n- JA.\n\n2. Relevante juridiske forpligtelser\n- Artikel 12.\n\n3. Konkrete systemkrav\n- SKAL: Implementere logging [1] [2]\n\n4. Åbne spørgsmål / risici\n- (ingen)"
 
-    engine._call_llm = fake_call_llm  # type: ignore[attr-defined]
+    engine._call_openai = fake_call_llm  # type: ignore[attr-defined]
 
     payload = RAGEngine.answer_structured(
         engine,
@@ -366,4 +481,3 @@ def test_non_json_mode_behavior_unchanged_for_plain_text_llm(monkeypatch):
     ans = str(payload.get("answer") or "").strip()
     assert ans != "MISSING_REF"
     assert "[1]" in ans
-

@@ -7,9 +7,8 @@ from __future__ import annotations
 
 import asyncio
 from typing import AsyncGenerator
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
-import pytest
 
 from src.engine.metrics_analysis import (
     _build_analysis_prompt,
@@ -77,7 +76,11 @@ class TestBuildAnalysisPrompt:
         """Prompt instructs model to use numbered/structured lists for output."""
         prompt = _build_analysis_prompt(SAMPLE_SNAPSHOT)
         # Prompt should instruct the model to format points as a numbered list
-        assert "nummereret liste" in prompt.lower() or "numbered list" in prompt.lower() or "brug nummerering" in prompt.lower()
+        assert (
+            "nummereret liste" in prompt.lower()
+            or "numbered list" in prompt.lower()
+            or "brug nummerering" in prompt.lower()
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

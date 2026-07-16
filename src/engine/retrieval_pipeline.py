@@ -31,7 +31,7 @@ Usage:
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable, Dict, FrozenSet, List, Tuple
 
 from ..common.config_loader import RankingWeights, load_settings
@@ -40,6 +40,7 @@ from ..common.config_loader import RankingWeights, load_settings
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class PipelineConfig:
@@ -93,6 +94,7 @@ class PipelineConfig:
 # ---------------------------------------------------------------------------
 # Core Data Types
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class RetrievedChunk:
@@ -155,6 +157,7 @@ class SelectedChunk:
 # Stage 1: Vector Retrieval
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class VectorRetrievalInput:
     """Input for vector retrieval stage."""
@@ -176,7 +179,10 @@ class VectorRetrievalResult:
 def execute_vector_retrieval(
     input: VectorRetrievalInput,
     *,
-    query_fn: Callable[[str, int, Dict[str, Any] | None], Tuple[List[Tuple[str, str, Dict[str, Any]]], List[float]]],
+    query_fn: Callable[
+        [str, int, Dict[str, Any] | None],
+        Tuple[List[Tuple[str, str, Dict[str, Any]]], List[float]],
+    ],
 ) -> VectorRetrievalResult:
     """Execute vector retrieval stage.
 
@@ -195,12 +201,14 @@ def execute_vector_retrieval(
     chunks: List[RetrievedChunk] = []
     for i, (chunk_id, doc, meta) in enumerate(raw_hits):
         dist = distances[i] if i < len(distances) else 0.0
-        chunks.append(RetrievedChunk(
-            chunk_id=chunk_id,
-            document=doc,
-            metadata=dict(meta) if meta else {},
-            distance=dist,
-        ))
+        chunks.append(
+            RetrievedChunk(
+                chunk_id=chunk_id,
+                document=doc,
+                metadata=dict(meta) if meta else {},
+                distance=dist,
+            )
+        )
 
     duration_ms = (time.perf_counter() - start) * 1000
     mode = "filtered" if input.where_filter else "standard"
@@ -215,6 +223,7 @@ def execute_vector_retrieval(
 # ---------------------------------------------------------------------------
 # Stage 2: Citation Expansion
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class CitationExpansionInput:
@@ -241,7 +250,8 @@ class CitationExpansionResult:
 def execute_citation_expansion(
     input: CitationExpansionInput,
     *,
-    inject_fn: Callable[[str, str, int], List[Tuple[str, str, Dict[str, Any], float]]] | None = None,
+    inject_fn: Callable[[str, str, int], List[Tuple[str, str, Dict[str, Any], float]]]
+    | None = None,
     expansion_enabled: bool = True,
 ) -> CitationExpansionResult:
     """Execute citation expansion stage.
@@ -343,12 +353,14 @@ def execute_citation_expansion(
                     # Check for duplicates
                     if any(c.chunk_id == chunk_id for c in chunks_list):
                         continue
-                    chunks_list.append(RetrievedChunk(
-                        chunk_id=chunk_id,
-                        document=doc,
-                        metadata=dict(meta) if meta else {},
-                        distance=dist,
-                    ))
+                    chunks_list.append(
+                        RetrievedChunk(
+                            chunk_id=chunk_id,
+                            document=doc,
+                            metadata=dict(meta) if meta else {},
+                            distance=dist,
+                        )
+                    )
                     injected_anchors.append(anchor)
             except Exception:
                 pass
@@ -367,6 +379,7 @@ def execute_citation_expansion(
 # ---------------------------------------------------------------------------
 # Stage 3: Hybrid Rerank
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class HybridRerankInput:
@@ -401,7 +414,6 @@ def execute_hybrid_rerank(
     Returns:
         HybridRerankResult with scored and sorted chunks
     """
-    import math
 
     start = time.perf_counter()
 
@@ -413,7 +425,7 @@ def execute_hybrid_rerank(
         )
 
     # Import ranking components
-    from .helpers import classify_query_intent
+    from .query_helpers import classify_query_intent
     from .ranking import Ranker
     from .concept_config import extract_anchors_from_metadata
 
@@ -468,14 +480,16 @@ def execute_hybrid_rerank(
             + w.gamma_cite * citation_signals[i]
             + w.delta_role * role_signals[i]
         )
-        scored_chunks.append(ScoredChunk(
-            chunk=chunk,
-            vec_score=vec_norm[i],
-            bm25_score=bm25_norm[i],
-            citation_score=citation_signals[i],
-            role_score=role_signals[i],
-            final_score=final_score,
-        ))
+        scored_chunks.append(
+            ScoredChunk(
+                chunk=chunk,
+                vec_score=vec_norm[i],
+                bm25_score=bm25_norm[i],
+                citation_score=citation_signals[i],
+                role_score=role_signals[i],
+                final_score=final_score,
+            )
+        )
 
     # Sort by final score descending
     scored_chunks.sort(key=lambda x: x.final_score, reverse=True)
@@ -503,6 +517,7 @@ def _normalize_scores(values: List[float]) -> List[float]:
 # ---------------------------------------------------------------------------
 # Stage 4: Context Selection
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class ContextSelectionInput:
@@ -550,7 +565,9 @@ def execute_context_selection(
     # Pre-filter to citable chunks only
     citable_scored: List[Tuple[int, ScoredChunk, str | None]] = []
     for rank, scored in enumerate(input.scored_chunks):
-        is_citable, precise_ref = is_citable_fn(scored.chunk.metadata, scored.chunk.document)
+        is_citable, precise_ref = is_citable_fn(
+            scored.chunk.metadata, scored.chunk.document
+        )
         if is_citable:
             citable_scored.append((rank, scored, precise_ref))
 
@@ -560,7 +577,9 @@ def execute_context_selection(
     selected_indices: set[int] = set()
     unique_anchors: set[str] = set()
 
-    def _add_chunk(idx: int, rank: int, scored: ScoredChunk, precise_ref: str | None) -> bool:
+    def _add_chunk(
+        idx: int, rank: int, scored: ScoredChunk, precise_ref: str | None
+    ) -> bool:
         """Add a chunk to selected. Returns True if added."""
         if idx in selected_indices:
             return False
@@ -571,12 +590,14 @@ def execute_context_selection(
         if anchor:
             unique_anchors.add(anchor)
 
-        selected.append(SelectedChunk(
-            chunk=scored.chunk,
-            is_citable=True,
-            precise_ref=precise_ref,
-            rank=rank + 1,
-        ))
+        selected.append(
+            SelectedChunk(
+                chunk=scored.chunk,
+                is_citable=True,
+                precise_ref=precise_ref,
+                rank=rank + 1,
+            )
+        )
         selected_indices.add(idx)
         return True
 
@@ -605,7 +626,10 @@ def execute_context_selection(
                     continue  # no match
 
                 # Track best (lowest) rank for this hint
-                if hint_anchor not in hint_best_rank or idx < hint_best_rank[hint_anchor]:
+                if (
+                    hint_anchor not in hint_best_rank
+                    or idx < hint_best_rank[hint_anchor]
+                ):
                     hint_best_rank[hint_anchor] = idx
 
         # Sort hint anchors by their best rank (highest-scoring first)
@@ -647,7 +671,7 @@ def execute_context_selection(
                     if ":" in hint_anchor:
                         parts = hint_anchor.split(":")
                         for i in range(1, len(parts)):
-                            parent = ":".join(parts[:i+1])
+                            parent = ":".join(parts[: i + 1])
                             covered_hints.add(parent)
                     break
 
@@ -670,6 +694,7 @@ def execute_context_selection(
 # ---------------------------------------------------------------------------
 # Pipeline Orchestrator
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class PipelineInput:
@@ -703,7 +728,6 @@ class PipelineResult:
                 "mode": self.vector_result.retrieval_mode,
                 "duration_ms": round(self.vector_result.duration_ms, 2),
             },
-
             # Stage 2: Citation expansion
             "citation_expansion_articles": list(self.expansion_result.hint_anchors),
             "chunks_injected": self.expansion_result.chunks_injected,
@@ -711,7 +735,6 @@ class PipelineResult:
                 "hint_anchors": list(self.expansion_result.hint_anchors),
                 "injected_anchors": list(self.expansion_result.injected_anchors),
             },
-
             # Stage 3: Hybrid rerank
             "hybrid_rerank": {
                 "enabled": True,
@@ -730,7 +753,6 @@ class PipelineResult:
                 ],
                 "duration_ms": round(self.rerank_result.duration_ms, 2),
             },
-
             # Stage 4: Context selection
             "context_selection": {
                 "citable_count": self.context_result.citable_count,
@@ -738,7 +760,6 @@ class PipelineResult:
                 "final_count": len(self.context_result.selected),
                 "duration_ms": round(self.context_result.duration_ms, 2),
             },
-
             # Timing
             "total_duration_ms": round(self.total_duration_ms, 2),
         }
@@ -764,8 +785,12 @@ def execute_pipeline(
     input: PipelineInput,
     config: PipelineConfig,
     *,
-    query_fn: Callable[[str, int, Dict[str, Any] | None], Tuple[List[Tuple[str, str, Dict[str, Any]]], List[float]]],
-    inject_fn: Callable[[str, str, int], List[Tuple[str, str, Dict[str, Any], float]]] | None = None,
+    query_fn: Callable[
+        [str, int, Dict[str, Any] | None],
+        Tuple[List[Tuple[str, str, Dict[str, Any]]], List[float]],
+    ],
+    inject_fn: Callable[[str, str, int], List[Tuple[str, str, Dict[str, Any], float]]]
+    | None = None,
     is_citable_fn: Callable[[Dict[str, Any], str], Tuple[bool, str | None]],
 ) -> PipelineResult:
     """Execute the full retrieval pipeline.

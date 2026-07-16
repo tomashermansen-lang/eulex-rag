@@ -81,7 +81,9 @@ class PreflightResult:
         return " | ".join(parts) if parts else "No structures detected"
 
 
-def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True) -> PreflightResult:
+def preflight_check_html(
+    html: str, *, enable_eurlex_structural_ids: bool = True
+) -> PreflightResult:
     """Pre-flight check: Analyze document for patterns we can/cannot handle.
 
     Run this BEFORE chunking to warn the user about unsupported content.
@@ -118,7 +120,9 @@ def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True
                 handled["definitional_table"] = handled.get("definitional_table", 0) + 1
             elif row_count >= 3:  # Only warn for substantial tables
                 # Unrecognized table pattern!
-                unhandled["unclassified_table"] = unhandled.get("unclassified_table", 0) + 1
+                unhandled["unclassified_table"] = (
+                    unhandled.get("unclassified_table", 0) + 1
+                )
 
                 # Get header preview
                 first_row = table.find("tr")
@@ -129,13 +133,15 @@ def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True
                         if text:
                             headers.append(text)
 
-                warnings.append(FormatWarning(
-                    category="unclassified_table",
-                    message=f"Table ({row_count} rows) with unrecognized pattern. Headers: [{' | '.join(headers)}]",
-                    location=f"near '{location}'",
-                    severity="warning",
-                    suggestion="Add table classification pattern to _classify_eurlex_table() in html_chunks.py",
-                ))
+                warnings.append(
+                    FormatWarning(
+                        category="unclassified_table",
+                        message=f"Table ({row_count} rows) with unrecognized pattern. Headers: [{' | '.join(headers)}]",
+                        location=f"near '{location}'",
+                        severity="warning",
+                        suggestion="Add table classification pattern to _classify_eurlex_table() in html_chunks.py",
+                    )
+                )
 
     # --- Check for other EUR-Lex structures we handle ---
     # Count articles, chapters, annexes
@@ -159,13 +165,15 @@ def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True
         if depth >= 3:
             unhandled["deep_nested_list"] = unhandled.get("deep_nested_list", 0) + 1
             if unhandled["deep_nested_list"] == 1:  # Only warn once
-                warnings.append(FormatWarning(
-                    category="deep_nested_list",
-                    message=f"Found deeply nested list (depth {depth + 1}+). May lose structure in chunking.",
-                    location="multiple locations",
-                    severity="info",
-                    suggestion="Consider flattening lists or adding nested list handler.",
-                ))
+                warnings.append(
+                    FormatWarning(
+                        category="deep_nested_list",
+                        message=f"Found deeply nested list (depth {depth + 1}+). May lose structure in chunking.",
+                        location="multiple locations",
+                        severity="info",
+                        suggestion="Consider flattening lists or adding nested list handler.",
+                    )
+                )
 
     # Tables without oj-table class (might be layout tables we're ignoring)
     # EUR-Lex uses many layout tables for formatting - these are NOT data tables
@@ -188,19 +196,23 @@ def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True
             continue  # Too small to be a data table
 
         # Check if it has a header-like structure (th elements or styled headers)
-        has_headers = bool(table.find("th")) or bool(table.find("td", class_=re.compile(r"hdr|header", re.I)))
+        has_headers = bool(table.find("th")) or bool(
+            table.find("td", class_=re.compile(r"hdr|header", re.I))
+        )
         if has_headers:
             suspicious_tables += 1
 
     if suspicious_tables > 0:
         unhandled["suspicious_table"] = suspicious_tables
-        warnings.append(FormatWarning(
-            category="suspicious_table",
-            message=f"Found {suspicious_tables} table(s) with header structure that may need special handling.",
-            location="various",
-            severity="warning",
-            suggestion="Verify these tables are layout wrappers, not data tables needing row-level extraction.",
-        ))
+        warnings.append(
+            FormatWarning(
+                category="suspicious_table",
+                message=f"Found {suspicious_tables} table(s) with header structure that may need special handling.",
+                location="various",
+                severity="warning",
+                suggestion="Verify these tables are layout wrappers, not data tables needing row-level extraction.",
+            )
+        )
 
     # --- Check for figures/images ---
     figures = soup.find_all("figure")
@@ -212,26 +224,32 @@ def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True
             prev = fig.find_previous(["h1", "h2", "h3", "h4", "p"])
             if prev:
                 fig_locations.append(prev.get_text(" ", strip=True)[:30])
-        warnings.append(FormatWarning(
-            category="figure",
-            message=f"Found {len(figures)} <figure> element(s). Visual content may not be extracted.",
-            location=f"near: {', '.join(fig_locations)}" if fig_locations else "various",
-            severity="warning",
-            suggestion="Consider adding figure caption extraction or flagging visuals for manual review.",
-        ))
+        warnings.append(
+            FormatWarning(
+                category="figure",
+                message=f"Found {len(figures)} <figure> element(s). Visual content may not be extracted.",
+                location=f"near: {', '.join(fig_locations)}"
+                if fig_locations
+                else "various",
+                severity="warning",
+                suggestion="Consider adding figure caption extraction or flagging visuals for manual review.",
+            )
+        )
 
     # Check for images with alt text we might want
     images = soup.find_all("img")
     images_with_alt = [img for img in images if img.get("alt", "").strip()]
     if images_with_alt:
         unhandled["image_with_alt"] = len(images_with_alt)
-        warnings.append(FormatWarning(
-            category="image_with_alt",
-            message=f"Found {len(images_with_alt)} image(s) with alt text. Alt text content is not extracted.",
-            location="various",
-            severity="info",
-            suggestion="Consider extracting alt text as supplementary content.",
-        ))
+        warnings.append(
+            FormatWarning(
+                category="image_with_alt",
+                message=f"Found {len(images_with_alt)} image(s) with alt text. Alt text content is not extracted.",
+                location="various",
+                severity="info",
+                suggestion="Consider extracting alt text as supplementary content.",
+            )
+        )
 
     # --- Check for definition lists (dl/dt/dd) ---
     dl_elements = soup.find_all("dl")
@@ -239,13 +257,15 @@ def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True
         total_terms = sum(len(dl.find_all("dt")) for dl in dl_elements)
         if total_terms > 0:
             unhandled["definition_list"] = len(dl_elements)
-            warnings.append(FormatWarning(
-                category="definition_list",
-                message=f"Found {len(dl_elements)} definition list(s) with {total_terms} terms. May not preserve dt/dd structure.",
-                location="various",
-                severity="info",
-                suggestion="Verify definition list content is properly chunked.",
-            ))
+            warnings.append(
+                FormatWarning(
+                    category="definition_list",
+                    message=f"Found {len(dl_elements)} definition list(s) with {total_terms} terms. May not preserve dt/dd structure.",
+                    location="various",
+                    severity="info",
+                    suggestion="Verify definition list content is properly chunked.",
+                )
+            )
 
     # --- Check for blockquotes ---
     blockquotes = soup.find_all("blockquote")
@@ -256,13 +276,15 @@ def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True
     code_blocks = soup.find_all(["pre", "code"])
     if code_blocks:
         unhandled["code_block"] = len(code_blocks)
-        warnings.append(FormatWarning(
-            category="code_block",
-            message=f"Found {len(code_blocks)} code/pre block(s). Formatting may be lost.",
-            location="various",
-            severity="info",
-            suggestion="Verify code blocks are legal formulas/references that need special handling.",
-        ))
+        warnings.append(
+            FormatWarning(
+                category="code_block",
+                message=f"Found {len(code_blocks)} code/pre block(s). Formatting may be lost.",
+                location="various",
+                severity="info",
+                suggestion="Verify code blocks are legal formulas/references that need special handling.",
+            )
+        )
 
     # --- Check for footnotes/endnotes ---
     footnotes = soup.find_all(class_=re.compile(r"footnote|endnote|note", re.I))
@@ -274,13 +296,15 @@ def preflight_check_html(html: str, *, enable_eurlex_structural_ids: bool = True
     math_elements = soup.find_all(["math", "mrow", "msub", "msup"])
     if math_elements:
         unhandled["math_formula"] = len(math_elements)
-        warnings.append(FormatWarning(
-            category="math_formula",
-            message=f"Found {len(math_elements)} mathematical notation element(s). Math rendering not preserved.",
-            location="various",
-            severity="warning",
-            suggestion="Consider adding MathML text extraction.",
-        ))
+        warnings.append(
+            FormatWarning(
+                category="math_formula",
+                message=f"Found {len(math_elements)} mathematical notation element(s). Math rendering not preserved.",
+                location="various",
+                severity="warning",
+                suggestion="Consider adding MathML text extraction.",
+            )
+        )
 
     # --- Summary of what we found ---
     # Count paragraphs and list items (our bread and butter)
@@ -319,7 +343,9 @@ def _extract_reference_mentions(
     # Keep these intentionally conservative: require explicit keywords.
     patterns: dict[str, Pattern[str]] = {
         "chapter": re.compile(r"(?i)\b(?:kapitel|chapter)\s+([ivxlcdm]+|\d+)\b"),
-        "section": re.compile(r"(?i)\b(?:afsnit|afdeling|section)\s+([ivxlcdm]+|\d+)\b"),
+        "section": re.compile(
+            r"(?i)\b(?:afsnit|afdeling|section)\s+([ivxlcdm]+|\d+)\b"
+        ),
         "article": re.compile(r"(?i)\b(?:artikel|article)\s*(\d{1,3}[a-z]?)\b"),
         "paragraph": re.compile(r"(?i)\b(?:stk\.|stykke|paragraph)\s*(\d{1,3})\b"),
         "annex": re.compile(r"(?i)\b(?:bilag|annex)\s+([ivxlcdm]+|\d+)\b"),
@@ -373,7 +399,9 @@ def make_chunk_id(*, corpus_id: str, source: str, chunk_index: int) -> str:
     return f"{_slugify(corpus_id)}-{_slugify(source)}-html-c{chunk_index}"
 
 
-def make_location_id(*, corpus_id: str, reference_state: Mapping[str, str | None]) -> str:
+def make_location_id(
+    *, corpus_id: str, reference_state: Mapping[str, str | None]
+) -> str:
     # Backwards-compatible wrapper. The new canonical id is in metadata_schema.make_location_id.
     _ = corpus_id
     return _make_location_id(reference_state=reference_state)
@@ -425,7 +453,9 @@ def _classify_eurlex_table(table_node) -> str | None:
 
     # Definitional table: "Sektor" | "Delsektor" | "Type enhed"
     if len(header_cells) >= 3:
-        if "sektor" in header_cells[0] and ("delsektor" in header_cells[1] or "type" in header_cells[2]):
+        if "sektor" in header_cells[0] and (
+            "delsektor" in header_cells[1] or "type" in header_cells[2]
+        ):
             return "definitional"
 
     return None
@@ -551,7 +581,9 @@ def _eurlex_struct_from_id(raw_id: str) -> dict[str, str] | None:
     return out or None
 
 
-def _iter_html_blocks(html: str, *, enable_eurlex_structural_ids: bool) -> Iterator[tuple[str, str]]:
+def _iter_html_blocks(
+    html: str, *, enable_eurlex_structural_ids: bool
+) -> Iterator[tuple[str, str]]:
     """Yield (kind, text) blocks in document order.
 
     kind is one of: "heading", "text", "struct_ref", "struct_title", "table_row".
@@ -599,13 +631,15 @@ def _iter_html_blocks(html: str, *, enable_eurlex_structural_ids: bool) -> Itera
     _last_struct_kind: str | None = None  # "chapter", "section", "annex", "article"
 
     # EUR-Lex structural title CSS classes.
-    _EURLEX_TITLE_CLASSES = frozenset({
-        "oj-sti-art",       # Article title: "Anvendelsesområde"
-        "oj-ti-section-2",  # Chapter/section title: "ALMINDELIGE BESTEMMELSER"
-        "oj-doc-ti",        # Annex title (second occurrence after BILAG X)
-        "oj-ti-grseq-1",    # Annex section/point title: "Afsnit A. Liste over...", "1. Indledning"
-        "oj-ti-grseq-2",    # Annex sub-point title: "3.1 Udbyderens ansøgning..."
-    })
+    _EURLEX_TITLE_CLASSES = frozenset(
+        {
+            "oj-sti-art",  # Article title: "Anvendelsesområde"
+            "oj-ti-section-2",  # Chapter/section title: "ALMINDELIGE BESTEMMELSER"
+            "oj-doc-ti",  # Annex title (second occurrence after BILAG X)
+            "oj-ti-grseq-1",  # Annex section/point title: "Afsnit A. Liste over...", "1. Indledning"
+            "oj-ti-grseq-2",  # Annex sub-point title: "3.1 Udbyderens ansøgning..."
+        }
+    )
 
     # Annex-internal structures vary widely across EUR-Lex corpora. We handle these
     # generically via CSS class markers and lightweight text parsing.
@@ -747,7 +781,9 @@ def _iter_html_blocks(html: str, *, enable_eurlex_structural_ids: bool) -> Itera
                     payload_kv["annex_section_title"] = t
 
                 if payload_kv:
-                    payload = ";".join([f"{k}={v}" for k, v in sorted(payload_kv.items()) if v])
+                    payload = ";".join(
+                        [f"{k}={v}" for k, v in sorted(payload_kv.items()) if v]
+                    )
                     if payload:
                         yield "struct_ref", payload
 
@@ -846,7 +882,9 @@ def _split_text_to_fit(text: str, *, encoding, max_tokens: int) -> list[str]:
     return [x for x in out if x]
 
 
-def _apply_overlap(blocks: list[tuple[str, int]], *, max_overlap_tokens: int) -> list[tuple[str, int]]:
+def _apply_overlap(
+    blocks: list[tuple[str, int]], *, max_overlap_tokens: int
+) -> list[tuple[str, int]]:
     if max_overlap_tokens <= 0:
         return []
 
@@ -934,7 +972,6 @@ def chunk_html(
         pending_blocks.insert(0, (prefix, tok))
         pending_tokens += tok
 
-
     def emit_chunk() -> dict | None:
         nonlocal chunk_index, pending_blocks, pending_tokens
         if not pending_blocks:
@@ -954,7 +991,9 @@ def chunk_html(
         # Ensure baseline schema fields exist (best-effort for generic usage).
         metadata.setdefault("schema_version", "meta:v1")
         metadata.setdefault("doc_id", str(metadata.get("doc_id") or source))
-        metadata.setdefault("doc_version", str(metadata.get("doc_version") or "unknown"))
+        metadata.setdefault(
+            "doc_version", str(metadata.get("doc_version") or "unknown")
+        )
         metadata.setdefault("language", str(metadata.get("language") or "und"))
         metadata.setdefault("source_type", str(metadata.get("source_type") or "html"))
         metadata.setdefault("source_path", str(metadata.get("source_path") or ""))
@@ -1022,7 +1061,9 @@ def chunk_html(
         )
 
         if include_reference_mentions:
-            mentions = _extract_reference_mentions(text_value, reference_state=reference_state)
+            mentions = _extract_reference_mentions(
+                text_value, reference_state=reference_state
+            )
             if mentions:
                 # Chroma metadata values must be primitives; store as JSON.
                 metadata["mentions"] = json.dumps(mentions, ensure_ascii=False)
@@ -1091,13 +1132,17 @@ def chunk_html(
             reference_state["annex_point_title"] = None
             reference_state["annex_subpoint_title"] = None
 
-        if "annex_section" in kv and kv.get("annex_section") != reference_state.get("annex_section"):
+        if "annex_section" in kv and kv.get("annex_section") != reference_state.get(
+            "annex_section"
+        ):
             reference_state["annex_point"] = None
             reference_state["annex_subpoint"] = None
             reference_state["annex_point_title"] = None
             reference_state["annex_subpoint_title"] = None
 
-        if "annex_point" in kv and kv.get("annex_point") != reference_state.get("annex_point"):
+        if "annex_point" in kv and kv.get("annex_point") != reference_state.get(
+            "annex_point"
+        ):
             reference_state["annex_subpoint"] = None
             reference_state["annex_subpoint_title"] = None
         if "section" in kv and kv.get("section") != reference_state.get("section"):
@@ -1129,7 +1174,9 @@ def chunk_html(
             for reset_field in reset_on.get(key, ()):  # pragma: no branch
                 reference_state[reset_field] = None
 
-    for kind, raw_text in _iter_html_blocks(html, enable_eurlex_structural_ids=enable_eurlex_structural_ids):
+    for kind, raw_text in _iter_html_blocks(
+        html, enable_eurlex_structural_ids=enable_eurlex_structural_ids
+    ):
         if kind == "struct_ref":
             pending_text_prefix = None
             # Treat as a stable boundary like headings, but do NOT inject heading text.
@@ -1340,7 +1387,11 @@ def chunk_html(
         # Only treat as annex point when we are inside an annex (not an article).
         # This creates chunk boundaries for each numbered category in annexes like Annex III.
         m_annex_point = _annex_point_only_re.match(candidate_marker)
-        if m_annex_point and reference_state.get("annex") and not reference_state.get("article"):
+        if (
+            m_annex_point
+            and reference_state.get("annex")
+            and not reference_state.get("article")
+        ):
             # Boundary before switching annex_point state.
             row = emit_chunk()
             if row:
@@ -1373,7 +1424,9 @@ def chunk_html(
                         row = emit_chunk()
                         if row:
                             yield row
-                        overlap_blocks = _apply_overlap(pending_blocks, max_overlap_tokens=config.overlap)
+                        overlap_blocks = _apply_overlap(
+                            pending_blocks, max_overlap_tokens=config.overlap
+                        )
                         pending_blocks = overlap_blocks.copy()
                         pending_tokens = sum(t for _, t in pending_blocks)
 
@@ -1409,14 +1462,20 @@ def chunk_html(
                 if not m:
                     continue
                 groups = [g for g in (m.groups() or ()) if g]
-                val = (groups[0] if groups else (m.group(1) if m.lastindex else "") or "").strip()
+                val = (
+                    groups[0] if groups else (m.group(1) if m.lastindex else "") or ""
+                ).strip()
                 if not val:
                     continue
 
                 # If this text block changes the structural location (e.g., new paragraph/litra),
                 # flush pending content so chunk metadata remains precise without splitting every <p>.
                 prev_val = reference_state.get(key)
-                if prev_val is not None and str(prev_val).strip() != "" and str(prev_val).strip() != str(val).strip():
+                if (
+                    prev_val is not None
+                    and str(prev_val).strip() != ""
+                    and str(prev_val).strip() != str(val).strip()
+                ):
                     row = emit_chunk()
                     if row:
                         yield row
@@ -1438,7 +1497,9 @@ def chunk_html(
                 for reset_field in reset_on.get(key, ()):  # pragma: no branch
                     reference_state[reset_field] = None
 
-        for block in _split_text_to_fit(raw_text, encoding=encoding, max_tokens=config.chunk_tokens):
+        for block in _split_text_to_fit(
+            raw_text, encoding=encoding, max_tokens=config.chunk_tokens
+        ):
             btok = len(encoding.encode(block))
             if btok <= 0:
                 continue
@@ -1455,7 +1516,9 @@ def chunk_html(
             if row:
                 yield row
 
-            overlap_blocks = _apply_overlap(pending_blocks, max_overlap_tokens=config.overlap)
+            overlap_blocks = _apply_overlap(
+                pending_blocks, max_overlap_tokens=config.overlap
+            )
             pending_blocks = overlap_blocks.copy()
             pending_tokens = sum(t for _, t in pending_blocks)
 

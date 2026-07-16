@@ -45,5 +45,7 @@ eurlex:
     monkeypatch.setattr(config_loader, "_REPO_ROOT", tmp_path)
     clear_config_cache()
 
-    with pytest.raises(ValueError, match=r"eurlex\.overlap must be < eurlex\.chunk_tokens"):
+    with pytest.raises(
+        ValueError, match=r"eurlex\.overlap must be < eurlex\.chunk_tokens"
+    ):
         load_settings()

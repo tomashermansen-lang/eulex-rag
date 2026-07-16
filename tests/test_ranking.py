@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
-import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -17,6 +16,7 @@ from src.common.config_loader import RankingWeights
 # =============================================================================
 # _tokenize_for_lexical tests
 # =============================================================================
+
 
 class TestTokenizeForLexical:
     """Tests for Ranker._tokenize_for_lexical()."""
@@ -54,6 +54,7 @@ class TestTokenizeForLexical:
 # _bm25_scores tests
 # =============================================================================
 
+
 class TestBm25Scores:
     """Tests for Ranker._bm25_scores()."""
 
@@ -71,7 +72,7 @@ class TestBm25Scores:
         """Documents with no matching terms get low scores."""
         result = Ranker._bm25_scores(
             query="artificial intelligence",
-            documents=["the quick brown fox", "jumped over lazy dog"]
+            documents=["the quick brown fox", "jumped over lazy dog"],
         )
         assert all(score == 0.0 for score in result)
 
@@ -79,10 +80,7 @@ class TestBm25Scores:
         """Document with exact query terms scores higher."""
         result = Ranker._bm25_scores(
             query="artificial intelligence",
-            documents=[
-                "artificial intelligence is important",
-                "the quick brown fox"
-            ]
+            documents=["artificial intelligence is important", "the quick brown fox"],
         )
         assert result[0] > result[1]
         assert result[1] == 0.0
@@ -91,7 +89,7 @@ class TestBm25Scores:
         """Partial match gets non-zero score."""
         result = Ranker._bm25_scores(
             query="artificial intelligence system",
-            documents=["artificial learning system", "random text"]
+            documents=["artificial learning system", "random text"],
         )
         assert result[0] > 0.0
         assert result[1] == 0.0
@@ -99,13 +97,9 @@ class TestBm25Scores:
     def test_bm25_repeated_query_terms_not_overweighted(self):
         """Repeated query terms are deduplicated."""
         result1 = Ranker._bm25_scores(
-            query="test test test",
-            documents=["test document"]
+            query="test test test", documents=["test document"]
         )
-        result2 = Ranker._bm25_scores(
-            query="test",
-            documents=["test document"]
-        )
+        result2 = Ranker._bm25_scores(query="test", documents=["test document"])
         # Scores should be equal since repeated terms are deduplicated
         assert result1[0] == result2[0]
 
@@ -113,6 +107,7 @@ class TestBm25Scores:
 # =============================================================================
 # _normalize_scores tests
 # =============================================================================
+
 
 class TestNormalizeScores:
     """Tests for Ranker._normalize_scores()."""
@@ -145,6 +140,7 @@ class TestNormalizeScores:
 # =============================================================================
 # classify_role tests
 # =============================================================================
+
 
 class TestClassifyRole:
     """Tests for Ranker.classify_role()."""
@@ -249,6 +245,7 @@ class TestClassifyRole:
 # =============================================================================
 # _rerank_delta_for_role tests
 # =============================================================================
+
 
 class TestRerankDeltaForRole:
     """Tests for Ranker._rerank_delta_for_role()."""
@@ -356,6 +353,7 @@ class TestRerankDeltaForRole:
 # anchor_score tests (extending existing)
 # =============================================================================
 
+
 class TestAnchorScore:
     """Tests for Ranker.anchor_score()."""
 
@@ -414,6 +412,7 @@ class TestAnchorScore:
 # =============================================================================
 # rerank_retrieved_chunks tests
 # =============================================================================
+
 
 class TestRerankRetrievedChunks:
     """Tests for Ranker.rerank_retrieved_chunks()."""
@@ -476,6 +475,7 @@ class TestRerankRetrievedChunks:
 # =============================================================================
 # execute_ranking_pipeline tests
 # =============================================================================
+
 
 class TestExecuteRankingPipeline:
     """Tests for execute_ranking_pipeline()."""
@@ -580,6 +580,7 @@ class TestExecuteRankingPipeline:
 # RankingPipelineResult tests
 # =============================================================================
 
+
 class TestRankingPipelineResult:
     """Tests for RankingPipelineResult dataclass."""
 
@@ -634,6 +635,8 @@ def test_chapter_only_chunks_never_appear_in_references():
     engine.top_k = 10
     engine.max_distance = None
     engine.ranking_weights = RankingWeights()
+    engine.collection = MagicMock()
+    engine.chroma = MagicMock()
 
     def fake_query(question: str):  # noqa: ARG001
         return [
@@ -645,9 +648,12 @@ def test_chapter_only_chunks_never_appear_in_references():
         return "Kravene fremgår af Artikel 10, stk. 2."
 
     engine.query = fake_query  # type: ignore[attr-defined]
+    engine.retriever._test_query_fn = fake_query
     engine._call_openai = fake_call  # type: ignore[attr-defined]
 
-    payload = RAGEngine.answer_structured(engine, "Hvad er kravene?", user_profile=UserProfile.LEGAL)
+    payload = RAGEngine.answer_structured(
+        engine, "Hvad er kravene?", user_profile=UserProfile.LEGAL
+    )
     refs = list(payload.get("references") or [])
 
     assert len(refs) == 1
@@ -660,6 +666,8 @@ def test_missing_ref_triggered_for_normative_claim_without_article_support():
     engine.top_k = 10
     engine.max_distance = None
     engine.ranking_weights = RankingWeights()
+    engine.collection = MagicMock()
+    engine.chroma = MagicMock()
 
     def fake_query(question: str):  # noqa: ARG001
         return [
@@ -670,9 +678,12 @@ def test_missing_ref_triggered_for_normative_claim_without_article_support():
         return "Systemet MUST implementere logging. (Betragtning 12)."
 
     engine.query = fake_query  # type: ignore[attr-defined]
+    engine.retriever._test_query_fn = fake_query
     engine._call_openai = fake_call  # type: ignore[attr-defined]
 
-    payload = RAGEngine.answer_structured(engine, "Hvad skal vi gøre?", user_profile=UserProfile.ENGINEERING)
+    payload = RAGEngine.answer_structured(
+        engine, "Hvad skal vi gøre?", user_profile=UserProfile.ENGINEERING
+    )
 
     assert str(payload.get("answer") or "") == "MISSING_REF"
     assert list(payload.get("reference_lines") or []) == []
@@ -684,6 +695,8 @@ def test_duplicate_recitals_removed_from_references():
     engine.top_k = 10
     engine.max_distance = None
     engine.ranking_weights = RankingWeights()
+    engine.collection = MagicMock()
+    engine.chroma = MagicMock()
 
     def fake_query(question: str):  # noqa: ARG001
         return [
@@ -695,12 +708,13 @@ def test_duplicate_recitals_removed_from_references():
         return "Dette følger af Betragtning 12."
 
     engine.query = fake_query  # type: ignore[attr-defined]
+    engine.retriever._test_query_fn = fake_query
     engine._call_openai = fake_call  # type: ignore[attr-defined]
 
-    payload = RAGEngine.answer_structured(engine, "Hvad betyder det?", user_profile=UserProfile.LEGAL)
+    payload = RAGEngine.answer_structured(
+        engine, "Hvad betyder det?", user_profile=UserProfile.LEGAL
+    )
     refs = list(payload.get("references") or [])
 
     assert len(refs) == 1
     assert refs[0].get("recital") == "12"
-
-
