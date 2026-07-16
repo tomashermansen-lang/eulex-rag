@@ -2,12 +2,12 @@
 
 ![Tests](https://img.shields.io/badge/tests-2773%20passed-green)
 ![Coverage](https://img.shields.io/badge/coverage-60%25-yellow)
-![Evals](https://img.shields.io/badge/golden%20evals-288-green)
+![Evals](https://img.shields.io/badge/golden%20evals-256-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 A legal Q&A system for EU legislation that **refuses to answer when evidence is insufficient** — because in regulated domains, a wrong citation has real consequences.
 
-> Hybrid retrieval (vector + BM25 + citation graph) with fail-closed citation validation, 288 eval cases across 13 EU regulations, and LLM-as-judge quality scoring.
+> Hybrid retrieval (vector + BM25 + citation graph) with fail-closed citation validation, 256 golden eval cases across 13 EU regulations, and LLM-as-judge quality scoring.
 
 > **Note:** This is a proof of concept, not production software. Outputs require human review.
 
@@ -17,7 +17,7 @@ A legal Q&A system for EU legislation that **refuses to answer when evidence is 
 
 EU compliance teams need reliable answers about legislation — which articles apply, what the obligations are, how regulations interact. Getting this wrong has consequences: missed deadlines, incorrect filings, regulatory exposure.
 
-EuLex answers questions about EU regulations with verified article citations. It uses hybrid retrieval to find relevant legal text, validates every citation against source chunks, and abstains when evidence is insufficient rather than guessing. An evaluation pipeline with 281 regression test cases across 13 laws measures quality continuously.
+EuLex answers questions about EU regulations with verified article citations. It uses hybrid retrieval to find relevant legal text, validates every citation against source chunks, and abstains when evidence is insufficient rather than guessing. An evaluation pipeline with 256 golden test cases across 13 laws measures quality continuously.
 
 This project comes from a background in process automation and efficiency improvement of complex business processes — in capital markets (derivatives trading systems, post-trade workflows) and in development processes (CI/CD adoption, release governance). The same instinct applies: when a process has high consequences for errors, you build in verification gates and measure outcomes. Here, the "process" is retrieval-augmented generation, and the "verification gates" are citation validation, abstention scoring, and automated evaluation.
 
@@ -99,7 +99,7 @@ flowchart TD
   end
 
   subgraph EvalPipeline["Eval Pipeline — EVAL = PROD"]
-    CASES["281 Eval Cases"] --> ASK
+    CASES["256 Eval Cases"] --> ASK
     ASK --> SCORE["Multi-Stage Scoring"]
     SCORE --> JUDGE["LLM-as-Judge"]
     JUDGE --> EVAL_API
@@ -118,7 +118,7 @@ flowchart TD
   style VAL fill:#f96,stroke:#333
 ```
 
-The system has four pipelines. **Query** handles user questions through corpus discovery (auto-detecting relevant laws), planning, hybrid retrieval (vector + BM25), citation graph expansion, LLM generation, and fail-closed citation validation. **Cross-law queries** use Reciprocal Rank Fusion to merge results across corpora with synthesis modes (comparison, discovery, aggregation). **Ingestion** processes EUR-Lex HTML through structure-aware chunking, LLM enrichment, vector indexing, and citation graph building. **Evaluation** runs 281 regression test cases through the production query path with multi-stage scoring and LLM-as-judge — the metrics dashboard provides three-level health monitoring with trend detection and AI-powered analysis.
+The system has four pipelines. **Query** handles user questions through corpus discovery (auto-detecting relevant laws), planning, hybrid retrieval (vector + BM25), citation graph expansion, LLM generation, and fail-closed citation validation. **Cross-law queries** use Reciprocal Rank Fusion to merge results across corpora with synthesis modes (comparison, discovery, aggregation). **Ingestion** processes EUR-Lex HTML through structure-aware chunking, LLM enrichment, vector indexing, and citation graph building. **Evaluation** runs 256 golden test cases through the production query path with multi-stage scoring and LLM-as-judge — the metrics dashboard provides three-level health monitoring with trend detection and AI-powered analysis.
 
 ---
 
@@ -140,7 +140,7 @@ The system has four pipelines. **Query** handles user questions through corpus d
 ## Quick Start
 
 ```bash
-git clone <repo-url> && cd RAG-framework
+git clone https://github.com/tomashermansen-lang/eulex-rag.git && cd eulex-rag
 
 # Python backend
 python -m venv .venv && source .venv/bin/activate
@@ -166,7 +166,7 @@ See [COMMANDS.md](COMMANDS.md) for full command reference.
 |--------|-------|---------------|
 | **Automated tests** | 2,773 passed | 1,708 backend (pytest) + 1,065 frontend (vitest) |
 | **Test coverage** | 60% | Critical paths covered; required minimum 55% |
-| **Eval cases** | 281 | Regression test cases across 13 EU regulations (~99% auto-generated) |
+| **Eval cases** | 256 | Golden regression cases across 13 EU regulations (253 of 256 auto-generated) |
 | **Eval pass rate** | 99.2% | Regression detection rate after model escalation (gpt-4o-mini → gpt-5.2 for ~10% of cases) |
 | **LLM judge thresholds** | ≥75% faithfulness, ≥75% relevancy | Answer quality scoring |
 | **Engine modules** | 30 Python files | SOLID-structured: single responsibility, dependency inversion, no circular imports |
@@ -231,7 +231,7 @@ flowchart TD
 ```mermaid
 flowchart LR
   subgraph Golden["Test Cases"]
-    YAML[YAML eval files] --> CASES[288 cases]
+    YAML[YAML eval files] --> CASES[256 cases]
   end
 
   subgraph Pipeline["EVAL = PROD"]
@@ -499,7 +499,7 @@ Per-query cost depends on the chat model. Embedding cost (text-embedding-3-large
 | | gpt-4o-mini (dev) | gpt-5.2 (prod) |
 |---|---|---|
 | Single query | ~$0.002 (< 1¢) | ~$0.03 (~3¢) |
-| Full eval suite (288 cases) | ~$1.70 | ~$6.80 |
+| Full eval suite (256 cases) | ~$1.70 | ~$6.80 |
 
 Assumptions: ~10k input tokens per query (system prompt + 15–20 context chunks), ~750 output tokens. Eval includes LLM-as-judge scoring (gpt-4o-mini) and ~10% model escalation to gpt-5.2 for failed cases. Prices from OpenAI Standard tier (Feb 2025 — may be outdated).
 
@@ -632,7 +632,7 @@ This system explains EU legislation — including the AI Act itself. So the natu
 
 **Known implementation gaps:**
 - Multi-turn conversations reduce the abstention safety check — the fail-closed guarantee is weaker in follow-up questions than in initial queries
-- ~99% of eval cases are auto-generated (278 of 281), creating circular validation — the eval suite validates system consistency (regression detection), not legal accuracy. Adversarial and expert-crafted cases would provide stronger quality evidence
+- ~99% of eval cases are auto-generated (253 of 256), creating circular validation — the eval suite validates system consistency (regression detection), not legal accuracy. Adversarial and expert-crafted cases would provide stronger quality evidence
 - Exception handling in core modules silently suppresses errors in some paths, which contradicts the fail-closed philosophy
 
 The point is not that a proof of concept should be fully compliant — it shouldn't. The point is knowing exactly where the gaps are and what closing them would require.
@@ -728,7 +728,7 @@ Each feature gets its own git worktree (`../eulex-<feature>/`), sharing the virt
 
 1. **Fail-closed beats fail-open.** Legal systems can't guess. Citation validation flags unverified claims — the system is prompted to abstain rather than risk a wrong reference.
 
-2. **Quality requires measurement.** 281 eval cases, LLM-as-judge scoring, regression testing before any change. Without metrics, "it seems to work" is the best you can say.
+2. **Quality requires measurement.** 256 golden eval cases, LLM-as-judge scoring, regression testing before any change. Without metrics, "it seems to work" is the best you can say.
 
 3. **EVAL = PROD.** The eval runner uses production code paths. No separate "test mode" that might diverge. This caught bugs that would have shipped otherwise.
 
