@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import logging
 import sys
-import tempfile
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
@@ -30,7 +29,6 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.ingestion.eurlex_listing import (
     download_legislation_html,
-    validate_celex,
     build_html_url,
     EurLexSecurityError,
     EurLexNetworkError,
@@ -75,7 +73,9 @@ def _emit_stage(stage: str, message: str, completed: bool = False) -> dict[str, 
     }
 
 
-def _emit_progress(stage: str, progress_pct: float, current: int = 0, total: int = 0) -> dict[str, Any]:
+def _emit_progress(
+    stage: str, progress_pct: float, current: int = 0, total: int = 0
+) -> dict[str, Any]:
     """Create a progress event."""
     return {
         "type": "progress",
@@ -162,12 +162,15 @@ def _retry_with_backoff(func, *args, max_attempts: int = 3, **kwargs):
             return func(*args, **kwargs)
         except Exception as e:
             msg = str(e).lower()
-            is_retryable = any(x in msg for x in ["429", "500", "502", "503", "504", "rate limit", "timeout"])
+            is_retryable = any(
+                x in msg
+                for x in ["429", "500", "502", "503", "504", "rate limit", "timeout"]
+            )
 
             if not is_retryable or attempt == max_attempts - 1:
                 raise
 
-            delay = base_delay * (2 ** attempt)
+            delay = base_delay * (2**attempt)
             time_module.sleep(delay)
 
     raise RuntimeError("Max retries exceeded")
@@ -192,13 +195,23 @@ def _run_verification_eval(
         corpus_id: The corpus to evaluate
         run_mode: Eval run mode (retrieval_only, full, full_with_judge)
     """
-    import threading
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
-    from src.engine.rag import RAGEngine
     from src.eval.eval_runner import evaluate_case, load_golden_cases
-    from src.eval.reporters import CaseResult, EvalSummary, JsonReporter, RetryStats, EscalationStats, PipelineStageStats
-    from src.eval.scorers import Score, AnchorScorer, PipelineBreakdownScorer, ContractScorer
+    from src.eval.reporters import (
+        CaseResult,
+        EvalSummary,
+        JsonReporter,
+        RetryStats,
+        EscalationStats,
+        PipelineStageStats,
+    )
+    from src.eval.scorers import (
+        Score,
+        AnchorScorer,
+        PipelineBreakdownScorer,
+        ContractScorer,
+    )
     from src.common.config_loader import get_settings_yaml
 
     # Load ALL settings from config (same as CLI and Dashboard)
@@ -329,7 +342,7 @@ def _run_verification_eval(
             passed=last_result.passed,
             scores=last_result.scores,
             duration_ms=last_result.duration_ms,
-            retrieval_metrics=getattr(last_result, 'retrieval_metrics', {}),
+            retrieval_metrics=getattr(last_result, "retrieval_metrics", {}),
             retry_count=max_primary_retries,
             escalated=False,
         )
@@ -364,7 +377,11 @@ def _run_verification_eval(
                 case_id=case.id,
                 profile=case.profile,
                 passed=False,
-                scores={"error": Score(passed=False, score=0.0, message=f"Escalation failed: {e}")},
+                scores={
+                    "error": Score(
+                        passed=False, score=0.0, message=f"Escalation failed: {e}"
+                    )
+                },
                 duration_ms=0,
                 retry_count=max_primary_retries,
                 escalated=True,
@@ -379,7 +396,9 @@ def _run_verification_eval(
     if use_parallel:
         logger.info("Phase 1: Running verification eval with %d workers", max_workers)
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_case = {executor.submit(process_case, case): case for case in cases}
+            future_to_case = {
+                executor.submit(process_case, case): case for case in cases
+            }
 
             for future in as_completed(future_to_case):
                 case = future_to_case[future]
@@ -390,7 +409,9 @@ def _run_verification_eval(
                         case_id=case.id,
                         profile=case.profile,
                         passed=False,
-                        scores={"error": Score(passed=False, score=0.0, message=str(e))},
+                        scores={
+                            "error": Score(passed=False, score=0.0, message=str(e))
+                        },
                         duration_ms=0,
                     )
 
@@ -411,7 +432,11 @@ def _run_verification_eval(
 
                 # Get expected articles from the case
                 original_case = case_lookup.get(result.case_id)
-                expected_articles = list(original_case.expected.must_include_any_of) if original_case else []
+                expected_articles = (
+                    list(original_case.expected.must_include_any_of)
+                    if original_case
+                    else []
+                )
 
                 # Emit eval result event for UI
                 yield _emit_eval_result(
@@ -475,12 +500,18 @@ def _run_verification_eval(
             faith_score = failed_result.scores.get("faithfulness")
             relevancy_score = failed_result.scores.get("answer_relevancy")
             # Only escalate generation failures, not retrieval failures
-            if (faith_score and not faith_score.passed) or (relevancy_score and not relevancy_score.passed):
+            if (faith_score and not faith_score.passed) or (
+                relevancy_score and not relevancy_score.passed
+            ):
                 if failed_result.case_id in case_lookup:
                     cases_to_escalate.append(case_lookup[failed_result.case_id])
 
         if cases_to_escalate:
-            logger.info("Phase 2: Escalating %d failed cases to %s", len(cases_to_escalate), fallback_model)
+            logger.info(
+                "Phase 2: Escalating %d failed cases to %s",
+                len(cases_to_escalate),
+                fallback_model,
+            )
 
             for i, case in enumerate(cases_to_escalate):
                 escalated_result = process_escalation_case(case)
@@ -496,7 +527,9 @@ def _run_verification_eval(
                         break
 
                 # Update failures list
-                failures = [f for f in failures if f.case_id != escalated_result.case_id]
+                failures = [
+                    f for f in failures if f.case_id != escalated_result.case_id
+                ]
                 if not escalated_result.passed:
                     failures.append(escalated_result)
 
@@ -515,8 +548,8 @@ def _run_verification_eval(
     # Calculate retry statistics
     retry_stats = RetryStats()
     for r in results:
-        retry_count = getattr(r, 'retry_count', 0)
-        escalated = getattr(r, 'escalated', False)
+        retry_count = getattr(r, "retry_count", 0)
+        escalated = getattr(r, "escalated", False)
         if retry_count > 0:
             retry_stats.cases_with_retries += 1
             retry_stats.total_retries += retry_count
@@ -526,7 +559,9 @@ def _run_verification_eval(
                 retry_stats.cases_failed_after_retries += 1
 
     # Build and save summary
-    stage_stats = PipelineStageStats.from_results(results) if results else PipelineStageStats()
+    stage_stats = (
+        PipelineStageStats.from_results(results) if results else PipelineStageStats()
+    )
 
     summary = EvalSummary(
         law=corpus_id,
@@ -621,7 +656,9 @@ def run_full_ingestion(
 
             # Run preflight check immediately after download
             html_content = html_path.read_text(encoding="utf-8", errors="replace")
-            preflight = preflight_check_html(html_content, enable_eurlex_structural_ids=True)
+            preflight = preflight_check_html(
+                html_content, enable_eurlex_structural_ids=True
+            )
             warnings_dicts = [
                 {
                     "category": w.category,
@@ -744,12 +781,18 @@ def run_full_ingestion(
             graph.save()
 
             yield _emit_progress(STAGE_CITATION_GRAPH, 100)
-            yield _emit_stage(STAGE_CITATION_GRAPH, "Citation graph bygget", completed=True)
+            yield _emit_stage(
+                STAGE_CITATION_GRAPH, "Citation graph bygget", completed=True
+            )
 
         except Exception as e:
             # Citation graph is non-critical - log but continue
             logger.warning("Citation graph build failed for %s: %s", corpus_id, e)
-            yield _emit_stage(STAGE_CITATION_GRAPH, f"Citation graph sprunget over: {str(e)}", completed=True)
+            yield _emit_stage(
+                STAGE_CITATION_GRAPH,
+                f"Citation graph sprunget over: {str(e)}",
+                completed=True,
+            )
 
         # Stage 5: Generate example questions + optional eval cases
         yield _emit_stage(STAGE_EVAL_GENERATION, "Genererer eksempelspørgsmål...")
@@ -767,7 +810,9 @@ def run_full_ingestion(
 
         except Exception as e:
             # Non-critical - log but continue
-            logger.warning("Example question generation failed for %s: %s", corpus_id, e)
+            logger.warning(
+                "Example question generation failed for %s: %s", corpus_id, e
+            )
 
         # Optional eval cases
         eval_cases_generated = False
@@ -787,19 +832,31 @@ def run_full_ingestion(
                 if eval_success:
                     eval_cases_generated = True
                     yield _emit_progress(STAGE_EVAL_GENERATION, 100)
-                    yield _emit_stage(STAGE_EVAL_GENERATION, "Eval cases genereret", completed=True)
+                    yield _emit_stage(
+                        STAGE_EVAL_GENERATION, "Eval cases genereret", completed=True
+                    )
                     logger.info("Generated eval cases for %s", corpus_id)
                 else:
-                    yield _emit_stage(STAGE_EVAL_GENERATION, "Kunne ikke generere eval cases (fortsætter)", completed=True)
+                    yield _emit_stage(
+                        STAGE_EVAL_GENERATION,
+                        "Kunne ikke generere eval cases (fortsætter)",
+                        completed=True,
+                    )
                     logger.warning("Could not generate eval cases for %s", corpus_id)
 
             except Exception as e:
                 # Non-critical - log but continue
                 logger.warning("Eval case generation failed for %s: %s", corpus_id, e)
-                yield _emit_stage(STAGE_EVAL_GENERATION, f"Eval cases sprunget over: {str(e)}", completed=True)
+                yield _emit_stage(
+                    STAGE_EVAL_GENERATION,
+                    f"Eval cases sprunget over: {str(e)}",
+                    completed=True,
+                )
         else:
             yield _emit_progress(STAGE_EVAL_GENERATION, 100)
-            yield _emit_stage(STAGE_EVAL_GENERATION, "Eksempelspørgsmål genereret", completed=True)
+            yield _emit_stage(
+                STAGE_EVAL_GENERATION, "Eksempelspørgsmål genereret", completed=True
+            )
 
         # Stage 6: Update configuration (must happen BEFORE verification eval so corpus is registered)
         yield _emit_stage(STAGE_CONFIG_UPDATE, "Opdaterer konfiguration...")
@@ -819,12 +876,20 @@ def run_full_ingestion(
 
             # Calculate quality metrics from preflight and ingestion result
             total_handled = sum(preflight.handled.values()) if preflight.handled else 0
-            total_unhandled = sum(preflight.unhandled.values()) if preflight.unhandled else 0
+            total_unhandled = (
+                sum(preflight.unhandled.values()) if preflight.unhandled else 0
+            )
             total_patterns = total_handled + total_unhandled
-            unhandled_pct = (100.0 * total_unhandled / total_patterns) if total_patterns > 0 else 0.0
+            unhandled_pct = (
+                (100.0 * total_unhandled / total_patterns)
+                if total_patterns > 0
+                else 0.0
+            )
 
             # Get structure coverage from ingestion result
-            structure_coverage_pct = ingestion_result.structure_coverage_pct if ingestion_result else 0.0
+            structure_coverage_pct = (
+                ingestion_result.structure_coverage_pct if ingestion_result else 0.0
+            )
 
             # Build extra metadata, only including dates if provided
             extra_metadata: dict[str, Any] = {
@@ -835,11 +900,15 @@ def run_full_ingestion(
                 "ingested_at": datetime.now(timezone.utc).isoformat(),
                 # Quality metrics
                 "quality": {
-                    "unhandled_patterns": preflight.unhandled if preflight.unhandled else {},
+                    "unhandled_patterns": preflight.unhandled
+                    if preflight.unhandled
+                    else {},
                     "unhandled_count": total_unhandled,
                     "unhandled_pct": round(unhandled_pct, 1),
                     "structure_coverage_pct": round(structure_coverage_pct, 1),
-                    "chunk_count": ingestion_result.chunk_count if ingestion_result else 0,
+                    "chunk_count": ingestion_result.chunk_count
+                    if ingestion_result
+                    else 0,
                 },
             }
             if fullname:
@@ -865,7 +934,9 @@ def run_full_ingestion(
             logger.info("Cleared config cache after ingestion of %s", corpus_id)
 
             yield _emit_progress(STAGE_CONFIG_UPDATE, 100)
-            yield _emit_stage(STAGE_CONFIG_UPDATE, "Konfiguration opdateret", completed=True)
+            yield _emit_stage(
+                STAGE_CONFIG_UPDATE, "Konfiguration opdateret", completed=True
+            )
 
         except Exception as e:
             yield _emit_error(f"Konfigurationsopdatering fejlede: {str(e)}")
@@ -873,26 +944,43 @@ def run_full_ingestion(
 
         # Stage 7: Run verification eval (if eval cases were generated)
         if eval_cases_generated:
-            yield _emit_stage(STAGE_EVAL_RUN, "Kører pipeline-verifikation (med retry og model-eskalering fra settings)...")
+            yield _emit_stage(
+                STAGE_EVAL_RUN,
+                "Kører pipeline-verifikation (med retry og model-eskalering fra settings)...",
+            )
             yield _emit_progress(STAGE_EVAL_RUN, 5)
 
             try:
                 # Run verification eval and yield results
                 event_count = 0
-                for event in _run_verification_eval(corpus_id, run_mode=eval_run_mode or "full"):
+                for event in _run_verification_eval(
+                    corpus_id, run_mode=eval_run_mode or "full"
+                ):
                     event_count += 1
-                    logger.debug("Verification event %d: %s", event_count, event.get("type"))
+                    logger.debug(
+                        "Verification event %d: %s", event_count, event.get("type")
+                    )
                     yield event
 
-                logger.info("Verification yielded %d events for %s", event_count, corpus_id)
-                yield _emit_stage(STAGE_EVAL_RUN, "Verifikation gennemført", completed=True)
+                logger.info(
+                    "Verification yielded %d events for %s", event_count, corpus_id
+                )
+                yield _emit_stage(
+                    STAGE_EVAL_RUN, "Verifikation gennemført", completed=True
+                )
 
             except Exception as e:
                 # Non-critical - log but continue
                 logger.warning("Verification eval failed for %s: %s", corpus_id, e)
-                yield _emit_stage(STAGE_EVAL_RUN, f"Verifikation sprunget over: {str(e)}", completed=True)
+                yield _emit_stage(
+                    STAGE_EVAL_RUN,
+                    f"Verifikation sprunget over: {str(e)}",
+                    completed=True,
+                )
         else:
-            logger.info("Skipping verification - eval_cases_generated=%s", eval_cases_generated)
+            logger.info(
+                "Skipping verification - eval_cases_generated=%s", eval_cases_generated
+            )
 
         # All done!
         yield _emit_complete(corpus_id)

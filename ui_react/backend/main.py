@@ -6,6 +6,16 @@ Single Responsibility: Configure and run the FastAPI application.
 from __future__ import annotations
 
 import os
+
+# Sandbox proxy bypass: Claude Code routes all traffic through SOCKS5, but
+# Python httpx crashes without socksio.  Exempt LLM API hosts so SDKs connect
+# directly.  The Seatbelt allowlist still enforces domain control.
+_no_proxy = os.environ.get("NO_PROXY", "")
+if "api.openai.com" not in _no_proxy:
+    _extra = "api.openai.com,api.anthropic.com"
+    os.environ["NO_PROXY"] = f"{_no_proxy},{_extra}" if _no_proxy else _extra
+    os.environ["no_proxy"] = os.environ["NO_PROXY"]
+
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -13,7 +23,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from routes import ask, config, admin, eval, eval_metrics
-from routes.eval_cross_law import create_router as create_cross_law_router, CrossLawEvalService
+from routes.eval_cross_law import (
+    create_router as create_cross_law_router,
+    CrossLawEvalService,
+)
 
 # Application metadata
 APP_TITLE = "EuLex Legal Assistant API"
@@ -32,9 +45,9 @@ app = FastAPI(
 
 # CORS configuration
 CORS_ORIGINS = [
-    "http://localhost:5173",      # Vite dev server
+    "http://localhost:5173",  # Vite dev server
     "http://127.0.0.1:5173",
-    "http://localhost:3000",      # Alternative dev port
+    "http://localhost:3000",  # Alternative dev port
     "http://127.0.0.1:3000",
 ]
 
@@ -64,14 +77,18 @@ EVALS_DIR = PROJECT_ROOT / "data" / "evals"
 
 # Get valid corpus IDs from settings
 import sys
+
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 from src.common.config_loader import load_settings
+
 _settings = load_settings()
 _valid_corpus_ids = set(_settings.corpora.keys()) if _settings.corpora else set()
 
 cross_law_service = CrossLawEvalService(EVALS_DIR, _valid_corpus_ids)
-app.include_router(create_cross_law_router(cross_law_service), prefix="/api/eval/cross-law")
+app.include_router(
+    create_cross_law_router(cross_law_service), prefix="/api/eval/cross-law"
+)
 
 
 # Serve static files in production (frontend build)

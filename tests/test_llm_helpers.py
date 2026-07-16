@@ -16,11 +16,9 @@ Requirement mapping:
 from __future__ import annotations
 
 import json
-import pytest
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 import sys
-import tempfile
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -143,7 +141,8 @@ class TestLoadArticleContent:
                 f.write(json.dumps(chunk) + "\n")
 
         with patch(
-            "src.common.llm_helpers.PROJECT_ROOT", tmp_path,
+            "src.common.llm_helpers.PROJECT_ROOT",
+            tmp_path,
         ):
             result = load_article_content("test-corpus")
 
@@ -155,7 +154,8 @@ class TestLoadArticleContent:
     def test_lh_007_returns_placeholder_for_missing_corpus(self, tmp_path):
         """Should return placeholder when chunks file doesn't exist."""
         with patch(
-            "src.common.llm_helpers.PROJECT_ROOT", tmp_path,
+            "src.common.llm_helpers.PROJECT_ROOT",
+            tmp_path,
         ):
             result = load_article_content("nonexistent-corpus")
 

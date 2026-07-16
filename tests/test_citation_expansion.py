@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 
 from src.engine.citation_expansion import (
     extract_mentioned_articles,
@@ -90,7 +89,9 @@ class TestShouldIncludeScopeArticles:
         assert should_include_scope_articles("What is the scope of the AI Act?")
 
     def test_english_applies_to(self) -> None:
-        assert should_include_scope_articles("Does the regulation apply? It applies to us.")
+        assert should_include_scope_articles(
+            "Does the regulation apply? It applies to us."
+        )
 
     def test_normal_question_returns_false(self) -> None:
         assert not should_include_scope_articles("Hvad er kravene til logging?")

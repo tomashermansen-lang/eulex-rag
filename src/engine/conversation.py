@@ -24,6 +24,7 @@ class HistoryMessage:
         role: Either "user" or "assistant"
         content: The message text content
     """
+
     role: str
     content: str
 
@@ -79,7 +80,7 @@ def format_history_for_prompt(
 
         # Truncate very long messages (but preserve most content)
         if len(content) > max_chars_per_message:
-            content = content[:max_chars_per_message - 3] + "..."
+            content = content[: max_chars_per_message - 3] + "..."
 
         lines.append(f"{role_label} {content}")
 
@@ -150,6 +151,7 @@ OMSKREVET SPØRGSMÅL:"""
 
     try:
         from .llm_client import call_llm
+
         # Use a fast model for rewriting (gpt-4o-mini or similar)
         rewrite_model = os.getenv("QUERY_REWRITE_MODEL", "gpt-4o-mini")
         rewritten = call_llm(rewrite_prompt, model=rewrite_model, temperature=0.0)

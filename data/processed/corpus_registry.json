@@ -47,6 +47,15 @@
     ],
     "display_name": "landbrugsdata (ELAN)"
   },
+  "eucc_cir_2024_482": {
+    "aliases": [
+      "forordning om cybersikkerhedscertificeringsordning (eucc-cir-2024-482)",
+      "eucc_cir_2024_482",
+      "eucc cir 2024 482",
+      "eucc-cir-2024-482"
+    ],
+    "display_name": "Forordning om cybersikkerhedscertificeringsordning (EUCC-CIR-2024-482)"
+  },
   "eucs_cir_2025_2540": {
     "aliases": [
       "forordning om peer reviews (eucs-cir-2025-2540)",

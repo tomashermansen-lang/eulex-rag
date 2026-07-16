@@ -143,7 +143,11 @@ class EnrichmentCoverageScorer:
         Returns:
             ScorerResult with coverage metrics
         """
-        passed = has_contextual_description and has_search_terms and search_terms_count >= min_terms
+        passed = (
+            has_contextual_description
+            and has_search_terms
+            and search_terms_count >= min_terms
+        )
 
         score = 0.0
         if has_contextual_description:
@@ -155,9 +159,17 @@ class EnrichmentCoverageScorer:
         if not has_contextual_description:
             message = "Missing contextual_description"
         if not has_search_terms:
-            message = f"{message}; Missing enrichment_terms" if message else "Missing enrichment_terms"
+            message = (
+                f"{message}; Missing enrichment_terms"
+                if message
+                else "Missing enrichment_terms"
+            )
         elif search_terms_count < min_terms:
-            message = f"{message}; Too few terms ({search_terms_count} < {min_terms})" if message else f"Too few terms ({search_terms_count} < {min_terms})"
+            message = (
+                f"{message}; Too few terms ({search_terms_count} < {min_terms})"
+                if message
+                else f"Too few terms ({search_terms_count} < {min_terms})"
+            )
 
         return ScorerResult(
             name=self.name,

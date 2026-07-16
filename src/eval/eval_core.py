@@ -18,11 +18,10 @@ Run modes (same as Dashboard):
 
 from __future__ import annotations
 
-import re
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
-from typing import Iterator, Literal, Any
+from dataclasses import dataclass
+from typing import Iterator
 
 from ..common.config_loader import get_settings_yaml
 from ..services import ask
@@ -52,6 +51,7 @@ from .cross_law_scorers import (
 )
 from .types import GoldenCase, RunMode
 
+
 @dataclass(frozen=True)
 class EvalConfig:
     """Configuration for eval execution.
@@ -69,6 +69,7 @@ class EvalConfig:
         fallback_model: Model to use for escalation
         verbose: Enable verbose logging
     """
+
     law: str
     run_mode: RunMode = "full"
     max_retries: int = 3
@@ -103,6 +104,7 @@ def _build_engine(
     """
     if model_override:
         from ..common.config_loader import load_settings
+
         settings = load_settings()
         return ask.RAGEngine(
             docs_path=str(settings.docs_path),
@@ -111,9 +113,11 @@ def _build_engine(
             embedding_model=settings.embedding_model,
             chat_model=model_override,
             vector_store_path=str(settings.vector_store_path),
-            max_distance=(settings.corpora[law].max_distance
-                          if settings.corpora[law].max_distance is not None
-                          else settings.rag_max_distance),
+            max_distance=(
+                settings.corpora[law].max_distance
+                if settings.corpora[law].max_distance is not None
+                else settings.rag_max_distance
+            ),
             hybrid_vec_k=settings.hybrid_vec_k,
             ranking_weights=settings.ranking_weights,
         )
@@ -187,12 +191,15 @@ def _retry_with_backoff(func, *args, max_attempts: int = 5, **kwargs):
             return func(*args, **kwargs)
         except Exception as e:
             msg = str(e).lower()
-            is_retryable = any(x in msg for x in ["429", "500", "502", "503", "504", "rate limit", "timeout"])
+            is_retryable = any(
+                x in msg
+                for x in ["429", "500", "502", "503", "504", "rate limit", "timeout"]
+            )
 
             if not is_retryable or attempt == max_attempts - 1:
                 raise
 
-            delay = min(base_delay * (2 ** attempt), 10.0)
+            delay = min(base_delay * (2**attempt), 10.0)
             time.sleep(delay)
 
 
@@ -210,7 +217,9 @@ def _evaluate_single_case(
     start = time.perf_counter()
 
     # Resolve profile
-    profile = UserProfile.ENGINEERING if case.profile == "ENGINEERING" else UserProfile.LEGAL
+    profile = (
+        UserProfile.ENGINEERING if case.profile == "ENGINEERING" else UserProfile.LEGAL
+    )
 
     # Call production code - EVAL = PROD
     result = _retry_with_backoff(
@@ -262,7 +271,9 @@ def _evaluate_single_case(
         # corpus_coverage scorer (retrieval-level)
         # Discovery mode uses configurable threshold instead of 100%
         if "corpus_coverage" in case.test_types:
-            expected_corpora = set(case.expected.required_corpora) or set(case.target_corpora)
+            expected_corpora = set(case.expected.required_corpora) or set(
+                case.target_corpora
+            )
             coverage_threshold = (
                 config.corpus_coverage_threshold
                 if synthesis_mode == "discovery"
@@ -344,12 +355,18 @@ def _evaluate_single_case(
             passed=False,
             score=0.0,
             message="Requires full_with_judge mode for proper evaluation",
-            details={"not_evaluated": True, "reason": "abstain cases require LLM-judge"},
+            details={
+                "not_evaluated": True,
+                "reason": "abstain cases require LLM-judge",
+            },
         )
 
     # Apply LLM-as-judge scorers if enabled
     if config.llm_judge and not config.skip_llm:
-        all_refs = result.retrieval_metrics.get("references_structured_all") or result.references_structured
+        all_refs = (
+            result.retrieval_metrics.get("references_structured_all")
+            or result.references_structured
+        )
         context_text = _build_context_text(all_refs)
         answer_text = result.answer or ""
 
@@ -463,9 +480,8 @@ def _evaluate_case_with_retries(
     if should_escalate:
         faith_score = last_result.scores.get("faithfulness")
         relevancy_score = last_result.scores.get("answer_relevancy")
-        is_generation_failure = (
-            (faith_score and not faith_score.passed)
-            or (relevancy_score and not relevancy_score.passed)
+        is_generation_failure = (faith_score and not faith_score.passed) or (
+            relevancy_score and not relevancy_score.passed
         )
 
         if is_generation_failure:

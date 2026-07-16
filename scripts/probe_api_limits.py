@@ -4,6 +4,7 @@
 Fires batches of concurrent requests and reports when 429s appear.
 Uses the same client/model config as the actual eval scorers.
 """
+
 import asyncio
 import os
 import sys
@@ -13,6 +14,7 @@ import time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from openai import AsyncOpenAI
@@ -48,11 +50,11 @@ async def probe_batch(client: AsyncOpenAI, model: str, concurrency: int) -> list
 async def main():
     # Load judge model from config (same as eval uses)
     from src.common.config_loader import get_settings_yaml
+
     settings = get_settings_yaml()
-    judge_model = (
-        os.getenv("EVAL_JUDGE_MODEL")
-        or settings.get("eval", {}).get("llm_judge", {}).get("model", "gpt-4o-mini")
-    )
+    judge_model = os.getenv("EVAL_JUDGE_MODEL") or settings.get("eval", {}).get(
+        "llm_judge", {}
+    ).get("model", "gpt-4o-mini")
 
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
@@ -62,7 +64,9 @@ async def main():
     client = AsyncOpenAI(api_key=api_key)
 
     print(f"Model: {judge_model}")
-    print(f"{'Concurrency':>12} | {'OK':>4} | {'429s':>4} | {'Errors':>6} | {'Avg ms':>7} | {'Max ms':>7}")
+    print(
+        f"{'Concurrency':>12} | {'OK':>4} | {'429s':>4} | {'Errors':>6} | {'Avg ms':>7} | {'Max ms':>7}"
+    )
     print("-" * 65)
 
     # Test increasing concurrency: 5, 10, 15, 20, 25, 30, 40, 50
@@ -75,7 +79,9 @@ async def main():
         avg_ms = round(sum(r["elapsed_ms"] for r in results) / len(results))
         max_ms = max(r["elapsed_ms"] for r in results)
 
-        print(f"{n:>12} | {ok:>4} | {rate_limited:>4} | {errors:>6} | {avg_ms:>7} | {max_ms:>7}")
+        print(
+            f"{n:>12} | {ok:>4} | {rate_limited:>4} | {errors:>6} | {avg_ms:>7} | {max_ms:>7}"
+        )
 
         if rate_limited > 0:
             print(f"  ^ Hit rate limit at concurrency={n}")

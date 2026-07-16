@@ -11,6 +11,9 @@ from src.engine.citations import (
     extract_precise_token_from_meta,
     best_effort_source_label,
     select_references_used_in_answer,
+    _cosine_similarity,
+    _find_better_match,
+    verify_citation_similarity,
 )
 
 
@@ -313,3 +316,157 @@ class TestSelectReferencesUsedInAnswer:
             references_structured=refs,
         )
         assert result == ["c1"]  # Not duplicated
+
+
+# ──────────────────────────────────────────────────────────────────────
+# Safety-net tests for citation verification functions (Phase 1)
+# ──────────────────────────────────────────────────────────────────────
+
+
+class TestCosineSimilarity:
+    """Tests for _cosine_similarity - vector math used in citation verification."""
+
+    def test_identical_vectors_return_one(self):
+        """Identical vectors have similarity 1.0."""
+        vec = [1.0, 0.0, 0.0]
+        assert _cosine_similarity(vec, vec) == pytest.approx(1.0)
+
+    def test_orthogonal_vectors_return_zero(self):
+        """Orthogonal vectors have similarity 0.0."""
+        assert _cosine_similarity([1.0, 0.0], [0.0, 1.0]) == pytest.approx(0.0)
+
+    def test_opposite_vectors_return_negative_one(self):
+        """Opposite vectors have similarity -1.0."""
+        assert _cosine_similarity([1.0, 0.0], [-1.0, 0.0]) == pytest.approx(-1.0)
+
+    def test_empty_vectors_return_zero(self):
+        """Empty vectors return 0.0."""
+        assert _cosine_similarity([], []) == 0.0
+
+    def test_zero_vector_returns_zero(self):
+        """Zero-magnitude vector returns 0.0 (no division by zero)."""
+        assert _cosine_similarity([0.0, 0.0], [1.0, 1.0]) == 0.0
+
+    def test_mismatched_lengths_return_zero(self):
+        """Vectors of different length return 0.0."""
+        assert _cosine_similarity([1.0, 2.0], [1.0]) == 0.0
+
+    def test_single_element_vectors(self):
+        """Single-element vectors work correctly."""
+        assert _cosine_similarity([3.0], [3.0]) == pytest.approx(1.0)
+        assert _cosine_similarity([3.0], [-3.0]) == pytest.approx(-1.0)
+
+
+class TestFindBetterMatch:
+    """Tests for _find_better_match - finds best-matching reference for a claim context."""
+
+    @staticmethod
+    def _constant_embedding(text: str) -> list[float]:
+        """Deterministic embedding: returns a vector based on text length modulo."""
+        # Simplistic mock: orthogonal vectors for different text patterns.
+        if "article 6" in text.lower():
+            return [1.0, 0.0, 0.0]
+        if "article 7" in text.lower():
+            return [0.0, 1.0, 0.0]
+        return [0.0, 0.0, 1.0]
+
+    def test_finds_best_matching_reference(self):
+        """Returns idx of the most similar reference."""
+        refs = [
+            {"idx": 1, "chunk_text": "Article 6 requires risk assessment"},
+            {"idx": 2, "chunk_text": "Article 7 defines obligations"},
+        ]
+        result = _find_better_match(
+            "article 6 compliance", refs, self._constant_embedding
+        )
+        assert result == 1
+
+    def test_empty_claim_returns_none(self):
+        """Empty claim context returns None."""
+        refs = [{"idx": 1, "chunk_text": "Some text"}]
+        assert _find_better_match("", refs, self._constant_embedding) is None
+        assert _find_better_match("   ", refs, self._constant_embedding) is None
+
+    def test_no_chunk_text_returns_none(self):
+        """References without chunk_text are skipped."""
+        refs = [{"idx": 1}, {"idx": 2, "chunk_text": ""}]
+        assert _find_better_match("some claim", refs, self._constant_embedding) is None
+
+    def test_embedding_failure_returns_none(self):
+        """Returns None when embedding function returns empty."""
+        refs = [{"idx": 1, "chunk_text": "text"}]
+        assert _find_better_match("claim", refs, lambda _: []) is None
+
+
+class TestVerifyCitationSimilarity:
+    """Tests for verify_citation_similarity - end-to-end citation verification."""
+
+    @staticmethod
+    def _mock_embedding(text: str) -> list[float]:
+        """Mock embedding that returns similar vectors for similar content."""
+        # Texts containing "risk" get one direction, "obligation" another
+        if "risk" in text.lower():
+            return [0.9, 0.1, 0.0]
+        if "obligation" in text.lower():
+            return [0.1, 0.9, 0.0]
+        return [0.0, 0.0, 1.0]
+
+    def test_verified_citation_high_similarity(self):
+        """Citation is verified when claim context matches chunk text."""
+        answer = "Risk assessment is required [1] for high-risk systems."
+        refs = [
+            {"idx": 1, "chunk_text": "Risk assessment procedures must be established."}
+        ]
+        result = verify_citation_similarity(
+            answer, refs, self._mock_embedding, similarity_threshold=0.5
+        )
+        assert 1 in result.verified
+        assert len(result.suspicious) == 0
+
+    def test_suspicious_citation_low_similarity(self):
+        """Citation is flagged when claim context does not match chunk text."""
+        answer = "Risk assessment is required [1] for compliance."
+        refs = [{"idx": 1, "chunk_text": "Obligations for provider transparency."}]
+        result = verify_citation_similarity(
+            answer, refs, self._mock_embedding, similarity_threshold=0.99
+        )
+        assert len(result.suspicious) == 1
+        assert result.suspicious[0]["idx"] == 1
+
+    def test_nonexistent_citation_flagged(self):
+        """Citation referencing non-existent source is flagged."""
+        answer = "See [99] for details."
+        refs = [{"idx": 1, "chunk_text": "Some text"}]
+        result = verify_citation_similarity(answer, refs, self._mock_embedding)
+        assert len(result.suspicious) == 1
+        assert result.suspicious[0]["reason"] == "citation_not_in_references"
+
+    def test_empty_answer_returns_clean_result(self):
+        """Empty answer returns empty verified list with overall_score 1.0."""
+        result = verify_citation_similarity("", [], self._mock_embedding)
+        assert result.verified == []
+        assert result.suspicious == []
+        assert result.overall_score == 1.0
+
+    def test_no_chunk_text_auto_verified(self):
+        """Citation with no chunk_text in reference is auto-verified."""
+        answer = "See [1] for details."
+        refs = [{"idx": 1}]  # No chunk_text
+        result = verify_citation_similarity(answer, refs, self._mock_embedding)
+        assert 1 in result.verified
+
+    def test_overall_score_is_average(self):
+        """Overall score is the average of individual scores."""
+        answer = "Risk [1] and obligation [2]."
+        refs = [
+            {"idx": 1, "chunk_text": "Risk assessment required."},
+            {
+                "idx": 2,
+                "chunk_text": "Risk assessment required.",
+            },  # Mismatch with "obligation" context
+        ]
+        result = verify_citation_similarity(
+            answer, refs, self._mock_embedding, similarity_threshold=0.5
+        )
+        assert len(result.scores) == 2
+        assert result.overall_score == pytest.approx(sum(result.scores) / 2, abs=0.01)

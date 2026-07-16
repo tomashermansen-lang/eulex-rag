@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from datetime import datetime
 
 import pytest
@@ -81,7 +81,7 @@ def mock_corpora_inventory(monkeypatch):
                 "chunks_collection": "ai-act_documents",
                 "source_url": "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1689",
             }
-        }
+        },
     }
 
     # Patch in both the source module and the admin routes module
@@ -173,7 +173,9 @@ class TestCheckUpdateEndpoint:
 
     def test_check_update_sql_injection_attempt(self, admin_client):
         """Should reject SQL injection attempts."""
-        response = admin_client.get("/api/admin/legislation/32024R1689';DROP/check-update")
+        response = admin_client.get(
+            "/api/admin/legislation/32024R1689';DROP/check-update"
+        )
 
         assert response.status_code == 400
 
@@ -189,6 +191,7 @@ class TestRemoveCorpusEndpoint:
 
         # CRITICAL: Mock file operations to prevent deleting real files
         from pathlib import Path
+
         original_unlink = Path.unlink
         original_exists = Path.exists
 
@@ -213,6 +216,7 @@ class TestRemoveCorpusEndpoint:
 
         # Mock shutil.rmtree to prevent cache deletion
         import shutil
+
         monkeypatch.setattr(shutil, "rmtree", lambda *args, **kwargs: None)
 
         # GUARDRAIL: Must include confirm parameter matching corpus_id
@@ -240,7 +244,9 @@ class TestRemoveCorpusEndpoint:
     def test_remove_nonexistent_corpus(self, admin_client):
         """Should return 404 for non-existent corpus."""
         # Must include confirm even for nonexistent corpus (checked before 404)
-        response = admin_client.delete("/api/admin/corpus/nonexistent?confirm=nonexistent")
+        response = admin_client.delete(
+            "/api/admin/corpus/nonexistent?confirm=nonexistent"
+        )
 
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
@@ -309,7 +315,9 @@ class TestSecurityHeaders:
 class TestSuggestNamesEndpoint:
     """Tests for POST /api/admin/suggest-names."""
 
-    def test_display_name_includes_corpus_id_in_parenthesis(self, admin_client, monkeypatch):
+    def test_display_name_includes_corpus_id_in_parenthesis(
+        self, admin_client, monkeypatch
+    ):
         """Display name shortname in parenthesis must match corpus_id format with year/number."""
         import re
 
@@ -334,8 +342,10 @@ class TestSuggestNamesEndpoint:
         assert data["corpus_id"] == "eu-dr-2024-1366"
 
         # Extract shortname from parenthesis in display_name
-        match = re.search(r'\(([^)]+)\)\s*$', data["display_name"])
-        assert match, f"display_name should end with (SHORTNAME), got: {data['display_name']}"
+        match = re.search(r"\(([^)]+)\)\s*$", data["display_name"])
+        assert match, (
+            f"display_name should end with (SHORTNAME), got: {data['display_name']}"
+        )
 
         shortname = match.group(1).lower()
         corpus_id = data["corpus_id"]
@@ -369,7 +379,9 @@ class TestInputValidation:
 class TestListAnchorsEndpoint:
     """Tests for GET /api/admin/corpus/{law}/anchors."""
 
-    def test_list_anchors_returns_from_citation_graph(self, admin_client, tmp_path, monkeypatch):
+    def test_list_anchors_returns_from_citation_graph(
+        self, admin_client, tmp_path, monkeypatch
+    ):
         """Should return anchors from citation graph."""
         import json
 
@@ -387,7 +399,9 @@ class TestListAnchorsEndpoint:
             graph_path.write_text(json.dumps(graph_data))
             return graph_path
 
-        monkeypatch.setattr("routes.admin._get_citation_graph_path", mock_get_citation_graph_path)
+        monkeypatch.setattr(
+            "routes.admin._get_citation_graph_path", mock_get_citation_graph_path
+        )
 
         response = admin_client.get("/api/admin/corpus/test-law/anchors")
 
@@ -415,7 +429,9 @@ class TestListAnchorsEndpoint:
             graph_path.write_text(json.dumps(graph_data))
             return graph_path
 
-        monkeypatch.setattr("routes.admin._get_citation_graph_path", mock_get_citation_graph_path)
+        monkeypatch.setattr(
+            "routes.admin._get_citation_graph_path", mock_get_citation_graph_path
+        )
 
         response = admin_client.get("/api/admin/corpus/test-law/anchors?q=annex")
 
@@ -424,13 +440,17 @@ class TestListAnchorsEndpoint:
         assert len(data["anchors"]) == 1
         assert data["anchors"][0] == "annex:i"
 
-    def test_list_anchors_returns_empty_for_missing_graph(self, admin_client, tmp_path, monkeypatch):
+    def test_list_anchors_returns_empty_for_missing_graph(
+        self, admin_client, tmp_path, monkeypatch
+    ):
         """Should return empty list if citation graph doesn't exist."""
 
         def mock_get_citation_graph_path(law):
             return tmp_path / "nonexistent.json"
 
-        monkeypatch.setattr("routes.admin._get_citation_graph_path", mock_get_citation_graph_path)
+        monkeypatch.setattr(
+            "routes.admin._get_citation_graph_path", mock_get_citation_graph_path
+        )
 
         response = admin_client.get("/api/admin/corpus/test-law/anchors")
 

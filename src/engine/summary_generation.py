@@ -11,9 +11,15 @@ Best practices applied:
 
 from __future__ import annotations
 
-from typing import Any
+import logging
+from typing import Any, Callable, List
 
+from . import citations
+from . import query_helpers
+from .rag_config import _get_default_temperature, _get_rag_settings
 from .types import RAGEngineError
+
+logger = logging.getLogger(__name__)
 
 
 # Summary prompt template - extracted for consistency
@@ -176,3 +182,148 @@ def generate_selected_chapter_summary(
         return str(response.choices[0].message.content or "")
     except Exception as exc:
         raise RAGEngineError("OpenAI request failed.") from exc
+
+
+# ---------------------------------------------------------------------------
+# Step 6.7: Stage function extracted from RAGEngine._answer_chapter_summary_from_chunks
+# ---------------------------------------------------------------------------
+
+
+def answer_chapter_summary_stage(
+    *,
+    question: str,
+    top_k: int,
+    query_fn: Callable[..., tuple[list[tuple[str, dict[str, Any]]], list[float]]],
+    client: Any,
+    chat_model: str,
+    collection_name: str | None,
+    source_label_fn: Callable[[dict[str, Any]], str],
+    hybrid_rerank_dict: dict[str, Any],
+    retrieved_ids_fn: Callable[[], list[str]],
+    retrieved_metadatas_fn: Callable[[], list[dict[str, Any]]],
+) -> dict[str, Any] | None:
+    """Execute chapter summary pipeline stage.
+
+    Detects chapter summary questions, retrieves scoped chunks,
+    generates a summary, and returns a structured result dict.
+
+    Returns None if the question is not a chapter summary question
+    or if no relevant chunks are found.
+
+    The result dict contains:
+        - answer: str
+        - references: list[str]
+        - retrieval: dict (includes distances, query_where, etc.)
+    """
+    if not query_helpers._looks_like_chapter_summary_question(question):
+        return None
+
+    chapter_ref = query_helpers._extract_chapter_ref(question)
+    if not chapter_ref:
+        return None
+
+    canonical = chapter_ref.upper()
+
+    rag_cfg = _get_rag_settings()
+    min_k = int(rag_cfg.get("chapter_summary_min_k", 8))
+    fallback_k = int(rag_cfg.get("chapter_summary_fallback_k", 12))
+    max_k = int(rag_cfg.get("chapter_summary_max_k", 20))
+
+    try:
+        k = max(min_k, int(top_k) * 4)
+    except Exception:  # noqa: BLE001
+        k = fallback_k
+
+    try:
+        hits, distances = query_fn(
+            question=f"Sammenfat Kapitel {canonical}.",
+            k=min(max_k, k),
+            where={"chapter": canonical},
+        )
+    except Exception:  # noqa: BLE001
+        return None
+
+    if not hits:
+        return None
+
+    references: List[str] = []
+    context_blocks: List[str] = []
+    references_structured: list[dict[str, Any]] = []
+
+    filtered_hits: list[tuple[str, dict[str, Any], str | None]] = []
+    for doc, metadata in hits:
+        meta_dict = dict(metadata or {})
+        doc_str = str(doc or "")
+
+        if citations._is_citable_metadata(meta_dict):
+            filtered_hits.append((doc_str, meta_dict, None))
+            continue
+
+        extracted = citations.extract_precise_ref_from_text(doc_str)
+        if extracted:
+            src = source_label_fn(meta_dict)
+            filtered_hits.append((doc_str, meta_dict, f"{src}, {extracted}"))
+
+    if not filtered_hits:
+        return None
+
+    for idx, (doc, metadata, precise_override) in enumerate(filtered_hits, start=1):
+        display = citations._format_metadata(metadata)
+        precise = precise_override or citations.extract_precise_token_from_meta(
+            dict(metadata or {})
+        )
+        missing = False
+        if not precise:
+            extracted = citations.extract_precise_ref_from_text(doc or "")
+            if extracted:
+                src = citations.best_effort_source_label(
+                    dict(metadata or {}),
+                    fallback=source_label_fn(dict(metadata or {})),
+                )
+                precise = f"{src}, {extracted}"
+            else:
+                src = citations.best_effort_source_label(
+                    dict(metadata or {}),
+                    fallback=source_label_fn(dict(metadata or {})),
+                )
+                precise = f"MISSING_REF — {src} (kilden mangler artikel/bilag i metadata og tekst)"
+                missing = True
+
+        references.append(f"[{idx}] {precise}")
+        context_blocks.append(f"[{idx}] {display}\n{doc}")
+
+        references_structured.append(
+            {
+                "idx": idx,
+                "chunk_id": (metadata or {}).get("chunk_id") or f"hit-{idx}",
+                "display": display,
+                "precise_ref": precise,
+                "missing_ref": missing,
+                "source": (metadata or {}).get("source"),
+                **dict(metadata or {}),
+            }
+        )
+
+    context = "\n\n".join(context_blocks)
+
+    answer_text = generate_chapter_summary_from_chunks(
+        client=client,
+        model=chat_model,
+        context=context,
+        question=question,
+        chapter_ref=canonical,
+        temperature=_get_default_temperature(),
+    )
+
+    return {
+        "answer": answer_text,
+        "references": references,
+        "retrieval": {
+            "distances": list(distances or []),
+            "query_collection": collection_name,
+            "query_where": {"chapter": canonical},
+            "retrieved_ids": list(retrieved_ids_fn() or []),
+            "retrieved_metadatas": list(retrieved_metadatas_fn() or []),
+            "hybrid_rerank": hybrid_rerank_dict,
+        },
+    }

@@ -224,6 +224,14 @@ cmd_done() {
         fi
     fi
 
+    # Step 1.5: Post-merge tests (catch integration issues before push)
+    echo -e "${YELLOW}Running post-merge tests...${NC}"
+    if ! "$PROJECT_ROOT/scripts/run_tests.sh" --fast; then
+        echo -e "${RED}Post-merge tests failed! Fix before pushing.${NC}"
+        echo -e "${YELLOW}Merge is complete locally. Fix tests, commit the fix, then re-run: ./scripts/worktree.sh done $name${NC}"
+        exit 1
+    fi
+
     # Step 2: Mark docs as done (idempotent — rename_docs_dir skips if already correct)
     rename_docs_dir "$name" "DONE_"
 
@@ -352,8 +360,8 @@ cmd_sync() {
 
     local branch=$(git -C "$path" branch --show-current)
 
-    # Check for uncommitted changes
-    if [ -n "$(git -C "$path" status --porcelain)" ]; then
+    # Check for uncommitted changes (ignore untracked files like symlinks)
+    if [ -n "$(git -C "$path" status --porcelain -uno)" ]; then
         echo -e "${RED}Error: Worktree '$name' has uncommitted changes. Commit or stash first.${NC}"
         exit 1
     fi

@@ -142,5 +142,17 @@
       "Hvordan kan nationale cybersikkerhedscertificeringsmyndigheder effektivt indsamle og analysere data i forbindelse med peerreviewmetoden?",
       "Hvilke systemer skal være på plads for at dokumentere og rapportere resultaterne af peerreviewene inden for den angivne tidsramme?"
     ]
+  },
+  "eucc-cir-2024-482": {
+    "LEGAL": [
+      "Hvilke betingelser skal være opfyldt for, at et certificeringsorgan kan udstede en EUCC-attest?",
+      "Hvad er konsekvenserne, hvis et certificeret IKT-produkt ikke overholder sikkerhedskravene?",
+      "Hvordan kan en attestindehaver anmode om revision af deres EUCC-attest?"
+    ],
+    "ENGINEERING": [
+      "Hvilke specifikke oplysninger skal en ansøger give for at opnå certificering af et IKT-produkt?",
+      "Hvordan skal evalueringsmetoderne til certificering af IKT-produkter implementeres for at sikre overholdelse af standarderne?",
+      "Hvilke skridt skal tages for at overvåge og håndtere sårbarheder i et certificeret IKT-produkt?"
+    ]
   }
 }

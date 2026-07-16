@@ -11,8 +11,7 @@ class TestAskEndpoint:
     def test_ask_returns_valid_response(self, client):
         """Test that ask endpoint returns expected response structure."""
         response = client.post(
-            "/api/ask",
-            json={"question": "What is prohibited?", "law": "ai-act"}
+            "/api/ask", json={"question": "What is prohibited?", "law": "ai-act"}
         )
 
         assert response.status_code == 200
@@ -35,17 +34,14 @@ class TestAskEndpoint:
                 "question": "What is prohibited?",
                 "law": "ai-act",
                 "user_profile": "ENGINEERING",
-            }
+            },
         )
 
         assert response.status_code == 200
 
     def test_ask_references_structure(self, client):
         """Test that references have expected fields."""
-        response = client.post(
-            "/api/ask",
-            json={"question": "Test?", "law": "ai-act"}
-        )
+        response = client.post("/api/ask", json={"question": "Test?", "law": "ai-act"})
 
         assert response.status_code == 200
         data = response.json()
@@ -59,19 +55,13 @@ class TestAskEndpoint:
 
     def test_ask_missing_question_fails(self, client):
         """Test that missing question returns 422."""
-        response = client.post(
-            "/api/ask",
-            json={"law": "ai-act"}
-        )
+        response = client.post("/api/ask", json={"law": "ai-act"})
 
         assert response.status_code == 422
 
     def test_ask_missing_law_fails(self, client):
         """Test that missing law returns 422."""
-        response = client.post(
-            "/api/ask",
-            json={"question": "Test?"}
-        )
+        response = client.post("/api/ask", json={"question": "Test?"})
 
         assert response.status_code == 422
 
@@ -82,8 +72,7 @@ class TestAskStreamEndpoint:
     def test_stream_returns_sse(self, client):
         """Test that stream endpoint returns SSE format."""
         response = client.post(
-            "/api/ask/stream",
-            json={"question": "What is prohibited?", "law": "ai-act"}
+            "/api/ask/stream", json={"question": "What is prohibited?", "law": "ai-act"}
         )
 
         assert response.status_code == 200
@@ -92,8 +81,7 @@ class TestAskStreamEndpoint:
     def test_stream_yields_chunks_then_result(self, client):
         """Test that stream yields chunk events followed by result."""
         response = client.post(
-            "/api/ask/stream",
-            json={"question": "Test?", "law": "ai-act"}
+            "/api/ask/stream", json={"question": "Test?", "law": "ai-act"}
         )
 
         content = response.text

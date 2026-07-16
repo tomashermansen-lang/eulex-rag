@@ -14,14 +14,14 @@ as opposed to hardcoded bump_hints which are a workaround.
 Configuration is in config/settings.yaml under citation_expansion:
   enabled: true
   max_expansion: 10        # Total articles to inject (Anthropic: top-20 recommended)
-  seed_limit: 20            # Seed articles to consider for graph expansion  
+  seed_limit: 20            # Seed articles to consider for graph expansion
   retrieved_boost_limit: 10 # Retrieved articles to boost for anchor retention
   min_weight: 0.15
   bump_bonus: 0.15
 
 Usage:
     from src.engine.citation_expansion import get_citation_expansion_for_query
-    
+
     # After initial retrieval, expand with related articles
     expanded_articles = get_citation_expansion_for_query(
         corpus_id="ai-act",
@@ -33,7 +33,6 @@ Usage:
 from __future__ import annotations
 
 import logging
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -59,7 +58,7 @@ def _load_config() -> dict[str, Any]:
     global _config_cache
     if _config_cache is not None:
         return _config_cache
-    
+
     try:
         config_path = Path(__file__).parent.parent.parent / "config" / "settings.yaml"
         with open(config_path) as f:
@@ -68,7 +67,7 @@ def _load_config() -> dict[str, Any]:
     except Exception as e:
         logger.warning("Could not load citation_expansion config: %s", e)
         _config_cache = {}
-    
+
     return _config_cache
 
 
@@ -112,9 +111,10 @@ def _get_citation_graph(corpus_id: str) -> Any | None:
     """Load citation graph with caching."""
     if corpus_id in _graph_cache:
         return _graph_cache[corpus_id]
-    
+
     try:
         from ..ingestion.citation_graph import load_citation_graph
+
         graph = load_citation_graph(corpus_id)
         if graph is not None:
             _graph_cache[corpus_id] = graph
@@ -133,29 +133,33 @@ def expand_retrieval_with_citations(
     min_weight: float = 0.15,
 ) -> list[str]:
     """Find additional articles to retrieve based on citation relationships.
-    
+
     This replaces hardcoded bump_hints with automatic discovery.
-    
+
     Args:
         corpus_id: The corpus to look up
         retrieved_articles: Articles already retrieved (from initial query)
         mentioned_articles: Articles explicitly mentioned in the question
         max_expansion: Maximum number of related articles to add
         min_weight: Minimum citation weight to consider
-        
+
     Returns:
         List of additional article IDs to retrieve
     """
     graph = _get_citation_graph(corpus_id)
     if graph is None:
         return []
-    
+
     # Combine seed articles (mentioned takes priority)
     seed_articles: list[str] = []
     if mentioned_articles:
         seed_articles.extend(str(a).upper() for a in mentioned_articles)
     if retrieved_articles:
-        seed_articles.extend(str(a).upper() for a in retrieved_articles if str(a).upper() not in seed_articles)
+        seed_articles.extend(
+            str(a).upper()
+            for a in retrieved_articles
+            if str(a).upper() not in seed_articles
+        )
 
     if not seed_articles:
         return []
@@ -201,14 +205,18 @@ def expand_retrieval_with_citations(
                 # Try parent as ANNEX:X (for ANNEX:III:5 -> ANNEX:III)
                 parent_annex = f"{parts[0]}:{parts[1]}"
                 # Boost if parent is in top_parents, related_scores, OR seeds
-                if parent_annex in top_parents or parent_annex in related_scores or parent_annex in seed_annexes:
+                if (
+                    parent_annex in top_parents
+                    or parent_annex in related_scores
+                    or parent_annex in seed_annexes
+                ):
                     # Boost this punkt-level node
                     related_scores[rel_id] = related_scores[rel_id] + parent_boost
 
     # Sort by score and take top N
     sorted_related = sorted(related_scores.items(), key=lambda x: (-x[1], x[0]))
     expansion = [art_id for art_id, score in sorted_related[:max_expansion]]
-    
+
     if expansion:
         logger.debug(
             "Citation expansion for %s: seeds=%s → expansion=%s",
@@ -216,7 +224,7 @@ def expand_retrieval_with_citations(
             seed_articles[:3],
             expansion,
         )
-    
+
     return expansion
 
 
@@ -226,18 +234,18 @@ def get_scope_articles_from_graph(
     scope_indicators: list[str] | None = None,
 ) -> list[str]:
     """Get scope/definition articles for a corpus based on citation patterns.
-    
+
     Scope articles (like AI Act art. 2, 3) are typically:
     - Heavily cited by other articles
     - In the first chapter (low article numbers)
     - Referenced when discussing applicability
-    
+
     This auto-discovers scope articles without configuration.
     """
     graph = _get_citation_graph(corpus_id)
     if graph is None:
         return []
-    
+
     # Find scope candidates using heuristic: low article numbers + citation counts
     # We look at ALL articles, not just most-cited, because scope articles
     # (e.g., art. 2, 3) may have moderate citation counts but low numbers
@@ -258,27 +266,27 @@ def get_scope_articles_from_graph(
             scope_candidates.append((article_id, scope_score))
         except ValueError:
             continue
-    
+
     scope_candidates.sort(key=lambda x: (-x[1], x[0]))
     return [art_id for art_id, score in scope_candidates[:5]]
 
 
 def get_classification_articles_from_graph(corpus_id: str) -> list[str]:
     """Get classification articles for a corpus from citation graph roles.
-    
+
     Returns articles tagged with 'classification' role (e.g., AI Act art. 6, Annex III).
     These define how to classify entities/systems under the regulation.
     """
     graph = _get_citation_graph(corpus_id)
     if graph is None:
         return []
-    
+
     return graph.get_articles_by_role("classification")
 
 
 def extract_mentioned_articles(question: str) -> list[str]:
     """Extract article and annex references from question text.
-    
+
     Parses patterns like:
     - "artikel 5"
     - "article 10"
@@ -288,30 +296,26 @@ def extract_mentioned_articles(question: str) -> list[str]:
     - "annex III"
     """
     import re
-    
+
     result: list[str] = []
-    
+
     # Article patterns
     article_pattern = re.compile(
-        r"(?:artikel|article|art\.?)\s*(\d{1,3}[a-z]?)",
-        re.IGNORECASE
+        r"(?:artikel|article|art\.?)\s*(\d{1,3}[a-z]?)", re.IGNORECASE
     )
-    
+
     article_matches = article_pattern.findall(question)
     result.extend(m.upper() for m in article_matches)
-    
+
     # Annex patterns (bilag I, II, III, IV, etc. or annex 1, 2, 3)
-    annex_pattern = re.compile(
-        r"(?:bilag|annex)\s*([IVX]+|\d+)",
-        re.IGNORECASE
-    )
-    
+    annex_pattern = re.compile(r"(?:bilag|annex)\s*([IVX]+|\d+)", re.IGNORECASE)
+
     annex_matches = annex_pattern.findall(question)
     for m in annex_matches:
         # Normalize: keep roman numerals uppercase
         annex_id = f"ANNEX:{m.upper()}"
         result.append(annex_id)
-    
+
     return result
 
 
@@ -335,39 +339,39 @@ def get_citation_expansion_for_query(
     max_expansion: int | None = None,
 ) -> list[str]:
     """Main entry point: get articles to inject based on citations.
-    
+
     This is the replacement for bump_hints. Call this after initial
     retrieval to get additional articles that should be included.
-    
+
     IMPORTANT: Returns articles for BOTH:
     - Anchor boosting (ensures high-value chunks stay in context)
     - Chunk injection (fetches new chunks for missing anchors)
-    
+
     The return value is used by PROD to:
     1. Boost distance scores for chunks matching these anchors
     2. Inject additional chunks for anchors not in initial retrieval
-    
+
     Therefore we include:
     - Graph expansion (articles cited by retrieved) - gets new relevant chunks
     - Top retrieved articles - ensures they get anchor boost to stay in context
     - Scope/classification (for applicability questions) - foundational context
-    
+
     Args:
         corpus_id: The corpus
         question: The user's question
         retrieved_metadatas: Metadata from initial retrieval
         max_expansion: Max articles to add
-        
+
     Returns:
         List of article IDs for anchor boosting and injection
     """
     # 0. Use config-based max_expansion if not explicitly provided
     if max_expansion is None:
         max_expansion = get_max_expansion()
-    
+
     # 1. Extract articles mentioned in question
     mentioned = extract_mentioned_articles(question)
-    
+
     # 2. Extract articles from initial retrieval
     retrieved: list[str] = []
     for meta in retrieved_metadatas:
@@ -377,13 +381,13 @@ def get_citation_expansion_for_query(
         annex = meta.get("annex")
         if annex:
             retrieved.append(f"ANNEX:{str(annex).upper()}")
-    
+
     retrieved_set = set(retrieved)
-    
+
     # 3. Collect ALL candidate sources
     already_added: set[str] = set()
     result: list[str] = []
-    
+
     def add_unique(articles: list[str], limit: int | None = None) -> int:
         """Add articles to result, avoiding duplicates. Returns count added."""
         added = 0
@@ -396,10 +400,10 @@ def get_citation_expansion_for_query(
                 if limit and added >= limit:
                     break
         return added
-    
+
     # 4. PRIORITY 1: Mentioned articles (explicit in question) - always include
     add_unique(mentioned)
-    
+
     # 5. PRIORITY 2: Scope articles (for applicability questions)
     # When question is about scope/applicability, we MUST include scope articles
     # (typically art. 2, 3) because they define WHAT the law covers.
@@ -410,7 +414,6 @@ def get_citation_expansion_for_query(
         scope_filtered = [a for a in scope_articles if a not in retrieved_set]
         add_unique(scope_filtered[:2])  # Guarantee 2 scope articles
 
-    
     # 6. PRIORITY 3: Top retrieved articles (CRITICAL for anchor boost)
     # These are what semantic search found most relevant - we MUST include them
     # so they get anchor boost and don't get displaced by injected chunks.
@@ -422,7 +425,7 @@ def get_citation_expansion_for_query(
     retrieved_boost_limit = get_retrieved_boost_limit()
     top_retrieved = [str(a).upper() for a in retrieved[:retrieved_boost_limit]]
     add_unique(top_retrieved)  # No artificial limit - add all unique from top chunks
-    
+
     # 7. PRIORITY 4: Graph expansion (articles cited by retrieved)
     # This finds related articles via citation graph. Since we already added
     # retrieved articles, this will only add NEW ones (related but not retrieved).
@@ -439,5 +442,5 @@ def get_citation_expansion_for_query(
         min_weight=get_min_weight(),  # Use config value (lowered to include punkt-level nodes)
     )
     add_unique(graph_expansion, limit=max_expansion - len(result))
-    
+
     return result[:max_expansion]

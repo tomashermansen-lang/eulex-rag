@@ -3,6 +3,7 @@
 CLI tool for analyzing vector similarity distances across a set of questions.
 Used to determine appropriate max_distance settings for abstention.
 """
+
 import argparse
 import json
 from dataclasses import dataclass
@@ -127,7 +128,9 @@ def _format_source(meta: dict[str, Any] | None) -> str:
     return src
 
 
-def measure_questions(engine: "RAGEngine", cases: list[DistanceCase], k: int = 5) -> list[DistanceRow]:
+def measure_questions(
+    engine: "RAGEngine", cases: list[DistanceCase], k: int = 5
+) -> list[DistanceRow]:
     rows: list[DistanceRow] = []
 
     for case in cases:
@@ -181,7 +184,9 @@ def parse_args() -> argparse.Namespace:
         default="data/evals/golden_answers_ai_act.json",
         help="Path to JSON file with questions (expects objects with at least a 'question' field).",
     )
-    parser.add_argument("--k", type=int, default=5, help="Number of results to retrieve per question")
+    parser.add_argument(
+        "--k", type=int, default=5, help="Number of results to retrieve per question"
+    )
     parser.add_argument(
         "--extra",
         action="append",
@@ -220,9 +225,12 @@ def run() -> int:
     law_id = (args.law or "").strip() or settings.default_corpus
     corpus = corpora.get(law_id)
     if corpus is None:
-        raise SystemExit(f"Unknown --law '{law_id}'. Available: {', '.join(available_laws)}")
+        raise SystemExit(
+            f"Unknown --law '{law_id}'. Available: {', '.join(available_laws)}"
+        )
 
     from src.engine.rag import RAGEngine
+
     engine = RAGEngine(
         docs_path=str(settings.docs_path),
         corpus_id=law_id,
@@ -246,7 +254,9 @@ def run() -> int:
             cases.append(DistanceCase(id=q, question=q))
 
     if not cases:
-        raise SystemExit("No questions found. Provide --file with cases and/or one or more --extra questions.")
+        raise SystemExit(
+            "No questions found. Provide --file with cases and/or one or more --extra questions."
+        )
 
     rows = measure_questions(engine, cases=cases, k=args.k)
 
@@ -278,7 +288,9 @@ def run() -> int:
             f"max={summary['max']:.4f}"
         )
         print("\nHeuristic starting point:")
-        print(f"  Try rag.max_distance ~= {p90:.4f} (more permissive) or {p80:.4f} (stricter)")
+        print(
+            f"  Try rag.max_distance ~= {p90:.4f} (more permissive) or {p80:.4f} (stricter)"
+        )
 
     sweep_results: list[dict[str, Any]] = []
     if args.sweep:
@@ -305,14 +317,18 @@ def run() -> int:
                         continue
                     printed_any = True
                     threshold = float(r["threshold"])
-                    print(f"\n  threshold={threshold:.4f} (newly answerable: {len(ids)})")
+                    print(
+                        f"\n  threshold={threshold:.4f} (newly answerable: {len(ids)})"
+                    )
                     for case_id in ids:
                         row = id_to_row.get(case_id)
                         if row is None:
                             continue
                         best = row.best_distance
                         best_str = "(none)" if best is None else f"{best:.4f}"
-                        print(f"    - {case_id}: best_distance={best_str} :: {row.question}")
+                        print(
+                            f"    - {case_id}: best_distance={best_str} :: {row.question}"
+                        )
                 if not printed_any:
                     print("  (none)")
 
@@ -335,7 +351,9 @@ def run() -> int:
             "summary": summary,
             "sweep": sweep_results,
         }
-        Path(args.json_out).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        Path(args.json_out).write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
         print(f"\nWrote JSON report to {args.json_out}")
 
     return 0

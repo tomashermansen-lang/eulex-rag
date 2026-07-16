@@ -4,7 +4,6 @@ import json
 import pytest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
 
 from src.ingestion.citation_graph import (
     CitationEdge,
@@ -305,17 +304,12 @@ class TestDetectRolesFromText:
         assert "definitions" in roles
 
     def test_detects_multiple_roles(self):
-        roles = _detect_roles_from_text(
-            "Definitions and scope of this regulation"
-        )
+        roles = _detect_roles_from_text("Definitions and scope of this regulation")
         assert "definitions" in roles
         assert "scope" in roles
 
     def test_uses_title(self):
-        roles = _detect_roles_from_text(
-            "Article content",
-            title="Anvendelsesområde"
-        )
+        roles = _detect_roles_from_text("Article content", title="Anvendelsesområde")
         assert "scope" in roles
 
 
@@ -374,17 +368,18 @@ class TestGetOrBuildCitationGraph:
             # Create chunks file for rebuild
             chunks_path = tmpdir_path / "test_chunks.jsonl"
             chunks_path.write_text(
-                json.dumps({
-                    "text": "Article content",
-                    "metadata": {"article": "rebuilt", "mentions": {"article": ["5"]}}
-                })
+                json.dumps(
+                    {
+                        "text": "Article content",
+                        "metadata": {
+                            "article": "rebuilt",
+                            "mentions": {"article": ["5"]},
+                        },
+                    }
+                )
             )
 
-            result = get_or_build_citation_graph(
-                "test",
-                data_dir=tmpdir,
-                rebuild=True
-            )
+            result = get_or_build_citation_graph("test", data_dir=tmpdir, rebuild=True)
 
             # Should have rebuilt from chunks
             assert "REBUILT" in result.nodes
@@ -408,15 +403,15 @@ class TestCitationGraphFromCorpus:
                         "article": "6",
                         "article_title": "Prohibited practices",
                         "chapter": "II",
-                        "mentions": json.dumps({"article": ["7", "8"]})
-                    }
+                        "mentions": json.dumps({"article": ["7", "8"]}),
+                    },
                 },
                 {
                     "text": "Article 7 content",
                     "metadata": {
                         "article": "7",
-                        "mentions": json.dumps({"article": ["6"]})
-                    }
+                        "mentions": json.dumps({"article": ["6"]}),
+                    },
                 },
             ]
 
@@ -444,8 +439,8 @@ class TestCitationGraphFromCorpus:
                     "metadata": {
                         "annex": "III",
                         "annex_title": "High-risk systems",
-                        "mentions": json.dumps({"article": ["6"]})
-                    }
+                        "mentions": json.dumps({"article": ["6"]}),
+                    },
                 },
             ]
 

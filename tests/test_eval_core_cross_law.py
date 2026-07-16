@@ -206,7 +206,12 @@ class TestComparisonCompletenessBugFix:
                 required_corpora=("ai_act", "gdpr"),
             ),
             corpus_scope="explicit",
-            target_corpora=("ai_act", "gdpr", "dsa", "dma"),  # Suite-level pool (larger)
+            target_corpora=(
+                "ai_act",
+                "gdpr",
+                "dsa",
+                "dma",
+            ),  # Suite-level pool (larger)
             synthesis_mode="comparison",
             test_types=("comparison_completeness",),
         )
@@ -466,7 +471,9 @@ class TestCrossLawParamsPassedToAsk:
 
         call_kwargs = mock_ask.call_args.kwargs
         assert call_kwargs["corpus_scope"] == "single"
-        assert call_kwargs["target_corpora"] is None or call_kwargs["target_corpora"] == []
+        assert (
+            call_kwargs["target_corpora"] is None or call_kwargs["target_corpora"] == []
+        )
 
 
 class TestEvalCrossLawRouteLogger:
@@ -475,6 +482,7 @@ class TestEvalCrossLawRouteLogger:
     def test_eval_cross_law_module_has_logger(self):
         """eval_cross_law.py must define a logger to avoid NameError at runtime."""
         import importlib
+
         mod = importlib.import_module("ui_react.backend.routes.eval_cross_law")
         assert hasattr(mod, "logger"), (
             "eval_cross_law.py is missing 'logger' - will crash on error path"
@@ -534,9 +542,17 @@ class TestOverviewScorerPassRates:
                     "passed": True,
                     "duration_ms": 5000,
                     "scores": {
-                        "corpus_coverage": {"passed": True, "score": 1.0, "message": "ok"},
+                        "corpus_coverage": {
+                            "passed": True,
+                            "score": 1.0,
+                            "message": "ok",
+                        },
                         "faithfulness": {"passed": True, "score": 0.9, "message": "ok"},
-                        "answer_relevancy": {"passed": False, "score": 0.3, "message": "low"},
+                        "answer_relevancy": {
+                            "passed": False,
+                            "score": 0.3,
+                            "message": "low",
+                        },
                     },
                 },
                 {
@@ -547,7 +563,11 @@ class TestOverviewScorerPassRates:
                     "passed": False,
                     "duration_ms": 5000,
                     "scores": {
-                        "corpus_coverage": {"passed": False, "score": 0.0, "message": "miss"},
+                        "corpus_coverage": {
+                            "passed": False,
+                            "score": 0.0,
+                            "message": "miss",
+                        },
                         "faithfulness": {"passed": True, "score": 0.8, "message": "ok"},
                     },
                 },
@@ -925,7 +945,6 @@ class TestRetrievalLevelCorpusScoring:
         assert result.scores["corpus_coverage"].passed is True
 
 
-
 class TestRoutingPrecisionRetrievalLevel:
     """Fix: routing_precision should use retrieval-level refs (context_corpora)
     instead of alias-based answer text matching.
@@ -1033,6 +1052,7 @@ class TestAnchorFormat:
     def test_process_raw_cases_strips_whitespace(self):
         """_process_raw_cases strips whitespace from anchors."""
         from src.eval.eval_case_generator import _process_raw_cases
+
         raw = [
             {
                 "id": "test",
@@ -1045,10 +1065,10 @@ class TestAnchorFormat:
         assert cases[0].expected_anchors == ("article:6", "article:13", "recital:1")
 
 
-
 # ---------------------------------------------------------------------------
 # Test TriggerCrossLawEvalRequest max_retries (R6)
 # ---------------------------------------------------------------------------
+
 
 class TestTriggerRequestMaxRetries:
     """TriggerCrossLawEvalRequest defaults to 0 retries and validates range."""
@@ -1056,12 +1076,14 @@ class TestTriggerRequestMaxRetries:
     def test_default_max_retries_is_zero(self):
         """Default max_retries is 0 (fast iteration)."""
         from ui_react.backend.routes.eval_cross_law import TriggerCrossLawEvalRequest
+
         req = TriggerCrossLawEvalRequest()
         assert req.max_retries == 0
 
     def test_max_retries_accepts_valid_values(self):
         """max_retries accepts 0, 1, 3, 5."""
         from ui_react.backend.routes.eval_cross_law import TriggerCrossLawEvalRequest
+
         for val in [0, 1, 3, 5]:
             req = TriggerCrossLawEvalRequest(max_retries=val)
             assert req.max_retries == val
@@ -1070,6 +1092,7 @@ class TestTriggerRequestMaxRetries:
         """Negative max_retries is rejected by validation."""
         from pydantic import ValidationError
         from ui_react.backend.routes.eval_cross_law import TriggerCrossLawEvalRequest
+
         with pytest.raises(ValidationError):
             TriggerCrossLawEvalRequest(max_retries=-1)
 
@@ -1077,13 +1100,17 @@ class TestTriggerRequestMaxRetries:
         """max_retries > 5 is rejected by validation."""
         from pydantic import ValidationError
         from ui_react.backend.routes.eval_cross_law import TriggerCrossLawEvalRequest
+
         with pytest.raises(ValidationError):
             TriggerCrossLawEvalRequest(max_retries=6)
 
-
     def test_generation_prompt_instructs_empty_anchors(self):
         """The LLM prompt instructs leaving expected_anchors empty."""
-        from src.eval.eval_case_generator import _build_generation_prompt, GenerationRequest
+        from src.eval.eval_case_generator import (
+            _build_generation_prompt,
+            GenerationRequest,
+        )
+
         request = GenerationRequest(
             target_corpora=("ai_act", "gdpr"),
             synthesis_mode="comparison",

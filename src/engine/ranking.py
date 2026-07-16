@@ -2,8 +2,9 @@ from typing import Any, Dict, List, Tuple
 import re
 import math
 from .planning import UserProfile
-from .helpers import classify_query_intent
+from .query_helpers import classify_query_intent
 from ..common.config_loader import RankingWeights
+
 
 class Ranker:
     # --- Deterministic role taxonomy (do not change values) ---
@@ -146,6 +147,7 @@ class Ranker:
         citation_signals: list[float] = []
         if hint_anchors and citation_boost > 0.0:
             from src.engine.concept_config import extract_anchors_from_metadata
+
             for meta in metadatas:
                 chunk_anchors = extract_anchors_from_metadata(meta)
                 has_match = bool(chunk_anchors & hint_anchors)
@@ -215,7 +217,11 @@ class Ranker:
         if "recital:" in location_id or "preamble" in location_id:
             is_recital_structural = True
             signals.append("location_id_recital_or_preamble")
-        if "recital" in heading_display or "betragtning" in heading_display or "preamble" in heading_display:
+        if (
+            "recital" in heading_display
+            or "betragtning" in heading_display
+            or "preamble" in heading_display
+        ):
             is_recital_structural = True
             signals.append("heading_recital_or_preamble")
 
@@ -255,13 +261,20 @@ class Ranker:
 
         # Heading/title keyword mapping.
         if heading_blob:
-            if re.search(r"\b(definition|definitions|scope|subject\s+matter)\b", heading_blob):
+            if re.search(
+                r"\b(definition|definitions|scope|subject\s+matter)\b", heading_blob
+            ):
                 add_heading(cls.ROLE_DEFINITION_SCOPE, "definition_or_scope")
             if re.search(r"\b(prohibited|prohibition|forbidden)\b", heading_blob):
                 add_heading(cls.ROLE_PROHIBITIONS, "prohibition")
-            if re.search(r"\b(transparency|inform|information|disclosure)\b", heading_blob):
+            if re.search(
+                r"\b(transparency|inform|information|disclosure)\b", heading_blob
+            ):
                 add_heading(cls.ROLE_TRANSPARENCY, "transparency_or_information")
-            if re.search(r"\b(authority|penalt(y|ies)|sanction(s)?|supervision|enforcement)\b", heading_blob):
+            if re.search(
+                r"\b(authority|penalt(y|ies)|sanction(s)?|supervision|enforcement)\b",
+                heading_blob,
+            ):
                 add_heading(cls.ROLE_ENFORCEMENT_SUPERVISION, "enforcement_supervision")
             if re.search(r"\b(sandbox)\b", heading_blob):
                 add_heading(cls.ROLE_EXCEPTIONS_SANDBOX, "sandbox")
@@ -276,7 +289,9 @@ class Ranker:
             add_text(cls.ROLE_OBLIGATIONS_NORMATIVE, "modal_must_shall_required")
         if re.search(r"\bskal\b", body_lower):
             add_text(cls.ROLE_OBLIGATIONS_NORMATIVE, "modal_skal")
-        if re.search(r"\b(inform|information|disclose|tell\s+user|notify)\b", body_lower):
+        if re.search(
+            r"\b(inform|information|disclose|tell\s+user|notify)\b", body_lower
+        ):
             add_text(cls.ROLE_TRANSPARENCY, "inform_user")
         if re.search(r"\b(transparency|gennemsigtighed)\b", body_lower):
             add_text(cls.ROLE_TRANSPARENCY, "transparency")
@@ -398,7 +413,9 @@ class Ranker:
         return [i for _, i in scored]
 
     @staticmethod
-    def anchor_score(metadata: dict[str, Any] | None, hint_anchors: set[str] | None = None) -> int:
+    def anchor_score(
+        metadata: dict[str, Any] | None, hint_anchors: set[str] | None = None
+    ) -> int:
         """Return a deterministic anchor precision score.
 
         +5 = matches a hint_anchor (explicitly mentioned in query)
@@ -442,16 +459,18 @@ class Ranker:
             return 1
         return 0
 
+
 # ---------------------------------------------------------------------------
 # Ranking Pipeline (extracted from RAGEngine.answer_structured)
 # ---------------------------------------------------------------------------
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass
 class RankingPipelineResult:
     """Result of the ranking pipeline pass-through."""
+
     ranked_hits: List[Tuple[str, Dict[str, Any]]]
     ranked_distances: List[float]
     ranked_ids: List[str]
@@ -506,16 +525,20 @@ def execute_ranking_pipeline(
                 role_conf = float(role_info.get("confidence") or 0.0)
                 role_signals = list(role_info.get("signals") or [])
 
-                items.append({
-                    "chunk_id": str(retrieved_ids[i]),
-                    "distance": float(distances[i]),
-                    "role": role,
-                    "role_confidence": float(role_conf),
-                    "role_signals": role_signals,
-                    "query_intent": intent,
-                    "rank": i + 1,
-                    "heading_path_display": str(retrieved_metas[i].get("heading_path_display", "")),
-                })
+                items.append(
+                    {
+                        "chunk_id": str(retrieved_ids[i]),
+                        "distance": float(distances[i]),
+                        "role": role,
+                        "role_confidence": float(role_conf),
+                        "role_signals": role_signals,
+                        "query_intent": intent,
+                        "rank": i + 1,
+                        "heading_path_display": str(
+                            retrieved_metas[i].get("heading_path_display", "")
+                        ),
+                    }
+                )
 
             debug_info = {
                 "query_intent": intent,

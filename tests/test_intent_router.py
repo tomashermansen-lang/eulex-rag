@@ -1,8 +1,6 @@
 """Tests for src/engine/intent_router.py - Intent routing logic."""
 
-import time
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from src.engine.intent_router import (
     _get_cache_key,

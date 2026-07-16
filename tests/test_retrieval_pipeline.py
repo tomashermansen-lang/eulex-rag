@@ -21,15 +21,10 @@ from src.engine.retrieval_pipeline import (
     PipelineResult,
     RetrievedChunk,
     ScoredChunk,
-    SelectedChunk,
     VectorRetrievalInput,
-    VectorRetrievalResult,
     CitationExpansionInput,
-    CitationExpansionResult,
     HybridRerankInput,
-    HybridRerankResult,
     ContextSelectionInput,
-    ContextSelectionResult,
     execute_vector_retrieval,
     execute_citation_expansion,
     execute_hybrid_rerank,
@@ -42,6 +37,7 @@ from src.common.config_loader import RankingWeights
 # ---------------------------------------------------------------------------
 # Test Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def sample_chunks() -> List[RetrievedChunk]:
@@ -77,6 +73,7 @@ def sample_chunks() -> List[RetrievedChunk]:
 @pytest.fixture
 def mock_query_fn():
     """Create a mock query function that returns predictable results."""
+
     def query_fn(
         question: str, k: int, where: Dict[str, Any] | None
     ) -> Tuple[List[Tuple[str, str, Dict[str, Any]]], List[float]]:
@@ -84,27 +81,35 @@ def mock_query_fn():
         hits = [
             ("chunk-1", "Article 6 defines high-risk AI.", {"article": "6"}),
             ("chunk-2", "Annex III lists use cases.", {"annex": "III"}),
-            ("chunk-3", "Point 5 covers credit assessment.", {"annex": "III", "annex_point": "5"}),
+            (
+                "chunk-3",
+                "Point 5 covers credit assessment.",
+                {"annex": "III", "annex_point": "5"},
+            ),
         ]
         distances = [0.2, 0.3, 0.4]
         return hits[:k], distances[:k]
+
     return query_fn
 
 
 @pytest.fixture
 def mock_is_citable_fn():
     """Create a mock is_citable function."""
+
     def is_citable_fn(meta: Dict[str, Any], doc: str) -> Tuple[bool, str | None]:
         # Citable if has article or annex
         if meta.get("article") or meta.get("annex"):
             return True, None
         return False, None
+
     return is_citable_fn
 
 
 # ---------------------------------------------------------------------------
 # Test RetrievedChunk
 # ---------------------------------------------------------------------------
+
 
 class TestRetrievedChunk:
     """Test RetrievedChunk dataclass."""
@@ -170,6 +175,7 @@ class TestRetrievedChunk:
 # Test PipelineConfig
 # ---------------------------------------------------------------------------
 
+
 class TestPipelineConfig:
     """Test PipelineConfig dataclass."""
 
@@ -192,6 +198,7 @@ class TestPipelineConfig:
 # ---------------------------------------------------------------------------
 # Test Stage 1: Vector Retrieval
 # ---------------------------------------------------------------------------
+
 
 class TestVectorRetrieval:
     """Test execute_vector_retrieval function."""
@@ -229,6 +236,7 @@ class TestVectorRetrieval:
 # Test Stage 2: Citation Expansion
 # ---------------------------------------------------------------------------
 
+
 class TestCitationExpansion:
     """Test execute_citation_expansion function."""
 
@@ -261,6 +269,7 @@ class TestCitationExpansion:
 # ---------------------------------------------------------------------------
 # Test Stage 3: Hybrid Rerank
 # ---------------------------------------------------------------------------
+
 
 class TestHybridRerank:
     """Test execute_hybrid_rerank function."""
@@ -313,6 +322,7 @@ class TestHybridRerank:
 # ---------------------------------------------------------------------------
 # Test Stage 4: Context Selection
 # ---------------------------------------------------------------------------
+
 
 class TestContextSelection:
     """Test execute_context_selection function."""
@@ -372,6 +382,7 @@ class TestContextSelection:
 # ---------------------------------------------------------------------------
 # Test Full Pipeline
 # ---------------------------------------------------------------------------
+
 
 class TestFullPipeline:
     """Test execute_pipeline function."""
@@ -457,6 +468,7 @@ class TestFullPipeline:
 # ---------------------------------------------------------------------------
 # Test Ranking Weight Application
 # ---------------------------------------------------------------------------
+
 
 class TestRankingWeights:
     """Test that ranking weights are correctly applied."""

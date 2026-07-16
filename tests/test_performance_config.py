@@ -6,8 +6,6 @@ TDD: Tests written BEFORE implementation of get_performance_settings().
 import os
 from unittest.mock import patch
 
-import pytest
-
 
 # ---------------------------------------------------------------------------
 # PC-01: Performance section exists with defaults

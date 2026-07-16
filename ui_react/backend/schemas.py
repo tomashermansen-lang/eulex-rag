@@ -21,20 +21,21 @@ class AskRequest(BaseModel):
 
     question: str = Field(..., min_length=1, description="The question to ask")
     law: str = Field(..., description="Corpus/law identifier (e.g., 'ai-act', 'gdpr')")
-    user_profile: str = Field(default="LEGAL", description="User profile: LEGAL or ENGINEERING")
+    user_profile: str = Field(
+        default="LEGAL", description="User profile: LEGAL or ENGINEERING"
+    )
     history: list[HistoryMessage] = Field(
         default_factory=list,
         max_length=10,
-        description="Previous conversation messages (max 10)"
+        description="Previous conversation messages (max 10)",
     )
     # Cross-law fields
     corpus_scope: Literal["single", "explicit", "all", "discover"] = Field(
         default="single",
-        description="Corpus scope: 'single' (default), 'explicit' (target_corpora), 'all', or 'discover' (AI auto-discovery)"
+        description="Corpus scope: 'single' (default), 'explicit' (target_corpora), 'all', or 'discover' (AI auto-discovery)",
     )
     target_corpora: list[str] = Field(
-        default_factory=list,
-        description="Target corpus IDs for 'explicit' scope"
+        default_factory=list, description="Target corpus IDs for 'explicit' scope"
     )
 
 
@@ -45,10 +46,16 @@ class Reference(BaseModel):
     display: str = Field(..., description="Human-readable source description")
     chunk_text: str = Field(default="", description="The actual text content")
     corpus_id: str | None = Field(default=None, description="Corpus identifier")
-    article: str | None = Field(default=None, description="Article number if applicable")
-    recital: str | None = Field(default=None, description="Recital number if applicable")
+    article: str | None = Field(
+        default=None, description="Article number if applicable"
+    )
+    recital: str | None = Field(
+        default=None, description="Recital number if applicable"
+    )
     annex: str | None = Field(default=None, description="Annex number if applicable")
-    paragraph: str | None = Field(default=None, description="Paragraph number if applicable")
+    paragraph: str | None = Field(
+        default=None, description="Paragraph number if applicable"
+    )
     litra: str | None = Field(default=None, description="Litra if applicable")
 
 
@@ -56,17 +63,22 @@ class AskResponse(BaseModel):
     """Response payload for a completed answer."""
 
     answer: str = Field(..., description="The generated answer")
-    references: list[Reference] = Field(default_factory=list, description="Source references")
-    retrieval_metrics: dict[str, Any] = Field(default_factory=dict, description="Debug metrics")
-    response_time_seconds: float = Field(..., description="Time taken to generate answer")
+    references: list[Reference] = Field(
+        default_factory=list, description="Source references"
+    )
+    retrieval_metrics: dict[str, Any] = Field(
+        default_factory=dict, description="Debug metrics"
+    )
+    response_time_seconds: float = Field(
+        ..., description="Time taken to generate answer"
+    )
     # Cross-law fields
     synthesis_mode: str | None = Field(
         default=None,
-        description="Synthesis mode used: aggregation, comparison, unified, routing, or None for single-law"
+        description="Synthesis mode used: aggregation, comparison, unified, routing, or None for single-law",
     )
     laws_searched: list[str] = Field(
-        default_factory=list,
-        description="List of corpus IDs that were searched"
+        default_factory=list, description="List of corpus IDs that were searched"
     )
 
 
@@ -74,8 +86,12 @@ class StreamChunk(BaseModel):
     """A chunk of streamed response."""
 
     type: str = Field(..., description="Event type: 'chunk' or 'result'")
-    content: str | None = Field(default=None, description="Text content for chunk events")
-    data: AskResponse | None = Field(default=None, description="Full response for result events")
+    content: str | None = Field(
+        default=None, description="Text content for chunk events"
+    )
+    data: AskResponse | None = Field(
+        default=None, description="Full response for result events"
+    )
 
 
 class CorpusInfo(BaseModel):
@@ -83,16 +99,24 @@ class CorpusInfo(BaseModel):
 
     id: str = Field(..., description="Corpus identifier")
     name: str = Field(..., description="Human-readable name")
-    fullname: str | None = Field(default=None, description="Full official legal title for citations")
+    fullname: str | None = Field(
+        default=None, description="Full official legal title for citations"
+    )
     source_url: str | None = Field(default=None, description="URL to source document")
-    celex_number: str | None = Field(default=None, description="CELEX number for EUR-Lex reference")
-    eurovoc_labels: list[str] | None = Field(default=None, description="EuroVoc subject keywords from EUR-Lex")
+    celex_number: str | None = Field(
+        default=None, description="CELEX number for EUR-Lex reference"
+    )
+    eurovoc_labels: list[str] | None = Field(
+        default=None, description="EuroVoc subject keywords from EUR-Lex"
+    )
 
 
 class CorporaResponse(BaseModel):
     """Response with available corpora."""
 
-    corpora: list[CorpusInfo] = Field(default_factory=list, description="Available corpora")
+    corpora: list[CorpusInfo] = Field(
+        default_factory=list, description="Available corpora"
+    )
 
 
 class ExamplesResponse(BaseModel):
@@ -100,7 +124,7 @@ class ExamplesResponse(BaseModel):
 
     examples: dict[str, dict[str, list[str]]] = Field(
         default_factory=dict,
-        description="Example questions: {corpus: {profile: [questions]}}"
+        description="Example questions: {corpus: {profile: [questions]}}",
     )
 
 
@@ -113,16 +137,20 @@ class HealthResponse(BaseModel):
 
 # Admin schemas for legislation management
 
+
 class IngestionQuality(BaseModel):
     """Quality metrics from HTML ingestion."""
 
     unhandled_patterns: dict[str, int] = Field(
-        default_factory=dict,
-        description="Unhandled HTML pattern types and counts"
+        default_factory=dict, description="Unhandled HTML pattern types and counts"
     )
     unhandled_count: int = Field(default=0, description="Total unhandled pattern count")
-    unhandled_pct: float = Field(default=0.0, description="Percentage of unhandled patterns")
-    structure_coverage_pct: float = Field(default=0.0, description="Percentage of chunks with citable structure")
+    unhandled_pct: float = Field(
+        default=0.0, description="Percentage of unhandled patterns"
+    )
+    structure_coverage_pct: float = Field(
+        default=0.0, description="Percentage of chunks with citable structure"
+    )
     chunk_count: int = Field(default=0, description="Total number of chunks")
 
 
@@ -132,18 +160,38 @@ class LegislationInfo(BaseModel):
     celex_number: str = Field(..., description="CELEX number (e.g., 32024R1689)")
     title_da: str = Field(default="", description="Danish title")
     title_en: str = Field(default="", description="English title")
-    last_modified: str | None = Field(default=None, description="Document date (ISO format)")
-    entry_into_force: str | None = Field(default=None, description="Entry into force date (ISO format)")
-    in_force: bool = Field(default=True, description="Whether the legislation is in force")
-    amended_by: list[str] = Field(default_factory=list, description="CELEX numbers of amending acts")
+    last_modified: str | None = Field(
+        default=None, description="Document date (ISO format)"
+    )
+    entry_into_force: str | None = Field(
+        default=None, description="Entry into force date (ISO format)"
+    )
+    in_force: bool = Field(
+        default=True, description="Whether the legislation is in force"
+    )
+    amended_by: list[str] = Field(
+        default_factory=list, description="CELEX numbers of amending acts"
+    )
     is_ingested: bool = Field(default=False, description="Whether locally ingested")
-    corpus_id: str | None = Field(default=None, description="Short corpus ID (e.g., 'gdpr', 'ai-act')")
-    local_version_date: str | None = Field(default=None, description="Local ingestion date (ISO format)")
-    is_outdated: bool = Field(default=False, description="Whether local version is outdated")
+    corpus_id: str | None = Field(
+        default=None, description="Short corpus ID (e.g., 'gdpr', 'ai-act')"
+    )
+    local_version_date: str | None = Field(
+        default=None, description="Local ingestion date (ISO format)"
+    )
+    is_outdated: bool = Field(
+        default=False, description="Whether local version is outdated"
+    )
     html_url: str = Field(default="", description="EUR-Lex HTML URL")
-    document_type: str = Field(default="", description="Document type (Regulation, Directive, etc.)")
-    eurovoc_labels: list[str] = Field(default_factory=list, description="EuroVoc subject keywords (Danish)")
-    quality: IngestionQuality | None = Field(default=None, description="Ingestion quality metrics (if ingested)")
+    document_type: str = Field(
+        default="", description="Document type (Regulation, Directive, etc.)"
+    )
+    eurovoc_labels: list[str] = Field(
+        default_factory=list, description="EuroVoc subject keywords (Danish)"
+    )
+    quality: IngestionQuality | None = Field(
+        default=None, description="Ingestion quality metrics (if ingested)"
+    )
 
 
 class LegislationListResponse(BaseModel):
@@ -160,9 +208,15 @@ class UpdateStatus(BaseModel):
 
     corpus_id: str = Field(..., description="Corpus identifier")
     celex_number: str = Field(default="", description="CELEX number")
-    is_outdated: bool = Field(default=False, description="Whether local version is outdated")
-    local_date: str | None = Field(default=None, description="Local version date (ISO format)")
-    remote_date: str | None = Field(default=None, description="Remote version date (ISO format)")
+    is_outdated: bool = Field(
+        default=False, description="Whether local version is outdated"
+    )
+    local_date: str | None = Field(
+        default=None, description="Local version date (ISO format)"
+    )
+    remote_date: str | None = Field(
+        default=None, description="Remote version date (ISO format)"
+    )
     reason: str = Field(default="", description="Reason for status")
 
 
@@ -170,13 +224,25 @@ class AddLawRequest(BaseModel):
     """Request to add a new law/corpus."""
 
     celex_number: str = Field(..., description="CELEX number of the legislation")
-    corpus_id: str = Field(..., min_length=1, description="Short ID for the corpus (e.g., 'nis2')")
+    corpus_id: str = Field(
+        ..., min_length=1, description="Short ID for the corpus (e.g., 'nis2')"
+    )
     display_name: str = Field(..., min_length=1, description="Display name for the UI")
-    fullname: str | None = Field(default=None, description="Full official legal title for citations")
-    eurovoc_labels: list[str] | None = Field(default=None, description="EuroVoc subject keywords from EUR-Lex")
-    generate_eval: bool = Field(default=False, description="Whether to generate eval cases")
-    entry_into_force: str | None = Field(default=None, description="Entry into force date (ISO format)")
-    last_modified: str | None = Field(default=None, description="Document adoption date (ISO format)")
+    fullname: str | None = Field(
+        default=None, description="Full official legal title for citations"
+    )
+    eurovoc_labels: list[str] | None = Field(
+        default=None, description="EuroVoc subject keywords from EUR-Lex"
+    )
+    generate_eval: bool = Field(
+        default=False, description="Whether to generate eval cases"
+    )
+    entry_into_force: str | None = Field(
+        default=None, description="Entry into force date (ISO format)"
+    )
+    last_modified: str | None = Field(
+        default=None, description="Document adoption date (ISO format)"
+    )
     eval_run_mode: Literal["retrieval_only", "full", "full_with_judge"] | None = Field(
         default="full", description="Run mode for verification eval"
     )
@@ -185,15 +251,25 @@ class AddLawRequest(BaseModel):
 class IngestionEvent(BaseModel):
     """SSE event for ingestion progress."""
 
-    type: Literal["stage", "progress", "complete", "error"] = Field(..., description="Event type")
+    type: Literal["stage", "progress", "complete", "error"] = Field(
+        ..., description="Event type"
+    )
     stage: str | None = Field(default=None, description="Current stage name")
     message: str | None = Field(default=None, description="Status message")
-    completed: bool | None = Field(default=None, description="Whether stage is completed")
-    progress_pct: float | None = Field(default=None, description="Progress percentage (0-100)")
+    completed: bool | None = Field(
+        default=None, description="Whether stage is completed"
+    )
+    progress_pct: float | None = Field(
+        default=None, description="Progress percentage (0-100)"
+    )
     current: int | None = Field(default=None, description="Current item number")
     total: int | None = Field(default=None, description="Total items")
-    corpus_id: str | None = Field(default=None, description="Created corpus ID (for complete event)")
-    error: str | None = Field(default=None, description="Error message (for error event)")
+    corpus_id: str | None = Field(
+        default=None, description="Created corpus ID (for complete event)"
+    )
+    error: str | None = Field(
+        default=None, description="Error message (for error event)"
+    )
 
 
 class RemoveCorpusResponse(BaseModel):
@@ -206,10 +282,13 @@ class RemoveCorpusResponse(BaseModel):
 
 # Eval Dashboard schemas
 
+
 class EvalTestTypeStats(BaseModel):
     """Statistics for a single test type."""
 
-    test_type: str = Field(..., description="Test type name (retrieval, faithfulness, etc.)")
+    test_type: str = Field(
+        ..., description="Test type name (retrieval, faithfulness, etc.)"
+    )
     total: int = Field(default=0, description="Total cases with this test type")
     passed: int = Field(default=0, description="Passed cases")
     failed: int = Field(default=0, description="Failed cases")
@@ -225,11 +304,14 @@ class EvalLawStats(BaseModel):
     passed: int = Field(default=0, description="Passed cases")
     failed: int = Field(default=0, description="Failed cases")
     pass_rate: float = Field(default=0.0, description="Overall pass rate")
-    last_run: str | None = Field(default=None, description="Last run timestamp (ISO format)")
-    last_run_mode: str | None = Field(default=None, description="Last run mode: retrieval_only, full, full_with_judge")
+    last_run: str | None = Field(
+        default=None, description="Last run timestamp (ISO format)"
+    )
+    last_run_mode: str | None = Field(
+        default=None, description="Last run mode: retrieval_only, full, full_with_judge"
+    )
     by_test_type: list[EvalTestTypeStats] = Field(
-        default_factory=list,
-        description="Breakdown by test type"
+        default_factory=list, description="Breakdown by test type"
     )
 
 
@@ -237,7 +319,9 @@ class EvalOverviewResponse(BaseModel):
     """Response with eval overview (matrix view data)."""
 
     laws: list[EvalLawStats] = Field(default_factory=list, description="Stats per law")
-    test_types: list[str] = Field(default_factory=list, description="All test type columns")
+    test_types: list[str] = Field(
+        default_factory=list, description="All test type columns"
+    )
     total_cases: int = Field(default=0, description="Total cases across all laws")
     overall_pass_rate: float = Field(default=0.0, description="Overall pass rate")
 
@@ -253,8 +337,12 @@ class EvalRunSummary(BaseModel):
     failed: int = Field(default=0, description="Failed cases")
     pass_rate: float = Field(default=0.0, description="Pass rate")
     duration_seconds: float = Field(default=0.0, description="Run duration")
-    trigger_source: str = Field(default="cli", description="How run was triggered: cli, api, scheduled")
-    run_mode: str = Field(default="full", description="Run mode: retrieval_only, full, full_with_judge")
+    trigger_source: str = Field(
+        default="cli", description="How run was triggered: cli, api, scheduled"
+    )
+    run_mode: str = Field(
+        default="full", description="Run mode: retrieval_only, full, full_with_judge"
+    )
 
 
 class EvalRunListResponse(BaseModel):
@@ -271,14 +359,22 @@ class EvalCaseResult(BaseModel):
     profile: str = Field(..., description="User profile (LEGAL/ENGINEERING)")
     prompt: str = Field(default="", description="The test prompt")
     passed: bool = Field(..., description="Whether the case passed")
-    test_types: list[str] = Field(default_factory=list, description="Test types for this case")
+    test_types: list[str] = Field(
+        default_factory=list, description="Test types for this case"
+    )
     origin: str = Field(default="auto", description="Case origin: auto or manual")
     duration_ms: float = Field(default=0.0, description="Case duration in milliseconds")
     scores: dict[str, Any] = Field(default_factory=dict, description="Detailed scores")
-    failure_reason: str | None = Field(default=None, description="Reason for failure if any")
+    failure_reason: str | None = Field(
+        default=None, description="Reason for failure if any"
+    )
     retry_count: int = Field(default=0, description="Number of retry attempts")
-    escalated: bool = Field(default=False, description="Whether case was escalated to fallback model")
-    escalation_model: str | None = Field(default=None, description="Fallback model used if escalated")
+    escalated: bool = Field(
+        default=False, description="Whether case was escalated to fallback model"
+    )
+    escalation_model: str | None = Field(
+        default=None, description="Fallback model used if escalated"
+    )
 
 
 class EvalRunDetailResponse(BaseModel):
@@ -288,11 +384,21 @@ class EvalRunDetailResponse(BaseModel):
     law: str = Field(..., description="Law/corpus evaluated")
     timestamp: str = Field(..., description="Run timestamp (ISO format)")
     duration_seconds: float = Field(default=0.0, description="Run duration")
-    summary: dict[str, Any] = Field(default_factory=dict, description="Run summary stats")
-    results: list[EvalCaseResult] = Field(default_factory=list, description="Individual case results")
-    stage_stats: dict[str, Any] = Field(default_factory=dict, description="Stats by pipeline stage")
-    retry_stats: dict[str, Any] = Field(default_factory=dict, description="Retry statistics")
-    escalation_stats: dict[str, Any] = Field(default_factory=dict, description="Model escalation stats")
+    summary: dict[str, Any] = Field(
+        default_factory=dict, description="Run summary stats"
+    )
+    results: list[EvalCaseResult] = Field(
+        default_factory=list, description="Individual case results"
+    )
+    stage_stats: dict[str, Any] = Field(
+        default_factory=dict, description="Stats by pipeline stage"
+    )
+    retry_stats: dict[str, Any] = Field(
+        default_factory=dict, description="Retry statistics"
+    )
+    escalation_stats: dict[str, Any] = Field(
+        default_factory=dict, description="Model escalation stats"
+    )
 
 
 class TriggerEvalRequest(BaseModel):
@@ -301,69 +407,119 @@ class TriggerEvalRequest(BaseModel):
     law: str = Field(..., description="Law/corpus to evaluate")
     run_mode: Literal["retrieval_only", "full", "full_with_judge"] = Field(
         default="full",
-        description="Run mode: retrieval_only (fast), full (standard), full_with_judge (thorough)"
+        description="Run mode: retrieval_only (fast), full (standard), full_with_judge (thorough)",
     )
-    case_ids: list[str] | None = Field(default=None, description="Specific case IDs to run (optional)")
-    limit: int | None = Field(default=None, description="Limit number of cases (optional)")
+    case_ids: list[str] | None = Field(
+        default=None, description="Specific case IDs to run (optional)"
+    )
+    limit: int | None = Field(
+        default=None, description="Limit number of cases (optional)"
+    )
 
 
 class SuggestNamesRequest(BaseModel):
     """Request to suggest corpus names using AI."""
 
-    title: str = Field(..., min_length=1, description="The legislation title (Danish or English)")
+    title: str = Field(
+        ..., min_length=1, description="The legislation title (Danish or English)"
+    )
     celex_number: str = Field(..., description="CELEX number for context")
 
 
 class SuggestNamesResponse(BaseModel):
     """Response with AI-suggested names."""
 
-    corpus_id: str = Field(..., description="Suggested structured corpus ID (e.g., 'nis2-dir-2022-2555')")
-    display_name: str = Field(..., description="Suggested display name (e.g., 'NIS2-direktivet')")
-    fullname: str = Field(default="", description="Full official legal title for citations")
+    corpus_id: str = Field(
+        ..., description="Suggested structured corpus ID (e.g., 'nis2-dir-2022-2555')"
+    )
+    display_name: str = Field(
+        ..., description="Suggested display name (e.g., 'NIS2-direktivet')"
+    )
+    fullname: str = Field(
+        default="", description="Full official legal title for citations"
+    )
 
 
 class AnchorListResponse(BaseModel):
     """Response with list of anchors from citation graph."""
 
-    anchors: list[str] = Field(default_factory=list, description="List of anchor references (e.g., 'article:5', 'annex:i')")
+    anchors: list[str] = Field(
+        default_factory=list,
+        description="List of anchor references (e.g., 'article:5', 'annex:i')",
+    )
     total: int = Field(..., description="Total number of anchors (before limit)")
 
 
 # Eval Case CRUD schemas
 
+
 class ExpectedBehaviorSchema(BaseModel):
     """Schema for expected behavior in eval cases."""
 
-    must_include_any_of: list[str] = Field(default_factory=list, description="Anchors where at least one must be present")
-    must_include_any_of_2: list[str] = Field(default_factory=list, description="Second set of any-of anchors")
-    must_include_all_of: list[str] = Field(default_factory=list, description="Anchors that must all be present")
-    must_not_include_any_of: list[str] = Field(default_factory=list, description="Anchors that must not be present")
-    contract_check: bool = Field(default=False, description="Whether to check citation count constraints")
-    min_citations: int | None = Field(default=None, description="Minimum citation count")
-    max_citations: int | None = Field(default=None, description="Maximum citation count")
-    behavior: Literal["answer", "abstain"] = Field(default="answer", description="Expected response behavior")
-    allow_empty_references: bool = Field(default=False, description="Whether empty references are allowed")
-    must_have_article_support_for_normative: bool = Field(default=True, description="Require article support for normative claims")
+    must_include_any_of: list[str] = Field(
+        default_factory=list, description="Anchors where at least one must be present"
+    )
+    must_include_any_of_2: list[str] = Field(
+        default_factory=list, description="Second set of any-of anchors"
+    )
+    must_include_all_of: list[str] = Field(
+        default_factory=list, description="Anchors that must all be present"
+    )
+    must_not_include_any_of: list[str] = Field(
+        default_factory=list, description="Anchors that must not be present"
+    )
+    contract_check: bool = Field(
+        default=False, description="Whether to check citation count constraints"
+    )
+    min_citations: int | None = Field(
+        default=None, description="Minimum citation count"
+    )
+    max_citations: int | None = Field(
+        default=None, description="Maximum citation count"
+    )
+    behavior: Literal["answer", "abstain"] = Field(
+        default="answer", description="Expected response behavior"
+    )
+    allow_empty_references: bool = Field(
+        default=False, description="Whether empty references are allowed"
+    )
+    must_have_article_support_for_normative: bool = Field(
+        default=True, description="Require article support for normative claims"
+    )
     notes: str = Field(default="", description="Notes about the expected behavior")
 
 
 class EvalCaseCreate(BaseModel):
     """Request payload for creating a new eval case."""
 
-    id: str | None = Field(default=None, description="Optional case ID (auto-generated if not provided)")
-    profile: Literal["LEGAL", "ENGINEERING"] = Field(..., description="User profile type")
+    id: str | None = Field(
+        default=None, description="Optional case ID (auto-generated if not provided)"
+    )
+    profile: Literal["LEGAL", "ENGINEERING"] = Field(
+        ..., description="User profile type"
+    )
     prompt: str = Field(..., min_length=10, description="The test prompt/question")
     test_types: list[str] = Field(..., min_length=1, description="Test type categories")
-    expected: ExpectedBehaviorSchema = Field(default_factory=ExpectedBehaviorSchema, description="Expected behavior")
+    expected: ExpectedBehaviorSchema = Field(
+        default_factory=ExpectedBehaviorSchema, description="Expected behavior"
+    )
 
 
 class EvalCaseUpdate(BaseModel):
     """Request payload for updating an eval case (partial update)."""
 
-    profile: Literal["LEGAL", "ENGINEERING"] | None = Field(default=None, description="User profile type")
-    prompt: str | None = Field(default=None, min_length=10, description="The test prompt/question")
-    test_types: list[str] | None = Field(default=None, description="Test type categories")
-    expected: ExpectedBehaviorSchema | None = Field(default=None, description="Expected behavior")
+    profile: Literal["LEGAL", "ENGINEERING"] | None = Field(
+        default=None, description="User profile type"
+    )
+    prompt: str | None = Field(
+        default=None, min_length=10, description="The test prompt/question"
+    )
+    test_types: list[str] | None = Field(
+        default=None, description="Test type categories"
+    )
+    expected: ExpectedBehaviorSchema | None = Field(
+        default=None, description="Expected behavior"
+    )
 
 
 class EvalCaseResponse(BaseModel):
@@ -380,11 +536,14 @@ class EvalCaseResponse(BaseModel):
 class EvalCaseListResponse(BaseModel):
     """Response payload for listing eval cases."""
 
-    cases: list[EvalCaseResponse] = Field(default_factory=list, description="List of eval cases")
+    cases: list[EvalCaseResponse] = Field(
+        default_factory=list, description="List of eval cases"
+    )
     total: int = Field(default=0, description="Total number of cases")
 
 
 # Single case validation (quick test)
+
 
 class RunSingleCaseRequest(BaseModel):
     """Request to run a single eval case for validation."""
@@ -392,15 +551,23 @@ class RunSingleCaseRequest(BaseModel):
     law: str = Field(..., description="Law/corpus to test against")
     run_mode: Literal["retrieval_only", "full", "full_with_judge"] = Field(
         default="full",
-        description="Run mode: retrieval_only (fast), full (standard), full_with_judge (thorough)"
+        description="Run mode: retrieval_only (fast), full (standard), full_with_judge (thorough)",
     )
     # Either case_id OR inline definition
     case_id: str | None = Field(default=None, description="Existing case ID to run")
     # Inline definition (used when validating unsaved case)
-    prompt: str | None = Field(default=None, min_length=1, description="Test prompt if inline")
-    profile: Literal["LEGAL", "ENGINEERING"] | None = Field(default=None, description="User profile if inline")
-    test_types: list[str] | None = Field(default=None, description="Test types if inline")
-    expected: ExpectedBehaviorSchema | None = Field(default=None, description="Expected behavior if inline")
+    prompt: str | None = Field(
+        default=None, min_length=1, description="Test prompt if inline"
+    )
+    profile: Literal["LEGAL", "ENGINEERING"] | None = Field(
+        default=None, description="User profile if inline"
+    )
+    test_types: list[str] | None = Field(
+        default=None, description="Test types if inline"
+    )
+    expected: ExpectedBehaviorSchema | None = Field(
+        default=None, description="Expected behavior if inline"
+    )
 
 
 class SingleCaseResultResponse(BaseModel):
@@ -408,20 +575,30 @@ class SingleCaseResultResponse(BaseModel):
 
     passed: bool = Field(..., description="Whether the case passed overall")
     duration_ms: float = Field(..., description="Execution time in milliseconds")
-    scores: dict[str, Any] = Field(default_factory=dict, description="Detailed scorer results")
+    scores: dict[str, Any] = Field(
+        default_factory=dict, description="Detailed scorer results"
+    )
 
     # The RAG response (what the system actually returned)
     answer: str = Field(default="", description="Generated answer text")
-    references: list[Reference] = Field(default_factory=list, description="Source references")
+    references: list[Reference] = Field(
+        default_factory=list, description="Source references"
+    )
 
     # Test definition used (for display)
-    test_definition: dict[str, Any] = Field(default_factory=dict, description="Test case definition used")
+    test_definition: dict[str, Any] = Field(
+        default_factory=dict, description="Test case definition used"
+    )
 
     # Retrieval metrics (for debugging)
-    retrieval_metrics: dict[str, Any] = Field(default_factory=dict, description="Retrieval debug info")
+    retrieval_metrics: dict[str, Any] = Field(
+        default_factory=dict, description="Retrieval debug info"
+    )
 
     # Error message if something went wrong
-    error: str | None = Field(default=None, description="Error message if test failed to execute")
+    error: str | None = Field(
+        default=None, description="Error message if test failed to execute"
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -432,10 +609,16 @@ class SingleCaseResultResponse(BaseModel):
 class TrendInfo(BaseModel):
     """Trend direction and delta for pass rate history."""
 
-    direction: str = Field(..., description="improving | stable | declining | insufficient_data")
-    delta_pp: float | None = Field(default=None, description="Percentage-point delta from mean")
+    direction: str = Field(
+        ..., description="improving | stable | declining | insufficient_data"
+    )
+    delta_pp: float | None = Field(
+        default=None, description="Percentage-point delta from mean"
+    )
     window: int = Field(..., description="How many runs used")
-    history: list[float] = Field(default_factory=list, description="Pass rates oldest→newest")
+    history: list[float] = Field(
+        default_factory=list, description="Pass rates oldest→newest"
+    )
 
 
 class MetricsSummary(BaseModel):
@@ -444,8 +627,12 @@ class MetricsSummary(BaseModel):
     total_cases: int = Field(..., description="Total eval cases across all runs")
     law_count: int = Field(..., description="Number of laws evaluated")
     suite_count: int = Field(..., description="Number of cross-law suites evaluated")
-    last_run_timestamp: str | None = Field(default=None, description="ISO timestamp of latest run")
-    ingestion_coverage: float | None = Field(default=None, description="Average ingestion coverage %")
+    last_run_timestamp: str | None = Field(
+        default=None, description="ISO timestamp of latest run"
+    )
+    ingestion_coverage: float | None = Field(
+        default=None, description="Average ingestion coverage %"
+    )
 
 
 class CategorySummary(BaseModel):
@@ -463,20 +650,36 @@ class CategorySummary(BaseModel):
 class MetricsOverviewResponse(BaseModel):
     """Level 1 trust overview data."""
 
-    unified_pass_rate: float = Field(..., description="Weighted pass rate across all runs")
+    unified_pass_rate: float = Field(
+        ..., description="Weighted pass rate across all runs"
+    )
     health_status: str = Field(..., description="green | yellow | orange | red")
     trend: TrendInfo
     summary: MetricsSummary
     single_law: CategorySummary
     cross_law: CategorySummary
     has_data: bool = Field(..., description="False → empty state")
-    sl_run_mode_distribution: dict[str, int] = Field(default_factory=dict, description="SL cases per run_mode")
-    cl_run_mode_distribution: dict[str, int] = Field(default_factory=dict, description="CL cases per run_mode")
-    sl_case_origin_distribution: dict[str, int] = Field(default_factory=dict, description="SL cases per origin")
-    cl_case_origin_distribution: dict[str, int] = Field(default_factory=dict, description="CL cases per origin")
-    ingestion_overall_coverage: float = Field(default=0.0, description="Overall ingestion coverage %")
-    ingestion_health_status: str = Field(default="green", description="green|yellow|orange|red")
-    ingestion_na_count: int = Field(default=0, description="Corpora with 0% coverage (not checked)")
+    sl_run_mode_distribution: dict[str, int] = Field(
+        default_factory=dict, description="SL cases per run_mode"
+    )
+    cl_run_mode_distribution: dict[str, int] = Field(
+        default_factory=dict, description="CL cases per run_mode"
+    )
+    sl_case_origin_distribution: dict[str, int] = Field(
+        default_factory=dict, description="SL cases per origin"
+    )
+    cl_case_origin_distribution: dict[str, int] = Field(
+        default_factory=dict, description="CL cases per origin"
+    )
+    ingestion_overall_coverage: float = Field(
+        default=0.0, description="Overall ingestion coverage %"
+    )
+    ingestion_health_status: str = Field(
+        default="green", description="green|yellow|orange|red"
+    )
+    ingestion_na_count: int = Field(
+        default=0, description="Corpora with 0% coverage (not checked)"
+    )
 
 
 class LawPassRate(BaseModel):
@@ -643,7 +846,9 @@ class RunModeTrend(BaseModel):
 class SLPerformance(BaseModel):
     """Single-law performance data."""
 
-    percentiles: Percentiles = Field(default_factory=lambda: Percentiles(p50=0, p95=0, p99=0))
+    percentiles: Percentiles = Field(
+        default_factory=lambda: Percentiles(p50=0, p95=0, p99=0)
+    )
     total_cases: int = Field(default=0)
     escalation_rate: float = Field(default=0.0)
     retry_rate: float = Field(default=0.0)
@@ -658,7 +863,9 @@ class SLPerformance(BaseModel):
 class CLPerformance(BaseModel):
     """Cross-law performance data."""
 
-    percentiles: Percentiles = Field(default_factory=lambda: Percentiles(p50=0, p95=0, p99=0))
+    percentiles: Percentiles = Field(
+        default_factory=lambda: Percentiles(p50=0, p95=0, p99=0)
+    )
     total_cases: int = Field(default=0)
     histogram_bins: list[HistogramBin] = Field(default_factory=list)
     latency_by_synthesis_mode: list[ModeLatency] = Field(default_factory=list)

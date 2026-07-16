@@ -87,9 +87,7 @@ def parse_json_response(content: str) -> dict[str, Any] | None:
         return None
 
 
-def load_article_content(
-    corpus_id: str, max_chars_per_article: int = 400
-) -> str:
+def load_article_content(corpus_id: str, max_chars_per_article: int = 400) -> str:
     """Load article titles AND content summaries from chunks file.
 
     For generation tasks, includes actual text snippets to help the LLM

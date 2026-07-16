@@ -4,12 +4,14 @@ import json
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Set, Tuple, TYPE_CHECKING
+from typing import Any, Callable, Dict, List, Tuple, TYPE_CHECKING
 
-from . import helpers
+from . import metadata_helpers
+from . import payload_builders
 
 if TYPE_CHECKING:
     from .types import ClaimIntent, UserProfile
+
 
 def _strip_trailing_references_section(text: str) -> str:
     # Defensive: some callers may use the legacy answer() which appends references.
@@ -17,6 +19,7 @@ def _strip_trailing_references_section(text: str) -> str:
     if marker in (text or ""):
         return str(text).split(marker, 1)[0].rstrip()
     return str(text or "")
+
 
 def _engineering_inject_neutral_hjemmel_citations_for_enforcement(
     *,
@@ -101,7 +104,9 @@ def _engineering_inject_neutral_hjemmel_citations_for_enforcement(
     inject_lines = [f"- Relevant hjemmel: {label} [{idx}]" for idx, label in selected]
 
     lines = txt.splitlines()
-    heading_re = re.compile(r"^\s*2\.\s*Relevante juridiske forpligtelser\s*$", flags=re.IGNORECASE)
+    heading_re = re.compile(
+        r"^\s*2\.\s*Relevante juridiske forpligtelser\s*$", flags=re.IGNORECASE
+    )
     start = None
     for i, line in enumerate(lines):
         if heading_re.match(line or ""):
@@ -110,7 +115,11 @@ def _engineering_inject_neutral_hjemmel_citations_for_enforcement(
 
     if start is None:
         # Fallback: append a minimal section.
-        return (txt.rstrip() + "\n\n2. Relevante juridiske forpligtelser\n" + "\n".join(inject_lines)).strip()
+        return (
+            txt.rstrip()
+            + "\n\n2. Relevante juridiske forpligtelser\n"
+            + "\n".join(inject_lines)
+        ).strip()
 
     # Insert directly after the section heading.
     insert_at = start + 1
@@ -314,7 +323,9 @@ def _engineering_ensure_min_unique_citations(
             return f"Relevant hjemmel: Bilag {val} [{idx}]."
         return f"Relevant hjemmel: Betragtning {val} [{idx}]."
 
-    inject_lines = [_line_for(kind, val, idx) for (kind, val, idx) in candidates[:target]]
+    inject_lines = [
+        _line_for(kind, val, idx) for (kind, val, idx) in candidates[:target]
+    ]
     return (txt.rstrip() + "\n\n" + "\n".join(inject_lines)).strip()
 
 
@@ -410,7 +421,9 @@ def _engineering_repair_bracket_citations_from_anchor_mentions(
                     matched.append(si)
 
         # Recital/Betragtning mentions.
-        for m in re.finditer(r"(?i)\b(?:betragtning|recital)\s*\(?\s*(\d{1,4})\s*\)?\b", raw):
+        for m in re.finditer(
+            r"(?i)\b(?:betragtning|recital)\s*\(?\s*(\d{1,4})\s*\)?\b", raw
+        ):
             rec = str(m.group(1) or "").strip()
             if rec and rec in recital_to_idxs:
                 si = _single_idx(recital_to_idxs[rec])
@@ -462,11 +475,12 @@ def _eurlex_litra_index(abs_source_path: str) -> dict[Tuple[int, int], set[str]]
             m = re.match(r"^\(([a-z])\)$", txt)
             if m:
                 litras.add(m.group(1))
-        
+
         if litras:
             out[(art_n, par_n)] = litras
 
     return out
+
 
 def is_litra_addressable(
     *,
@@ -511,7 +525,9 @@ def is_litra_addressable(
     loc = str(m.get("location_id") or "").strip().lower()
     parts = [p.strip() for p in loc.split("/") if p.strip()]
     article_token = str(article_raw).strip().lower()
-    details["checks"]["location_id_ok"] = bool(loc and f"article:{article_token}" in parts)
+    details["checks"]["location_id_ok"] = bool(
+        loc and f"article:{article_token}" in parts
+    )
 
     m_art = re.match(r"^(\d{1,3})", article_raw)
     m_par = re.match(r"^(\d{1,3})$", paragraph_raw)
@@ -537,6 +553,7 @@ def is_litra_addressable(
             details["reason"] = "litra_not_proven_in_html"
     return ok, details
 
+
 def _resolve_source_html_path(metadata: dict[str, Any]) -> Path | None:
     raw = str((metadata or {}).get("source_path") or "").strip()
     if not raw:
@@ -548,6 +565,7 @@ def _resolve_source_html_path(metadata: dict[str, Any]) -> Path | None:
         repo_root = Path(__file__).resolve().parent.parent.parent
         p = (repo_root / p).resolve()
     return p if p.exists() else None
+
 
 def _format_metadata_audit_safe(
     metadata: Dict[str, Any] | None,
@@ -584,6 +602,7 @@ def _format_metadata_audit_safe(
 
     display = _format_metadata(sanitized)
     return display, sanitized, validation
+
 
 def _format_metadata(metadata: Dict[str, Any] | None) -> str:
     if not metadata:
@@ -678,22 +697,22 @@ def _format_metadata(metadata: Dict[str, Any] | None) -> str:
 
 def format_mentions_for_context(mentions_raw: str | Dict | None) -> str | None:
     """Format mentions JSON to human-readable cross-reference string.
-    
+
     Args:
         mentions_raw: JSON string or dict with article/recital/annex lists
-        
+
     Returns:
         Formatted string like "Artikel 16, Betragtning 107" or None if empty
     """
     if not mentions_raw:
         return None
-    
+
     try:
         if isinstance(mentions_raw, str):
             mentions = json.loads(mentions_raw)
         else:
             mentions = mentions_raw
-        
+
         refs = []
         for article in mentions.get("article", []):
             refs.append(f"Artikel {article}")
@@ -701,12 +720,12 @@ def format_mentions_for_context(mentions_raw: str | Dict | None) -> str | None:
             refs.append(f"Betragtning {recital}")
         for annex in mentions.get("annex", []):
             refs.append(f"Bilag {annex}")
-        
+
         if refs:
             return ", ".join(refs)
     except (json.JSONDecodeError, TypeError, AttributeError):
         pass
-    
+
     return None
 
 
@@ -716,7 +735,12 @@ def _is_citable_metadata(meta: Dict[str, Any] | None) -> bool:
         return False
 
     # Explicit structural fields.
-    if meta.get("article") or meta.get("annex") or meta.get("chapter") or meta.get("recital"):
+    if (
+        meta.get("article")
+        or meta.get("annex")
+        or meta.get("chapter")
+        or meta.get("recital")
+    ):
         return True
 
     # Canonical location_id (metadata_schema.make_location_id): loc:v1/...
@@ -752,6 +776,7 @@ def _is_citable_metadata(meta: Dict[str, Any] | None) -> bool:
 
     return False
 
+
 def extract_precise_ref_from_text(doc_text: str) -> str | None:
     """Try to extract a precise legal reference token from chunk text."""
     if not doc_text:
@@ -769,7 +794,10 @@ def extract_precise_ref_from_text(doc_text: str) -> str | None:
             return m.group(0)
     return None
 
-def _is_citable_chunk(meta: Dict[str, Any] | None, doc_text: str) -> tuple[bool, str | None]:
+
+def _is_citable_chunk(
+    meta: Dict[str, Any] | None, doc_text: str
+) -> tuple[bool, str | None]:
     """Return (is_citable, precise_ref_override)."""
     m = dict(meta or {})
     if _is_citable_metadata(m):
@@ -783,6 +811,7 @@ def _is_citable_chunk(meta: Dict[str, Any] | None, doc_text: str) -> tuple[bool,
         return True, f"{src}, {extracted}"
 
     return False, None
+
 
 def extract_precise_token_from_meta(meta: dict[str, Any] | None) -> str | None:
     """
@@ -812,7 +841,10 @@ def extract_precise_token_from_meta(meta: dict[str, Any] | None) -> str | None:
     token = ", ".join(parts)
     return token or None
 
-def best_effort_source_label(meta: dict[str, Any] | None, *, fallback: str | None = None) -> str:
+
+def best_effort_source_label(
+    meta: dict[str, Any] | None, *, fallback: str | None = None
+) -> str:
     """
     Return the source label from metadata, or a fallback if missing.
     """
@@ -829,7 +861,7 @@ def select_references_used_in_answer(
     references_structured: list[dict[str, Any]],
 ) -> list[str]:
     """Return chunk_ids in the order they are cited/used in the answer.
-    
+
     Extracted from RAGEngine in Phase E2 for better modularity.
     This function implements the citation selection contract:
     1) Prefer explicit bracket citations like [1]
@@ -868,7 +900,7 @@ def select_references_used_in_answer(
     # both signals deterministically.
 
     # 2) Fall back to anchor mentions (Article/Recital/Annex) in the answer.
-    mentions = helpers._extract_anchor_mentions_from_answer(txt)
+    mentions = metadata_helpers._extract_anchor_mentions_from_answer(txt)
     articles = list(mentions.get("articles") or [])
     recitals = list(mentions.get("recitals") or [])
     annexes = list(mentions.get("annexes") or [])
@@ -933,59 +965,64 @@ class EngineeringCitationIntegrityResult:
     debug: dict[str, Any] = field(default_factory=dict)
 
 
-def apply_engineering_citation_integrity(
-    *,
-    answer_text: str,
-    references_structured: list[dict[str, Any]],
-    references_structured_all: list[dict[str, Any]],
-    used_chunk_ids: list[str],
+def _set_missing_ref(result: EngineeringCitationIntegrityResult) -> None:
+    """Fail-closed: clear answer and references."""
+    result.answer_text = "MISSING_REF"
+    result.references_structured = []
+    result.reference_lines = []
+    result.used_chunk_ids = []
+
+
+def _rebuild_reference_lines(refs: list[dict[str, Any]]) -> list[str]:
+    """Build display lines from structured references."""
+    return [f"[{r['idx']}] {r.get('precise_ref') or r.get('display')}" for r in refs]
+
+
+def _extract_structured_idx_set(refs: list[dict[str, Any]]) -> set[int]:
+    """Extract the set of idx values from structured references."""
+    result: set[int] = set()
+    for r in list(refs or []):
+        if not isinstance(r, dict):
+            continue
+        try:
+            result.add(int(r.get("idx")))
+        except Exception:  # noqa: BLE001
+            continue
+    return result
+
+
+def _parse_cited_idxs(
+    result: EngineeringCitationIntegrityResult,
     run_meta: dict[str, Any],
-    contract_min_citations: int | None,
-    intent_used: str,
-    is_debug_enabled_fn: Callable[[], bool],
-) -> EngineeringCitationIntegrityResult:
-    """Apply ENGINEERING-profile citation integrity checks after hard reference gating.
+) -> tuple[set[int], str]:
+    """Parse citation indices from answer text or JSON mode output.
 
-    This function handles:
-    1. Citation source parsing (text vs JSON mode)
-    2. Min citations contract enforcement
-    3. Reference rebuilding from cited idxs
-    4. Missing citation checks
-    5. Hallucinated idx detection
-    6. Contract consistency filtering (only return cited references)
-
-    Returns EngineeringCitationIntegrityResult with potentially modified answer/refs.
+    Handles JSON-mode rendered text replacement and bracket citation parsing.
+    Returns (cited_idxs, citations_source).
     """
-
-    result = EngineeringCitationIntegrityResult(
-        answer_text=str(answer_text or ""),
-        references_structured=list(references_structured or []),
-        reference_lines=[
-            f"[{r['idx']}] {r.get('precise_ref') or r.get('display')}"
-            for r in list(references_structured or [])
-        ],
-        used_chunk_ids=list(used_chunk_ids or []),
-        debug={},
-    )
-
     citations_source = "text_parse"
     json_cited_idxs: set[int] | None = None
 
-    # Check if JSON mode produced cited_idxs
     try:
         if bool(run_meta.get("engineering_json_mode")):
             raw_json_cited = run_meta.get("cited_idxs")
             if isinstance(raw_json_cited, list) and raw_json_cited:
-                json_cited_idxs = {int(x) for x in raw_json_cited if isinstance(x, int) or str(x).isdigit()}
+                json_cited_idxs = {
+                    int(x)
+                    for x in raw_json_cited
+                    if isinstance(x, int) or str(x).isdigit()
+                }
     except Exception:  # noqa: BLE001
         json_cited_idxs = None
 
     txt_for_citations = _strip_trailing_references_section(result.answer_text)
     had_brackets_in_text = bool(re.search(r"\[\d{1,3}\]", txt_for_citations))
 
-    # If JSON-mode produced a rendered answer, always let the downstream gate evaluate
-    # that deterministic text.
-    if bool(run_meta.get("engineering_json_mode")) and result.answer_text.strip() != "MISSING_REF":
+    # If JSON-mode produced a rendered answer, evaluate that deterministic text.
+    if (
+        bool(run_meta.get("engineering_json_mode"))
+        and result.answer_text.strip() != "MISSING_REF"
+    ):
         try:
             rendered = None
             ej = run_meta.get("engineering_json")
@@ -993,8 +1030,12 @@ def apply_engineering_citation_integrity(
                 rendered = ej.get("rendered_text")
             if isinstance(rendered, str) and rendered.strip():
                 result.answer_text = rendered
-                txt_for_citations = _strip_trailing_references_section(result.answer_text)
-                had_brackets_in_text = bool(re.search(r"\[\d{1,3}\]", txt_for_citations))
+                txt_for_citations = _strip_trailing_references_section(
+                    result.answer_text
+                )
+                had_brackets_in_text = bool(
+                    re.search(r"\[\d{1,3}\]", txt_for_citations)
+                )
         except Exception:  # noqa: BLE001
             pass
 
@@ -1009,18 +1050,36 @@ def apply_engineering_citation_integrity(
         citations_source = "json_mode"
         cited_idxs = set(json_cited_idxs)
 
-    # Persist debug info
     result.debug["citations_source"] = citations_source
     result.debug["json_cited_idxs"] = sorted(list(json_cited_idxs or []))
     result.debug["answer_text_contains_brackets"] = had_brackets_in_text
     result.debug["parsed_citations_raw"] = sorted(list(cited_idxs))
 
-    # Contract enforcement: if minimum citation count required and prompt had enough
-    # allowed sources to satisfy it, then <min valid citations must fail-closed.
+    return cited_idxs, citations_source
+
+
+def _check_min_citations_early(
+    *,
+    cited_idxs: set[int],
+    references_structured_all: list[dict[str, Any]],
+    contract_min_citations: int | None,
+    intent_used: str,
+    is_debug_enabled_fn: Callable[[], bool],
+    result: EngineeringCitationIntegrityResult,
+) -> bool:
+    """Early contract enforcement: fail-closed if min citations not met.
+
+    Returns True if the result was failed (caller should return early).
+    """
     try:
-        min_cit_contract = int(contract_min_citations) if contract_min_citations is not None else 0
+        min_cit_contract = (
+            int(contract_min_citations) if contract_min_citations is not None else 0
+        )
     except Exception:  # noqa: BLE001
         min_cit_contract = 0
+
+    if min_cit_contract <= 0:
+        return False
 
     allowed_all: set[int] = set()
     try:
@@ -1032,7 +1091,7 @@ def apply_engineering_citation_integrity(
         allowed_all = set()
 
     valid_cited_all = len(set(cited_idxs) & set(allowed_all))
-    if min_cit_contract > 0 and len(allowed_all) >= min_cit_contract and valid_cited_all < min_cit_contract:
+    if len(allowed_all) >= min_cit_contract and valid_cited_all < min_cit_contract:
         if is_debug_enabled_fn():
             result.debug["missing_ref_reason"] = {
                 "intent": intent_used,
@@ -1043,20 +1102,23 @@ def apply_engineering_citation_integrity(
                 "had_bracket_citations": bool(cited_idxs),
             }
         result.debug["fail_reason"] = "MIN_CITATIONS_NOT_MET_DOWNSTREAM"
-        result.answer_text = "MISSING_REF"
-        result.references_structured = []
-        result.reference_lines = []
-        result.used_chunk_ids = []
-        return result
+        _set_missing_ref(result)
+        return True
 
-    structured_idx_set: set[int] = set()
-    for r in list(result.references_structured or []):
-        if not isinstance(r, dict):
-            continue
-        try:
-            structured_idx_set.add(int(r.get("idx")))
-        except Exception:  # noqa: BLE001
-            continue
+    return False
+
+
+def _rebuild_and_backfill_references(
+    *,
+    result: EngineeringCitationIntegrityResult,
+    cited_idxs: set[int],
+    references_structured_all: list[dict[str, Any]],
+) -> set[int]:
+    """Rebuild references from cited idxs if empty, and backfill missing cited refs.
+
+    Returns the updated structured_idx_set.
+    """
+    structured_idx_set = _extract_structured_idx_set(result.references_structured)
 
     # If earlier reference-selection produced no references but we have cited idxs,
     # reconstruct deterministically from the cited idxs.
@@ -1072,19 +1134,11 @@ def apply_engineering_citation_integrity(
             if ridx in cited_idxs:
                 rebuilt.append(dict(r))
         result.references_structured = rebuilt
-        result.reference_lines = [
-            f"[{r['idx']}] {r.get('precise_ref') or r.get('display')}"
-            for r in result.references_structured
-        ]
-        structured_idx_set = {
-            int(r.get("idx"))
-            for r in result.references_structured
-            if isinstance(r, dict) and str(r.get("idx") or "").strip().isdigit()
-        }
+        result.reference_lines = _rebuild_reference_lines(result.references_structured)
+        structured_idx_set = _extract_structured_idx_set(result.references_structured)
 
     # Hard reference gating may deduplicate by canonical anchor, which can collapse
-    # multiple cited idx values into a single reference. Ensure every cited idx is
-    # present in references_structured before hallucination checks.
+    # multiple cited idx values into a single reference. Backfill missing ones.
     if structured_idx_set and cited_idxs and references_structured_all:
         try:
             by_idx: dict[int, dict[str, Any]] = {}
@@ -1104,46 +1158,80 @@ def apply_engineering_citation_integrity(
                     ref = by_idx.get(ridx)
                     if ref is not None:
                         result.references_structured.append(ref)
-                result.reference_lines = [
-                    f"[{r['idx']}] {r.get('precise_ref') or r.get('display')}"
-                    for r in result.references_structured
-                ]
-                structured_idx_set = {
-                    int(r.get("idx"))
-                    for r in list(result.references_structured or [])
-                    if isinstance(r, dict) and str(r.get("idx") or "").strip().isdigit()
-                }
+                result.reference_lines = _rebuild_reference_lines(
+                    result.references_structured
+                )
+                structured_idx_set = _extract_structured_idx_set(
+                    result.references_structured
+                )
         except Exception:  # noqa: BLE001
             pass
 
-    # If we have references but zero bracket citations, fail closed.
-    if structured_idx_set and not cited_idxs and result.answer_text.strip() != "MISSING_REF":
+    return structured_idx_set
+
+
+def _check_citation_consistency_gates(
+    *,
+    result: EngineeringCitationIntegrityResult,
+    cited_idxs: set[int],
+    structured_idx_set: set[int],
+    contract_min_citations: int | None,
+    references_structured_all: list[dict[str, Any]],
+    intent_used: str,
+    is_debug_enabled_fn: Callable[[], bool],
+) -> bool:
+    """Check citation consistency gates: no-citations, hallucinated idx, min-citations.
+
+    Returns True if the result was failed (caller should return early).
+    """
+    # Gate: references exist but zero bracket citations → fail closed
+    if (
+        structured_idx_set
+        and not cited_idxs
+        and result.answer_text.strip() != "MISSING_REF"
+    ):
         if is_debug_enabled_fn():
             result.debug["missing_ref_reason"] = {
                 "intent": intent_used,
                 "required_support": "citations_required",
-                "has_article_support": any(bool(r.get("article")) for r in result.references_structured),
-                "has_annex_support": any(bool(r.get("annex")) for r in result.references_structured),
+                "has_article_support": any(
+                    bool(r.get("article")) for r in result.references_structured
+                ),
+                "has_annex_support": any(
+                    bool(r.get("annex")) for r in result.references_structured
+                ),
                 "had_bracket_citations": False,
                 "had_anchor_mentions": bool(
                     any(
                         v
                         for v in (
-                            (helpers._extract_anchor_mentions_from_answer(result.answer_text).get("articles") or []),
-                            (helpers._extract_anchor_mentions_from_answer(result.answer_text).get("recitals") or []),
-                            (helpers._extract_anchor_mentions_from_answer(result.answer_text).get("annexes") or []),
+                            (
+                                metadata_helpers._extract_anchor_mentions_from_answer(
+                                    result.answer_text
+                                ).get("articles")
+                                or []
+                            ),
+                            (
+                                metadata_helpers._extract_anchor_mentions_from_answer(
+                                    result.answer_text
+                                ).get("recitals")
+                                or []
+                            ),
+                            (
+                                metadata_helpers._extract_anchor_mentions_from_answer(
+                                    result.answer_text
+                                ).get("annexes")
+                                or []
+                            ),
                         )
                     )
                 ),
             }
         result.debug["fail_reason"] = "CITATIONS_REQUIRED_DOWNSTREAM"
-        result.answer_text = "MISSING_REF"
-        result.references_structured = []
-        result.reference_lines = []
-        result.used_chunk_ids = []
-        return result
+        _set_missing_ref(result)
+        return True
 
-    # If citations exist, they must all map to present idx values.
+    # Gate: cited idxs must all map to present references
     if cited_idxs and structured_idx_set:
         missing = sorted(cited_idxs - structured_idx_set)
         if missing:
@@ -1154,27 +1242,27 @@ def apply_engineering_citation_integrity(
                     "missing_cited_idxs": missing,
                 }
             result.debug["fail_reason"] = "HALLUCINATED_IDX_DOWNSTREAM"
-            result.answer_text = "MISSING_REF"
-            result.references_structured = []
-            result.reference_lines = []
-            result.used_chunk_ids = []
-            return result
+            _set_missing_ref(result)
+            return True
 
-        # Optional: enforce minimum unique valid citations when sources allow it.
+        # Gate: minimum unique valid citations when sources allow it
         try:
-            min_cit = int(contract_min_citations) if contract_min_citations is not None else 0
+            min_cit = (
+                int(contract_min_citations) if contract_min_citations is not None else 0
+            )
         except Exception:  # noqa: BLE001
             min_cit = 0
 
         if min_cit > 0:
-            # Only enforce when the prompt had enough allowed sources to satisfy it.
             allowed_count = 0
             try:
-                allowed_count = len({
-                    int(r.get("idx"))
-                    for r in list(references_structured_all or [])
-                    if isinstance(r, dict)
-                })
+                allowed_count = len(
+                    {
+                        int(r.get("idx"))
+                        for r in list(references_structured_all or [])
+                        if isinstance(r, dict)
+                    }
+                )
             except Exception:  # noqa: BLE001
                 allowed_count = 0
 
@@ -1189,29 +1277,91 @@ def apply_engineering_citation_integrity(
                         "valid_cited": valid_count,
                     }
                 result.debug["fail_reason"] = "MIN_CITATIONS_NOT_MET_DOWNSTREAM"
-                result.answer_text = "MISSING_REF"
-                result.references_structured = []
-                result.reference_lines = []
-                result.used_chunk_ids = []
-                return result
+                _set_missing_ref(result)
+                return True
 
-        # Contract consistency (ENGINEERING): only return references actually cited.
-        filtered_structured: list[dict[str, Any]] = []
-        for r in list(result.references_structured or []):
-            if not isinstance(r, dict):
-                continue
-            try:
-                ridx = int(r.get("idx"))
-            except Exception:  # noqa: BLE001
-                continue
-            if ridx in cited_idxs:
-                filtered_structured.append(r)
+    return False
 
-        result.references_structured = filtered_structured
-        result.reference_lines = [
-            f"[{r['idx']}] {r.get('precise_ref') or r.get('display')}"
-            for r in result.references_structured
-        ]
+
+def _filter_to_cited_references(
+    result: EngineeringCitationIntegrityResult,
+    cited_idxs: set[int],
+) -> None:
+    """Contract consistency: only return references actually cited in the answer."""
+    filtered: list[dict[str, Any]] = []
+    for r in list(result.references_structured or []):
+        if not isinstance(r, dict):
+            continue
+        try:
+            ridx = int(r.get("idx"))
+        except Exception:  # noqa: BLE001
+            continue
+        if ridx in cited_idxs:
+            filtered.append(r)
+    result.references_structured = filtered
+    result.reference_lines = _rebuild_reference_lines(result.references_structured)
+
+
+def apply_engineering_citation_integrity(
+    *,
+    answer_text: str,
+    references_structured: list[dict[str, Any]],
+    references_structured_all: list[dict[str, Any]],
+    used_chunk_ids: list[str],
+    run_meta: dict[str, Any],
+    contract_min_citations: int | None,
+    intent_used: str,
+    is_debug_enabled_fn: Callable[[], bool],
+) -> EngineeringCitationIntegrityResult:
+    """Apply ENGINEERING-profile citation integrity checks after hard reference gating.
+
+    Pipeline: parse citations → enforce min contract → rebuild refs → consistency gates → filter.
+    Returns EngineeringCitationIntegrityResult with potentially modified answer/refs.
+    """
+    result = EngineeringCitationIntegrityResult(
+        answer_text=str(answer_text or ""),
+        references_structured=list(references_structured or []),
+        reference_lines=_rebuild_reference_lines(list(references_structured or [])),
+        used_chunk_ids=list(used_chunk_ids or []),
+        debug={},
+    )
+
+    # Stage 1: Parse citation indices from text or JSON mode
+    cited_idxs, _citations_source = _parse_cited_idxs(result, run_meta)
+
+    # Stage 2: Early contract enforcement — fail closed if min citations not met
+    if _check_min_citations_early(
+        cited_idxs=cited_idxs,
+        references_structured_all=references_structured_all,
+        contract_min_citations=contract_min_citations,
+        intent_used=intent_used,
+        is_debug_enabled_fn=is_debug_enabled_fn,
+        result=result,
+    ):
+        return result
+
+    # Stage 3: Rebuild/backfill references from cited indices
+    structured_idx_set = _rebuild_and_backfill_references(
+        result=result,
+        cited_idxs=cited_idxs,
+        references_structured_all=references_structured_all,
+    )
+
+    # Stage 4: Citation consistency gates (no-citations, hallucinated idx, min-citations)
+    if _check_citation_consistency_gates(
+        result=result,
+        cited_idxs=cited_idxs,
+        structured_idx_set=structured_idx_set,
+        contract_min_citations=contract_min_citations,
+        references_structured_all=references_structured_all,
+        intent_used=intent_used,
+        is_debug_enabled_fn=is_debug_enabled_fn,
+    ):
+        return result
+
+    # Stage 5: Filter references to only cited ones (contract consistency)
+    if cited_idxs and structured_idx_set:
+        _filter_to_cited_references(result, cited_idxs)
 
     return result
 
@@ -1260,7 +1410,14 @@ def _select_legal_fallback_chunk_ids(
 
     def _score_ref_text(r: dict[str, Any]) -> int:
         parts: list[str] = []
-        for k in ["title", "heading_path", "toc_path", "display", "location_id", "chunk_text"]:
+        for k in [
+            "title",
+            "heading_path",
+            "toc_path",
+            "display",
+            "location_id",
+            "chunk_text",
+        ]:
             v = r.get(k)
             if isinstance(v, str) and v.strip():
                 parts.append(v.strip().lower())
@@ -1306,11 +1463,23 @@ def _select_legal_fallback_chunk_ids(
 
         if r.get("article"):
             pool_articles.append(
-                (_score_ref_text(r), _to_int_or_none(r.get("article")), pos, cid, anchor_key)
+                (
+                    _score_ref_text(r),
+                    _to_int_or_none(r.get("article")),
+                    pos,
+                    cid,
+                    anchor_key,
+                )
             )
         elif r.get("recital"):
             pool_recitals.append(
-                (_score_ref_text(r), _to_int_or_none(r.get("recital")), pos, cid, anchor_key)
+                (
+                    _score_ref_text(r),
+                    _to_int_or_none(r.get("recital")),
+                    pos,
+                    cid,
+                    anchor_key,
+                )
             )
         elif r.get("annex"):
             pool_annexes.append((_score_ref_text(r), pos, cid, anchor_key))
@@ -1448,7 +1617,9 @@ def apply_hard_reference_gating(
     }
 
     gated: list[dict[str, Any]] = []
-    seen_keys: set[tuple[str, str, str]] = set()  # (corpus_id, anchor_type, anchor_value)
+    seen_keys: set[tuple[str, str, str]] = (
+        set()
+    )  # (corpus_id, anchor_type, anchor_value)
 
     # Deterministic ordering:
     # - If answer contains bracket citations, order by first appearance of each cited idx.
@@ -1579,9 +1750,15 @@ def ensure_required_anchor_citations(
         return answer_text
 
     try:
-        required_idxs, missing_anchor_keys = helpers.compute_required_anchor_idxs(
-            required_anchors_payload=dict(required_anchors_payload),
-            references_structured_all=[dict(r or {}) for r in list(references_structured_all or []) if isinstance(r, dict)],
+        required_idxs, missing_anchor_keys = (
+            payload_builders.compute_required_anchor_idxs(
+                required_anchors_payload=dict(required_anchors_payload),
+                references_structured_all=[
+                    dict(r or {})
+                    for r in list(references_structured_all or [])
+                    if isinstance(r, dict)
+                ],
+            )
         )
 
         body = _strip_trailing_references_section(str(answer_text or ""))
@@ -1620,13 +1797,19 @@ def ensure_required_anchor_citations(
             if target_idx is not None:
                 add_marks = " ".join(f"[{i}]" for i in missing_idxs)
                 if add_marks:
-                    lines[target_idx] = str(lines[target_idx]).rstrip() + " " + add_marks
+                    lines[target_idx] = (
+                        str(lines[target_idx]).rstrip() + " " + add_marks
+                    )
                     answer_text = "\n".join(lines)
                     did_force = True
 
         if isinstance(run_meta.get("anchor_rescue"), dict):
-            run_meta["anchor_rescue"]["rescue_required_anchor_retry_performed"] = bool(did_force)
-            run_meta["anchor_rescue"]["rescue_required_anchor_retry_success"] = (True if did_force else None)
+            run_meta["anchor_rescue"]["rescue_required_anchor_retry_performed"] = bool(
+                did_force
+            )
+            run_meta["anchor_rescue"]["rescue_required_anchor_retry_success"] = (
+                True if did_force else None
+            )
 
         # If anchors are required but not even retrievable, keep an explicit fail reason.
         if missing_anchor_keys and isinstance(run_meta.get("anchor_rescue"), dict):
@@ -1664,6 +1847,142 @@ class CitationProcessingResult:
     debug: dict[str, Any] = field(default_factory=dict)
 
 
+def _dbg_citation_set(txt: str) -> set[int]:
+    """Extract bracket citation indices from text for debug diagnostics."""
+    return {
+        int(m.group(1))
+        for m in re.finditer(
+            r"\[(\d{1,3})\]", _strip_trailing_references_section(str(txt or ""))
+        )
+    }
+
+
+def _apply_engineering_backstop(
+    *,
+    answer_text: str,
+    references_structured_all: list[dict[str, Any]],
+    run_meta: dict[str, Any],
+    corpus_debug_on: bool,
+    debug: dict[str, Any],
+) -> str:
+    """ENGINEERING backstop: ensure min unique citations for SCOPE/CLASSIFICATION/REQUIREMENTS."""
+    if corpus_debug_on:
+        before_cites = sorted(_dbg_citation_set(answer_text))
+        mentions = metadata_helpers._extract_anchor_mentions_from_answer(
+            str(answer_text or "")
+        )
+        run_meta.setdefault("corpus_debug", {})
+        run_meta["corpus_debug"].update(
+            {
+                "backstop_ran": True,
+                "backstop_before_cited_idxs": before_cites,
+                "backstop_anchor_mentions": {
+                    "articles": list(mentions.get("articles") or []),
+                    "recitals": list(mentions.get("recitals") or []),
+                    "annexes": list(mentions.get("annexes") or []),
+                },
+            }
+        )
+    answer_text = _engineering_ensure_min_unique_citations(
+        answer_text=answer_text,
+        references_structured_all=references_structured_all,
+        min_unique_citations=3,
+    )
+    if corpus_debug_on:
+        after_cites = sorted(_dbg_citation_set(answer_text))
+        run_meta.setdefault("corpus_debug", {})
+        run_meta["corpus_debug"].update(
+            {
+                "backstop_after_cited_idxs": after_cites,
+                "backstop_added": int(
+                    max(0, len(set(after_cites) - set(before_cites)))
+                ),
+            }
+        )
+    debug["backstop_ran"] = True
+    return answer_text
+
+
+def _apply_engineering_repair(
+    *,
+    answer_text: str,
+    references_structured_all: list[dict[str, Any]],
+    run_meta: dict[str, Any],
+    corpus_debug_on: bool,
+    debug: dict[str, Any],
+) -> str:
+    """ENGINEERING: deterministic repair of missing bracket citations. Must run BEFORE gating."""
+    if corpus_debug_on:
+        before_cites = sorted(_dbg_citation_set(answer_text))
+    answer_text = _engineering_repair_bracket_citations_from_anchor_mentions(
+        answer_text=answer_text,
+        references_structured_all=references_structured_all,
+        max_unique_citations=8,
+    )
+    if corpus_debug_on:
+        after_cites = sorted(_dbg_citation_set(answer_text))
+        run_meta.setdefault("corpus_debug", {})
+        run_meta["corpus_debug"].update(
+            {
+                "repair_ran": True,
+                "repair_before_cited_idxs": before_cites,
+                "repair_after_cited_idxs": after_cites,
+                "repair_added": int(max(0, len(set(after_cites) - set(before_cites)))),
+            }
+        )
+    debug["repair_ran"] = True
+    return answer_text
+
+
+def _persist_integrity_debug_to_run_meta(
+    citation_result: EngineeringCitationIntegrityResult,
+    run_meta: dict[str, Any],
+) -> None:
+    """Persist engineering citation integrity debug info to run_meta."""
+    if not citation_result.debug:
+        return
+
+    run_meta.setdefault(
+        "citations_source", citation_result.debug.get("citations_source")
+    )
+    run_meta.setdefault(
+        "json_cited_idxs", citation_result.debug.get("json_cited_idxs", [])
+    )
+    run_meta.setdefault(
+        "answer_text_contains_brackets",
+        citation_result.debug.get("answer_text_contains_brackets"),
+    )
+    run_meta["parsed_citations_raw"] = citation_result.debug.get(
+        "parsed_citations_raw", []
+    )
+
+    if isinstance(run_meta.get("engineering_json"), dict):
+        ej = run_meta["engineering_json"]
+        ej.setdefault("citations_source", citation_result.debug.get("citations_source"))
+        ej.setdefault(
+            "json_cited_idxs", citation_result.debug.get("json_cited_idxs", [])
+        )
+        ej.setdefault(
+            "answer_text_contains_brackets",
+            citation_result.debug.get("answer_text_contains_brackets"),
+        )
+        ej["parsed_citations_raw"] = citation_result.debug.get(
+            "parsed_citations_raw", []
+        )
+
+    if citation_result.debug.get("fail_reason"):
+        if run_meta.get("fail_reason") is None:
+            run_meta["fail_reason"] = citation_result.debug["fail_reason"]
+            run_meta["final_fail_reason"] = citation_result.debug["fail_reason"]
+            if isinstance(run_meta.get("engineering_json"), dict):
+                run_meta["engineering_json"]["fail_reason"] = citation_result.debug[
+                    "fail_reason"
+                ]
+
+    if citation_result.debug.get("missing_ref_reason"):
+        run_meta["missing_ref_reason"] = citation_result.debug["missing_ref_reason"]
+
+
 def apply_all_citation_processing(
     *,
     answer_text: str,
@@ -1682,101 +2001,42 @@ def apply_all_citation_processing(
 ) -> CitationProcessingResult:
     """Stage 4b: Apply all citation processing in correct order.
 
-    Consolidates:
-    - Citation backstop (ensure min unique citations)
-    - Citation repair (anchor mentions → brackets)
-    - Required-anchor rescue (eval/contract-only)
-    - Hard reference gating (filter to cited refs only)
-    - Citation integrity check (ENGINEERING only)
-
-    Args:
-        answer_text: The answer text from generation/policy stages
-        question: The user's question
-        references_structured_all: All structured references from retrieval
-        resolved_profile: User profile (LEGAL/ENGINEERING)
-        intent_used: The classified intent for this question
-        did_abstain: Whether policy gates abstained
-        required_anchors_payload: Optional anchor requirements (eval/contract)
-        contract_min_citations: Optional minimum citations requirement
-        is_legal_profile: Whether this is LEGAL profile
-        legal_allow_reference_fallback: Whether to allow LEGAL fallback refs
-        run_meta: Run metadata dict (mutated in-place)
-        corpus_debug_on: Whether corpus debug is enabled
-        is_debug_enabled_fn: Function to check if debug is enabled
-
-    Returns:
-        CitationProcessingResult with all citation processing outputs
+    Pipeline: backstop → repair → anchor rescue → hard gating → integrity check.
     """
     from .types import ClaimIntent, UserProfile
 
     debug: dict[str, Any] = {}
 
-    def _dbg_citation_set(txt: str) -> set[int]:
-        return {int(m.group(1)) for m in re.finditer(r"\[(\d{1,3})\]", _strip_trailing_references_section(str(txt or "")))}
-
-    # --- ENGINEERING minimal backstop (SCOPE/CLASSIFICATION/REQUIREMENTS) ---
-    # If the final answer body contains neither [n] citations nor anchor mentions,
-    # append neutral hjemmel lines pointing at eligible references.
-    if resolved_profile == UserProfile.ENGINEERING and intent_used in {
-        ClaimIntent.SCOPE,
-        ClaimIntent.CLASSIFICATION,
-        ClaimIntent.REQUIREMENTS,
-    } and (not did_abstain):
-        if corpus_debug_on:
-            before_cites = sorted(_dbg_citation_set(answer_text))
-            mentions = helpers._extract_anchor_mentions_from_answer(str(answer_text or ""))
-            run_meta.setdefault("corpus_debug", {})
-            run_meta["corpus_debug"].update(
-                {
-                    "backstop_ran": True,
-                    "backstop_before_cited_idxs": before_cites,
-                    "backstop_anchor_mentions": {
-                        "articles": list(mentions.get("articles") or []),
-                        "recitals": list(mentions.get("recitals") or []),
-                        "annexes": list(mentions.get("annexes") or []),
-                    },
-                }
-            )
-        answer_text = _engineering_ensure_min_unique_citations(
+    # Step 1: ENGINEERING backstop (SCOPE/CLASSIFICATION/REQUIREMENTS)
+    if (
+        resolved_profile == UserProfile.ENGINEERING
+        and intent_used
+        in {
+            ClaimIntent.SCOPE,
+            ClaimIntent.CLASSIFICATION,
+            ClaimIntent.REQUIREMENTS,
+        }
+        and (not did_abstain)
+    ):
+        answer_text = _apply_engineering_backstop(
             answer_text=answer_text,
             references_structured_all=references_structured_all,
-            min_unique_citations=3,
+            run_meta=run_meta,
+            corpus_debug_on=corpus_debug_on,
+            debug=debug,
         )
-        if corpus_debug_on:
-            after_cites = sorted(_dbg_citation_set(answer_text))
-            run_meta.setdefault("corpus_debug", {})
-            run_meta["corpus_debug"].update(
-                {
-                    "backstop_after_cited_idxs": after_cites,
-                    "backstop_added": int(max(0, len(set(after_cites) - set(before_cites)))),
-                }
-            )
-        debug["backstop_ran"] = True
 
-    # --- ENGINEERING: deterministic repair of missing bracket citations ---
-    # Must run BEFORE reference gating.
+    # Step 2: ENGINEERING bracket citation repair (before gating)
     if resolved_profile == UserProfile.ENGINEERING:
-        if corpus_debug_on:
-            before_cites = sorted(_dbg_citation_set(answer_text))
-        answer_text = _engineering_repair_bracket_citations_from_anchor_mentions(
+        answer_text = _apply_engineering_repair(
             answer_text=answer_text,
             references_structured_all=references_structured_all,
-            max_unique_citations=8,
+            run_meta=run_meta,
+            corpus_debug_on=corpus_debug_on,
+            debug=debug,
         )
-        if corpus_debug_on:
-            after_cites = sorted(_dbg_citation_set(answer_text))
-            run_meta.setdefault("corpus_debug", {})
-            run_meta["corpus_debug"].update(
-                {
-                    "repair_ran": True,
-                    "repair_before_cited_idxs": before_cites,
-                    "repair_after_cited_idxs": after_cites,
-                    "repair_added": int(max(0, len(set(after_cites) - set(before_cites)))),
-                }
-            )
-        debug["repair_ran"] = True
 
-    # --- ENGINEERING required-anchor rescue (eval/contract-only) ---
+    # Step 3: ENGINEERING required-anchor rescue (eval/contract-only)
     if resolved_profile == UserProfile.ENGINEERING and required_anchors_payload:
         answer_text = ensure_required_anchor_citations(
             answer_text=str(answer_text or ""),
@@ -1786,14 +2046,11 @@ def apply_all_citation_processing(
         )
         debug["required_anchor_rescue_ran"] = True
 
-    # --- Hard reference gating ---
-    # Only include chunks actually used/cited in the answer
+    # Step 4: Hard reference gating (select + gate cited refs)
     used_chunk_ids = select_references_used_in_answer(
         answer_text=answer_text,
         references_structured=references_structured_all,
     )
-
-    # Apply hard reference gating with LEGAL fallback
     gating_result = apply_hard_reference_gating(
         answer_text=str(answer_text or ""),
         used_chunk_ids=list(used_chunk_ids or []),
@@ -1807,14 +2064,12 @@ def apply_all_citation_processing(
     references_structured: list[dict[str, Any]] = gating_result.references_structured
     reference_lines = gating_result.reference_lines
 
-    # Diagnostic counters used by eval before/after checks
     try:
         run_meta["references_structured_count"] = int(len(references_structured or []))
     except Exception:  # noqa: BLE001
         run_meta.setdefault("references_structured_count", None)
 
-    # --- ENGINEERING citation integrity post-check ---
-    # Goal: prevent "refs without [n]" and prevent citing idx that are not present.
+    # Step 5: ENGINEERING citation integrity post-check
     if resolved_profile == UserProfile.ENGINEERING:
         citation_result = apply_engineering_citation_integrity(
             answer_text=str(answer_text or ""),
@@ -1830,28 +2085,7 @@ def apply_all_citation_processing(
         references_structured = citation_result.references_structured
         reference_lines = citation_result.reference_lines
         used_chunk_ids = citation_result.used_chunk_ids
-
-        # Persist debug info to run_meta
-        if citation_result.debug:
-            run_meta.setdefault("citations_source", citation_result.debug.get("citations_source"))
-            run_meta.setdefault("json_cited_idxs", citation_result.debug.get("json_cited_idxs", []))
-            run_meta.setdefault("answer_text_contains_brackets", citation_result.debug.get("answer_text_contains_brackets"))
-            run_meta["parsed_citations_raw"] = citation_result.debug.get("parsed_citations_raw", [])
-            if isinstance(run_meta.get("engineering_json"), dict):
-                run_meta["engineering_json"].setdefault("citations_source", citation_result.debug.get("citations_source"))
-                run_meta["engineering_json"].setdefault("json_cited_idxs", citation_result.debug.get("json_cited_idxs", []))
-                run_meta["engineering_json"].setdefault("answer_text_contains_brackets", citation_result.debug.get("answer_text_contains_brackets"))
-                run_meta["engineering_json"]["parsed_citations_raw"] = citation_result.debug.get("parsed_citations_raw", [])
-
-            if citation_result.debug.get("fail_reason"):
-                if run_meta.get("fail_reason") is None:
-                    run_meta["fail_reason"] = citation_result.debug["fail_reason"]
-                    run_meta["final_fail_reason"] = citation_result.debug["fail_reason"]
-                    if isinstance(run_meta.get("engineering_json"), dict):
-                        run_meta["engineering_json"]["fail_reason"] = citation_result.debug["fail_reason"]
-            if citation_result.debug.get("missing_ref_reason"):
-                run_meta["missing_ref_reason"] = citation_result.debug["missing_ref_reason"]
-
+        _persist_integrity_debug_to_run_meta(citation_result, run_meta)
         debug["citation_integrity_ran"] = True
         debug.update(citation_result.debug)
 
@@ -1873,13 +2107,16 @@ def apply_all_citation_processing(
 @dataclass
 class CitationVerificationResult:
     """Result of post-hoc citation verification."""
+
     verified: List[int]  # Citation indices that passed verification
     suspicious: List[Dict[str, Any]]  # Citations with low similarity
     overall_score: float  # Average similarity score (0.0-1.0)
     scores: List[float]  # Individual scores per citation
 
 
-def _extract_claim_context(answer_text: str, citation_idx: int, window: int = 150) -> str:
+def _extract_claim_context(
+    answer_text: str, citation_idx: int, window: int = 150
+) -> str:
     """Extract text surrounding a citation [n] in the answer.
 
     Args:
@@ -1992,11 +2229,13 @@ def verify_citation_similarity(
 
     # Find all citations in the answer
     citation_pattern = re.compile(r"\[(\d{1,3})\]")
-    cited_idxs = sorted(set(int(m.group(1)) for m in citation_pattern.finditer(answer_text or "")))
+    cited_idxs = sorted(
+        set(int(m.group(1)) for m in citation_pattern.finditer(answer_text or ""))
+    )
 
     # Build idx -> reference lookup
     ref_by_idx: Dict[int, Dict[str, Any]] = {}
-    for ref in (references_structured or []):
+    for ref in references_structured or []:
         if isinstance(ref, dict):
             try:
                 idx = int(ref.get("idx"))
@@ -2008,12 +2247,14 @@ def verify_citation_similarity(
         ref = ref_by_idx.get(idx)
         if not ref:
             # Citation references non-existent source
-            suspicious.append({
-                "idx": idx,
-                "similarity": 0.0,
-                "reason": "citation_not_in_references",
-                "suggestion": None,
-            })
+            suspicious.append(
+                {
+                    "idx": idx,
+                    "similarity": 0.0,
+                    "reason": "citation_not_in_references",
+                    "suggestion": None,
+                }
+            )
             scores.append(0.0)
             continue
 
@@ -2049,15 +2290,21 @@ def verify_citation_similarity(
             verified.append(idx)
         else:
             # Find better match suggestion
-            suggestion = _find_better_match(claim_context, references_structured, embedding_fn)
+            suggestion = _find_better_match(
+                claim_context, references_structured, embedding_fn
+            )
 
-            suspicious.append({
-                "idx": idx,
-                "similarity": round(similarity, 3),
-                "claim_context": claim_context[:100] + "..." if len(claim_context) > 100 else claim_context,
-                "reason": "low_similarity",
-                "suggestion": suggestion,
-            })
+            suspicious.append(
+                {
+                    "idx": idx,
+                    "similarity": round(similarity, 3),
+                    "claim_context": claim_context[:100] + "..."
+                    if len(claim_context) > 100
+                    else claim_context,
+                    "reason": "low_similarity",
+                    "suggestion": suggestion,
+                }
+            )
 
     overall_score = sum(scores) / len(scores) if scores else 1.0
 

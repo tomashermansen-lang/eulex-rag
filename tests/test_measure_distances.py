@@ -9,9 +9,15 @@ def test_summarize_best_distances_empty():
 
 def test_summarize_best_distances_quantiles():
     rows = [
-        DistanceRow(id="a", question="q", best_distance=0.1, distances=[0.1], top_sources=[]),
-        DistanceRow(id="b", question="q", best_distance=0.5, distances=[0.5], top_sources=[]),
-        DistanceRow(id="c", question="q", best_distance=0.9, distances=[0.9], top_sources=[]),
+        DistanceRow(
+            id="a", question="q", best_distance=0.1, distances=[0.1], top_sources=[]
+        ),
+        DistanceRow(
+            id="b", question="q", best_distance=0.5, distances=[0.5], top_sources=[]
+        ),
+        DistanceRow(
+            id="c", question="q", best_distance=0.9, distances=[0.9], top_sources=[]
+        ),
     ]
 
     summary = summarize_best_distances(rows)
@@ -23,9 +29,15 @@ def test_summarize_best_distances_quantiles():
 
 def test_sweep_thresholds_counts():
     rows = [
-        DistanceRow(id="a", question="q", best_distance=0.10, distances=[0.10], top_sources=[]),
-        DistanceRow(id="b", question="q", best_distance=0.50, distances=[0.50], top_sources=[]),
-        DistanceRow(id="c", question="q", best_distance=None, distances=[], top_sources=[]),
+        DistanceRow(
+            id="a", question="q", best_distance=0.10, distances=[0.10], top_sources=[]
+        ),
+        DistanceRow(
+            id="b", question="q", best_distance=0.50, distances=[0.50], top_sources=[]
+        ),
+        DistanceRow(
+            id="c", question="q", best_distance=None, distances=[], top_sources=[]
+        ),
     ]
 
     sweep = sweep_thresholds(rows, start=0.10, end=0.50, step=0.20)

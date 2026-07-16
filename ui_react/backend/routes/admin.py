@@ -45,10 +45,8 @@ from schemas import (
 from src.ingestion.eurlex_listing import (
     list_available_legislation,
     check_for_updates,
-    get_legislation_by_celex,
     validate_celex,
     EurLexValidationError,
-    EurLexSecurityError,
     LegislationInfo as CoreLegislationInfo,
     DateFilterType,
     DocumentType,
@@ -69,7 +67,9 @@ from src.common.config_loader import clear_config_cache
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
-def _core_to_schema(info: CoreLegislationInfo, quality_data: dict | None = None) -> LegislationInfo:
+def _core_to_schema(
+    info: CoreLegislationInfo, quality_data: dict | None = None
+) -> LegislationInfo:
     """Convert core LegislationInfo to API schema.
 
     Args:
@@ -91,12 +91,16 @@ def _core_to_schema(info: CoreLegislationInfo, quality_data: dict | None = None)
         title_da=info.title_da,
         title_en=info.title_en,
         last_modified=info.last_modified.isoformat() if info.last_modified else None,
-        entry_into_force=info.entry_into_force.isoformat() if info.entry_into_force else None,
+        entry_into_force=info.entry_into_force.isoformat()
+        if info.entry_into_force
+        else None,
         in_force=info.in_force,
         amended_by=info.amended_by,
         is_ingested=info.is_ingested,
         corpus_id=info.corpus_id,
-        local_version_date=info.local_version_date.isoformat() if info.local_version_date else None,
+        local_version_date=info.local_version_date.isoformat()
+        if info.local_version_date
+        else None,
         is_outdated=info.is_outdated,
         html_url=info.html_url,
         document_type=info.document_type,
@@ -113,11 +117,22 @@ def _get_corpora_path() -> Path:
 @router.get("/legislation", response_model=LegislationListResponse)
 async def list_legislation_endpoint(
     search: str = Query(default="", description="Search term for filtering"),
-    year_from: int | None = Query(default=None, description="Start year (default: current year - 4)"),
-    year_to: int | None = Query(default=None, description="End year (default: current year)"),
-    date_filter: str = Query(default="creation", description="Date filter: 'creation' or 'modification'"),
-    doc_type: str = Query(default="regulation", description="Document type: 'all', 'regulation', or 'directive'"),
-    in_force_only: bool = Query(default=True, description="Only show legislation in force"),
+    year_from: int | None = Query(
+        default=None, description="Start year (default: current year - 4)"
+    ),
+    year_to: int | None = Query(
+        default=None, description="End year (default: current year)"
+    ),
+    date_filter: str = Query(
+        default="creation", description="Date filter: 'creation' or 'modification'"
+    ),
+    doc_type: str = Query(
+        default="regulation",
+        description="Document type: 'all', 'regulation', or 'directive'",
+    ),
+    in_force_only: bool = Query(
+        default=True, description="Only show legislation in force"
+    ),
 ) -> LegislationListResponse:
     """List available EU legislation with local ingestion status.
 
@@ -142,7 +157,7 @@ async def list_legislation_endpoint(
         if year_to - year_from + 1 > MAX_YEAR_SPAN:
             raise HTTPException(
                 status_code=400,
-                detail=f"Year range cannot exceed {MAX_YEAR_SPAN} years"
+                detail=f"Year range cannot exceed {MAX_YEAR_SPAN} years",
             )
 
         # Parse filter enums
@@ -171,7 +186,13 @@ async def list_legislation_endpoint(
         )
 
         # Enrich with local status
-        from src.ingestion.eurlex_listing import enrich_corpora_with_status, LegislationInfo as CoreLegInfo, build_html_url, get_document_type
+        from src.ingestion.eurlex_listing import (
+            enrich_corpora_with_status,
+            LegislationInfo as CoreLegInfo,
+            build_html_url,
+            get_document_type,
+        )
+
         enriched = enrich_corpora_with_status(local_corpora, core_legislation)
 
         # Always include ALL locally ingested corpora (even if not in current filter)
@@ -185,7 +206,9 @@ async def list_legislation_endpoint(
                 local_date = None
                 if ingested_at:
                     try:
-                        local_date = datetime.fromisoformat(ingested_at.replace("Z", "+00:00"))
+                        local_date = datetime.fromisoformat(
+                            ingested_at.replace("Z", "+00:00")
+                        )
                     except ValueError:
                         pass
 
@@ -243,7 +266,9 @@ async def list_legislation_endpoint(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to list legislation: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to list legislation: {str(e)}"
+        )
 
 
 @router.get("/legislation/{celex}/check-update", response_model=UpdateStatus)
@@ -265,6 +290,7 @@ async def check_update_endpoint(celex: str) -> UpdateStatus:
         # Find corpus_id by CELEX number
         corpus_id = None
         from src.ingestion.eurlex_listing import extract_celex_from_url
+
         for cid, data in local_corpora.get("corpora", {}).items():
             source_url = data.get("source_url", "")
             if extract_celex_from_url(source_url) == celex.upper():
@@ -330,7 +356,9 @@ def _run_ingestion_in_thread(request: AddLawRequest, queue: Queue) -> None:
         queue.put(("error", str(e)))
 
 
-async def _generate_ingestion_events(request: AddLawRequest) -> AsyncGenerator[str, None]:
+async def _generate_ingestion_events(
+    request: AddLawRequest,
+) -> AsyncGenerator[str, None]:
     """Generate SSE events for ingestion progress."""
     queue: Queue = Queue()
 
@@ -403,7 +431,9 @@ async def add_law_stream_endpoint(request: AddLawRequest) -> StreamingResponse:
 @router.delete("/corpus/{corpus_id}", response_model=RemoveCorpusResponse)
 async def remove_corpus_endpoint(
     corpus_id: str,
-    confirm: str = Query(default="", description="Must match corpus_id exactly to confirm deletion"),
+    confirm: str = Query(
+        default="", description="Must match corpus_id exactly to confirm deletion"
+    ),
 ) -> RemoveCorpusResponse:
     """Remove a corpus from the system.
 
@@ -415,13 +445,16 @@ async def remove_corpus_endpoint(
 
     GUARDRAIL: Requires confirm parameter matching corpus_id exactly.
     """
-    logger.info("Delete request received for corpus: %s (confirm: %s)", corpus_id, confirm)
+    logger.info(
+        "Delete request received for corpus: %s (confirm: %s)", corpus_id, confirm
+    )
 
     # GUARDRAIL 1: Require explicit confirmation
     if confirm != corpus_id:
         logger.warning(
             "Delete BLOCKED: confirm parameter '%s' does not match corpus_id '%s'",
-            confirm, corpus_id
+            confirm,
+            corpus_id,
         )
         raise HTTPException(
             status_code=400,
@@ -433,7 +466,9 @@ async def remove_corpus_endpoint(
         local_corpora = load_corpora_inventory(corpora_path)
 
         if corpus_id not in local_corpora.get("corpora", {}):
-            logger.warning("Delete failed: corpus '%s' not found in inventory", corpus_id)
+            logger.warning(
+                "Delete failed: corpus '%s' not found in inventory", corpus_id
+            )
             raise HTTPException(
                 status_code=404,
                 detail=f"Corpus '{corpus_id}' not found",
@@ -441,7 +476,11 @@ async def remove_corpus_endpoint(
 
         corpus_data = local_corpora["corpora"][corpus_id]
         deleted_files: list[str] = []
-        logger.info("Starting deletion of corpus '%s' (CELEX: %s)", corpus_id, corpus_data.get("celex_number", "unknown"))
+        logger.info(
+            "Starting deletion of corpus '%s' (CELEX: %s)",
+            corpus_id,
+            corpus_data.get("celex_number", "unknown"),
+        )
 
         # Delete ChromaDB collection
         collection_name = corpus_data.get("chunks_collection", f"{corpus_id}_documents")
@@ -475,7 +514,11 @@ async def remove_corpus_endpoint(
         if html_file.exists():
             # GUARDRAIL: Verify corpus_id is in filename
             if not html_file.name.startswith(corpus_id):
-                logger.error("GUARDRAIL: Refusing to delete %s - doesn't match corpus '%s'", html_file.name, corpus_id)
+                logger.error(
+                    "GUARDRAIL: Refusing to delete %s - doesn't match corpus '%s'",
+                    html_file.name,
+                    corpus_id,
+                )
             else:
                 html_file.unlink()
                 deleted_files.append(f"HTML: {html_file.name}")
@@ -485,13 +528,20 @@ async def remove_corpus_endpoint(
         if jsonl_file.exists():
             # GUARDRAIL: Verify corpus_id is in filename
             if not jsonl_file.name.startswith(corpus_id):
-                logger.error("GUARDRAIL: Refusing to delete %s - doesn't match corpus '%s'", jsonl_file.name, corpus_id)
+                logger.error(
+                    "GUARDRAIL: Refusing to delete %s - doesn't match corpus '%s'",
+                    jsonl_file.name,
+                    corpus_id,
+                )
             else:
                 jsonl_file.unlink()
                 deleted_files.append(f"JSONL: {jsonl_file.name}")
 
         # Citation graph file (try both naming conventions)
-        for citation_pattern in [f"citation_graph_{corpus_id}.json", f"{corpus_id}_citation_graph.json"]:
+        for citation_pattern in [
+            f"citation_graph_{corpus_id}.json",
+            f"{corpus_id}_citation_graph.json",
+        ]:
             citation_file = processed_dir / citation_pattern
             if citation_file.exists():
                 citation_file.unlink()
@@ -502,6 +552,7 @@ async def remove_corpus_endpoint(
         enrichment_cache_dir = processed_dir / "enrichment_cache"
         if enrichment_cache_dir.exists():
             import shutil
+
             cache_file_count = len(list(enrichment_cache_dir.glob("*.json")))
             shutil.rmtree(enrichment_cache_dir)
             deleted_files.append(f"Enrichment cache: {cache_file_count} filer")
@@ -510,7 +561,11 @@ async def remove_corpus_endpoint(
         # GUARDRAIL: Only delete eval file with EXACT corpus_id match
         # Handle both hyphen and underscore variants (e.g., ai-act vs ai_act)
         evals_dir = PROJECT_ROOT / "data" / "evals"
-        corpus_id_variants = [corpus_id, corpus_id.replace("-", "_"), corpus_id.replace("_", "-")]
+        corpus_id_variants = [
+            corpus_id,
+            corpus_id.replace("-", "_"),
+            corpus_id.replace("_", "-"),
+        ]
         for variant in corpus_id_variants:
             eval_file = evals_dir / f"golden_cases_{variant}.yaml"
             if eval_file.exists():
@@ -518,7 +573,11 @@ async def remove_corpus_endpoint(
                 base_id = corpus_id.replace("-", "").replace("_", "")
                 file_base = variant.replace("-", "").replace("_", "")
                 if base_id != file_base:
-                    logger.error("GUARDRAIL: Refusing to delete %s - doesn't match corpus '%s'", eval_file.name, corpus_id)
+                    logger.error(
+                        "GUARDRAIL: Refusing to delete %s - doesn't match corpus '%s'",
+                        eval_file.name,
+                        corpus_id,
+                    )
                 else:
                     eval_file.unlink()
                     deleted_files.append(f"Eval: {eval_file.name}")
@@ -544,6 +603,7 @@ async def remove_corpus_endpoint(
         # Remove example questions
         try:
             from src.ingestion.example_generator import remove_corpus_examples
+
             if remove_corpus_examples(corpus_id):
                 deleted_files.append("example_questions.json entry")
         except Exception:
@@ -566,7 +626,9 @@ async def remove_corpus_endpoint(
         raise
     except Exception as e:
         logger.exception("Unexpected error while deleting corpus '%s'", corpus_id)
-        raise HTTPException(status_code=500, detail=f"Failed to remove corpus: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to remove corpus: {str(e)}"
+        )
 
 
 @router.post("/suggest-names", response_model=SuggestNamesResponse)
@@ -635,7 +697,7 @@ Svar KUN med JSON:
         response_text = call_llm(prompt, temperature=0.3)
 
         # Extract JSON from response
-        json_match = re.search(r'\{[^}]+\}', response_text)
+        json_match = re.search(r"\{[^}]+\}", response_text)
         if not json_match:
             raise ValueError("No JSON found in response")
 
@@ -673,10 +735,10 @@ Svar KUN med JSON:
 
         # Ensure display_name shortname in parenthesis matches corpus_id format
         # Replace e.g. "(EU-DR)" with "(EU-DR-2024-1366)" to include year/number
-        paren_match = re.search(r'\(([^)]+)\)\s*$', display_name)
+        paren_match = re.search(r"\(([^)]+)\)\s*$", display_name)
         if paren_match:
             display_name = re.sub(
-                r'\([^)]+\)\s*$',
+                r"\([^)]+\)\s*$",
                 f"({corpus_id.upper()})",
                 display_name,
             )
@@ -697,7 +759,9 @@ Svar KUN med JSON:
             celex_info = parse_celex(request.celex_number)
             corpus_id = f"eu{celex_info['year']}-{celex_info['type_code']}-{celex_info['number']}"
         except ValueError:
-            corpus_id = request.celex_number[-8:].lower().replace("/", "").replace(" ", "")
+            corpus_id = (
+                request.celex_number[-8:].lower().replace("/", "").replace(" ", "")
+            )
 
         return SuggestNamesResponse(
             corpus_id=corpus_id,
@@ -730,7 +794,9 @@ def _get_citation_graph_path(law: str) -> Path:
 async def list_anchors_endpoint(
     law: str,
     q: str = Query(default="", description="Search query to filter anchors"),
-    limit: int = Query(default=50, ge=1, le=200, description="Maximum number of anchors to return"),
+    limit: int = Query(
+        default=50, ge=1, le=200, description="Maximum number of anchors to return"
+    ),
 ) -> AnchorListResponse:
     """List available anchors for a corpus from citation graph.
 

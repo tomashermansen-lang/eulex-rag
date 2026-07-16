@@ -3,9 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable, Mapping, MutableMapping, NotRequired, TypedDict
+from typing import Any, Iterable, Mapping, MutableMapping, TypedDict
 
 
 Primitive = str | int | float | bool | None
@@ -82,6 +81,70 @@ class TocMetadata(CommonMetadata, total=False):
     preamble_kind: str
     recital: str
     section_kind: str
+
+
+class CaseLawChunkMetadata(CommonMetadata, total=False):
+    doc_type: str
+    chunk_index: int
+    chunk_id: str
+    text_hash: str
+    ecli: str
+    case_number: str
+    court: str
+    decision_date: str
+    section_type: str
+    paragraph_range: str
+    articles_interpreted: str
+    case_name: str
+    heading_path: str
+    heading_path_display: str
+
+
+CASE_LAW_REQUIRED_FIELDS: tuple[str, ...] = (
+    "ecli",
+    "case_number",
+    "court",
+    "decision_date",
+    "source_type",
+    "articles_interpreted",
+)
+
+
+_CASE_NAME_MAX_LEN = 200
+
+
+def validate_case_name(name: str) -> None:
+    """Validate case_name: non-empty, maximum 200 characters, UTF-8."""
+    if not name or not name.strip():
+        raise ValueError("case_name must be non-empty")
+    if len(name) > _CASE_NAME_MAX_LEN:
+        raise ValueError(
+            f"case_name exceeds {_CASE_NAME_MAX_LEN} characters ({len(name)})"
+        )
+
+
+_articles_re = re.compile(r"^[a-z_]+/article:\d+$")
+
+
+def normalize_case_number_for_id(case_number: str) -> str:
+    """Convert case number to slug-safe ID: lowercase, slashes to hyphens, [a-z0-9-] only."""
+    if not case_number or not case_number.strip():
+        raise ValueError("case_number must be non-empty")
+    v = case_number.strip().lower().replace("/", "-").replace(" ", "-")
+    v = re.sub(r"[^a-z0-9\-]", "", v)
+    v = re.sub(r"-+", "-", v).strip("-")
+    return v
+
+
+def validate_articles_interpreted(entries: Iterable[str]) -> None:
+    """Validate articles_interpreted entries match {corpus}/article:{id} pattern."""
+    for entry in entries:
+        if len(entry) > 100:
+            raise ValueError(
+                f"articles_interpreted entry too long (>100 chars): {entry!r}"
+            )
+        if not _articles_re.match(entry):
+            raise ValueError(f"Invalid articles_interpreted entry: {entry!r}")
 
 
 _SCHEMA_VERSION = "meta:v1"
@@ -248,11 +311,15 @@ def make_heading_path(*, reference_state: Mapping[str, str | None]) -> tuple[str
     if "annex" in refs:
         display_parts.append(_fmt("Annex", refs["annex"].upper(), "annex_title"))
     if "annex_section" in refs:
-        display_parts.append(_fmt("Annex section", refs["annex_section"].upper(), "annex_section_title"))
+        display_parts.append(
+            _fmt("Annex section", refs["annex_section"].upper(), "annex_section_title")
+        )
     if "annex_point" in refs:
         display_parts.append(_fmt("Point", refs["annex_point"], "annex_point_title"))
     if "annex_subpoint" in refs:
-        display_parts.append(_fmt("Subpoint", refs["annex_subpoint"], "annex_subpoint_title"))
+        display_parts.append(
+            _fmt("Subpoint", refs["annex_subpoint"], "annex_subpoint_title")
+        )
     if "section" in refs:
         display_parts.append(_fmt("Section", refs["section"].upper(), "section_title"))
     if "article" in refs:
@@ -303,14 +370,18 @@ def compute_text_hash(text: str) -> str:
     return hashlib.sha256(normalize_text_for_hash(text).encode("utf-8")).hexdigest()
 
 
-def build_chunk_id(*, doc_id: str, location_id: str, chunk_index: int, text_hash: str) -> str:
+def build_chunk_id(
+    *, doc_id: str, location_id: str, chunk_index: int, text_hash: str
+) -> str:
     # Keep it readable, but safe.
     doc_part = slugify(doc_id)
     loc_part = slugify(location_id)
     return f"chunk:v1/{doc_part}/{loc_part}/{int(chunk_index)}/{text_hash[:12]}"
 
 
-def build_toc_node_id(*, doc_id: str, kind: str, location_id: str | None, extra: str | None = None) -> str:
+def build_toc_node_id(
+    *, doc_id: str, kind: str, location_id: str | None, extra: str | None = None
+) -> str:
     doc_part = slugify(doc_id)
     kind_part = slugify(kind)
     if location_id:
@@ -323,7 +394,9 @@ def build_toc_node_id(*, doc_id: str, kind: str, location_id: str | None, extra:
     return base
 
 
-def validate_required_fields(metadata: Mapping[str, Any], required_fields: Iterable[str]) -> None:
+def validate_required_fields(
+    metadata: Mapping[str, Any], required_fields: Iterable[str]
+) -> None:
     missing: list[str] = []
     for field in required_fields:
         if field not in metadata:
@@ -342,7 +415,9 @@ def validate_metadata_primitives(metadata: Mapping[str, Any]) -> None:
     for k, v in metadata.items():
         if isinstance(v, (str, int, float, bool)) or v is None:
             continue
-        raise ValueError(f"Metadata value for {k!r} must be primitive (got {type(v).__name__})")
+        raise ValueError(
+            f"Metadata value for {k!r} must be primitive (got {type(v).__name__})"
+        )
 
 
 def stamp_common_metadata(

@@ -1,5 +1,5 @@
-import pytest
 from src.engine.rag import _extract_raw_anchors_from_chunk
+
 
 def test_extract_raw_anchors_from_chunk():
     # Test 1: Article only
@@ -23,9 +23,10 @@ def test_extract_raw_anchors_from_chunk():
     # Test 5: Normalization (spaces, case)
     meta5 = {"article": " 5 "}
     assert _extract_raw_anchors_from_chunk(meta5) == ["article:5"]
-    
+
     meta6 = {"annex": "III"}
     assert _extract_raw_anchors_from_chunk(meta6) == ["annex:iii"]
+
 
 def test_extract_raw_anchors_empty():
     assert _extract_raw_anchors_from_chunk({}) == []

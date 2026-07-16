@@ -4,7 +4,6 @@ TDD: These tests are written BEFORE the implementation.
 """
 
 import pytest
-from unittest.mock import MagicMock
 
 
 # ---------------------------------------------------------------------------
@@ -147,7 +146,9 @@ class TestSynthesisBalanceScorer:
         )
 
         assert result.passed is False
-        assert "ai_act" in result.message.lower() or "dominant" in result.message.lower()
+        assert (
+            "ai_act" in result.message.lower() or "dominant" in result.message.lower()
+        )
 
     def test_sbs_003_returns_na_for_unified_mode(self):
         """Returns N/A (passes with message) for unified mode."""
@@ -160,7 +161,10 @@ class TestSynthesisBalanceScorer:
         )
 
         assert result.passed is True
-        assert "n/a" in result.message.lower() or "not applicable" in result.message.lower()
+        assert (
+            "n/a" in result.message.lower()
+            or "not applicable" in result.message.lower()
+        )
 
     def test_sbs_004_returns_na_for_routing_mode(self):
         """Returns N/A for routing mode."""
@@ -173,7 +177,10 @@ class TestSynthesisBalanceScorer:
         )
 
         assert result.passed is True
-        assert "n/a" in result.message.lower() or "not applicable" in result.message.lower()
+        assert (
+            "n/a" in result.message.lower()
+            or "not applicable" in result.message.lower()
+        )
 
     def test_sbs_005_handles_zero_citations(self):
         """Fails gracefully when no citations exist."""
@@ -266,7 +273,7 @@ class TestRoutingPrecisionScorer:
         )
 
         # 1/3 = 0.33
-        assert result.score == pytest.approx(1/3, rel=0.01)
+        assert result.score == pytest.approx(1 / 3, rel=0.01)
 
     def test_rps_004_returns_na_for_non_routing_modes(self):
         """Returns N/A for non-routing synthesis modes."""
@@ -280,7 +287,10 @@ class TestRoutingPrecisionScorer:
         )
 
         assert result.passed is True
-        assert "n/a" in result.message.lower() or "not applicable" in result.message.lower()
+        assert (
+            "n/a" in result.message.lower()
+            or "not applicable" in result.message.lower()
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -330,7 +340,10 @@ class TestComparisonCompletenessScorer:
         )
 
         assert result.passed is True
-        assert "n/a" in result.message.lower() or "not applicable" in result.message.lower()
+        assert (
+            "n/a" in result.message.lower()
+            or "not applicable" in result.message.lower()
+        )
 
     def test_cpc_005_message_lists_missing_corpora(self):
         """Message lists which corpora are missing."""

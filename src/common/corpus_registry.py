@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List
 
 DEFAULT_REGISTRY_FILENAME = "corpus_registry.json"
 
@@ -36,7 +35,9 @@ def load_registry(path: Path) -> dict:
     if data is None:
         return {}
     if not isinstance(data, dict):
-        raise SystemExit(f"Invalid format in corpus registry '{path}': expected a top-level JSON object")
+        raise SystemExit(
+            f"Invalid format in corpus registry '{path}': expected a top-level JSON object"
+        )
     return data
 
 
@@ -85,7 +86,9 @@ def derive_aliases(corpus_id: str, display_name: str) -> list[str]:
     return out
 
 
-def upsert_corpus(registry: dict, corpus_id: str, display_name: str, aliases: list[str]) -> dict:
+def upsert_corpus(
+    registry: dict, corpus_id: str, display_name: str, aliases: list[str]
+) -> dict:
     key = normalize_corpus_id(corpus_id)
     entry = registry.get(key)
     if not isinstance(entry, dict):

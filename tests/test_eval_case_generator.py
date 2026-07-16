@@ -408,7 +408,6 @@ import json
 
 from src.eval.eval_case_generator import (
     _call_llm_for_cases,
-    _build_generation_prompt,
     assign_test_types,
     DEFAULT_DISTRIBUTION,
 )
@@ -429,7 +428,11 @@ class TestCallLlmForCases:
             "src.eval.eval_case_generator.call_generation_llm",
             return_value=llm_response,
         ):
-            result = _run(_call_llm_for_cases("test prompt", max_cases=2, synthesis_mode="comparison"))
+            result = _run(
+                _call_llm_for_cases(
+                    "test prompt", max_cases=2, synthesis_mode="comparison"
+                )
+            )
 
         assert len(result) == 2
         assert result[0]["id"] == "test_1"
@@ -453,7 +456,11 @@ class TestCallLlmForCases:
             "src.eval.eval_case_generator.call_generation_llm",
             side_effect=mock_llm,
         ):
-            result = _run(_call_llm_for_cases("test prompt", max_cases=1, synthesis_mode="comparison"))
+            result = _run(
+                _call_llm_for_cases(
+                    "test prompt", max_cases=1, synthesis_mode="comparison"
+                )
+            )
 
         assert len(result) == 1
         assert call_count == 2
@@ -465,7 +472,11 @@ class TestCallLlmForCases:
             return_value=None,
         ):
             with pytest.raises(CaseGenerationError):
-                _run(_call_llm_for_cases("test prompt", max_cases=5, synthesis_mode="comparison"))
+                _run(
+                    _call_llm_for_cases(
+                        "test prompt", max_cases=5, synthesis_mode="comparison"
+                    )
+                )
 
     def test_cg_004_prompt_includes_article_index(self, mock_corpus_metadata):
         """Prompt should include article index from citation graph for each corpus."""
@@ -559,8 +570,13 @@ class TestAssignTestTypes:
     def test_td_002_custom_distribution_applied(self):
         """Custom distribution should assign correct test types to cases."""
         cases = [
-            GeneratedCase(id=f"c_{i}", prompt=f"Q{i}", synthesis_mode="comparison",
-                          expected_corpora=("ai-act", "gdpr"), expected_anchors=())
+            GeneratedCase(
+                id=f"c_{i}",
+                prompt=f"Q{i}",
+                synthesis_mode="comparison",
+                expected_corpora=("ai-act", "gdpr"),
+                expected_anchors=(),
+            )
             for i in range(5)
         ]
         distribution = {"corpus_coverage": 3, "synthesis_balance": 2}
@@ -575,8 +591,13 @@ class TestAssignTestTypes:
     def test_td_003_base_types_added_to_non_abstention(self):
         """Non-abstention cases should get base types (retrieval, faithfulness, relevancy)."""
         cases = [
-            GeneratedCase(id="c_0", prompt="Q", synthesis_mode="comparison",
-                          expected_corpora=("ai-act",), expected_anchors=())
+            GeneratedCase(
+                id="c_0",
+                prompt="Q",
+                synthesis_mode="comparison",
+                expected_corpora=("ai-act",),
+                expected_anchors=(),
+            )
         ]
         distribution = {"corpus_coverage": 1}
 
@@ -589,8 +610,13 @@ class TestAssignTestTypes:
     def test_td_004_abstention_cases_no_base_types(self):
         """Abstention cases should NOT get base types."""
         cases = [
-            GeneratedCase(id="c_0", prompt="Q", synthesis_mode="comparison",
-                          expected_corpora=("ai-act",), expected_anchors=())
+            GeneratedCase(
+                id="c_0",
+                prompt="Q",
+                synthesis_mode="comparison",
+                expected_corpora=("ai-act",),
+                expected_anchors=(),
+            )
         ]
         distribution = {"abstention": 1}
 
@@ -604,8 +630,13 @@ class TestAssignTestTypes:
     def test_td_005_total_respects_distribution_count(self):
         """assign_test_types should handle fewer cases than distribution total."""
         cases = [
-            GeneratedCase(id=f"c_{i}", prompt=f"Q{i}", synthesis_mode="comparison",
-                          expected_corpora=("ai-act",), expected_anchors=())
+            GeneratedCase(
+                id=f"c_{i}",
+                prompt=f"Q{i}",
+                synthesis_mode="comparison",
+                expected_corpora=("ai-act",),
+                expected_anchors=(),
+            )
             for i in range(3)
         ]
         # Distribution sums to 5 but only 3 cases
@@ -643,15 +674,19 @@ class TestBuildArticleIndex:
 
     def test_build_article_index_all_articles(self):
         """All articles from citation graph appear in output."""
-        graph = self._make_mock_graph({
-            "1": {"type": "article", "title": "Genstand og formål"},
-            "2": {"type": "article", "title": "Anvendelsesområde"},
-            "3": {"type": "article", "title": "Definitioner"},
-            "4": {"type": "article", "title": "Risikokategorier"},
-            "5": {"type": "article", "title": "Forbudte praksisser"},
-        })
+        graph = self._make_mock_graph(
+            {
+                "1": {"type": "article", "title": "Genstand og formål"},
+                "2": {"type": "article", "title": "Anvendelsesområde"},
+                "3": {"type": "article", "title": "Definitioner"},
+                "4": {"type": "article", "title": "Risikokategorier"},
+                "5": {"type": "article", "title": "Forbudte praksisser"},
+            }
+        )
 
-        with patch("src.eval.eval_case_generator.load_citation_graph", return_value=graph):
+        with patch(
+            "src.eval.eval_case_generator.load_citation_graph", return_value=graph
+        ):
             result = _build_article_index("test-corpus")
 
         assert "Artikel 1:" in result
@@ -663,14 +698,18 @@ class TestBuildArticleIndex:
 
     def test_build_article_index_excludes_annex_subnodes(self):
         """annex_point and annex_section nodes are excluded."""
-        graph = self._make_mock_graph({
-            "1": {"type": "article", "title": "Scope"},
-            "ANNEX:I": {"type": "annex", "title": "Top-level annex"},
-            "ANNEX:I:A:1": {"type": "annex_point", "title": "Sub-point"},
-            "ANNEX:I:Section1": {"type": "annex_section", "title": "Section"},
-        })
+        graph = self._make_mock_graph(
+            {
+                "1": {"type": "article", "title": "Scope"},
+                "ANNEX:I": {"type": "annex", "title": "Top-level annex"},
+                "ANNEX:I:A:1": {"type": "annex_point", "title": "Sub-point"},
+                "ANNEX:I:Section1": {"type": "annex_section", "title": "Section"},
+            }
+        )
 
-        with patch("src.eval.eval_case_generator.load_citation_graph", return_value=graph):
+        with patch(
+            "src.eval.eval_case_generator.load_citation_graph", return_value=graph
+        ):
             result = _build_article_index("test-corpus")
 
         assert "Artikel 1:" in result
@@ -680,11 +719,15 @@ class TestBuildArticleIndex:
 
     def test_build_article_index_includes_top_level_annexes(self):
         """Top-level annex nodes (ANNEX:III) appear as Bilag III."""
-        graph = self._make_mock_graph({
-            "ANNEX:III": {"type": "annex", "title": "Højrisiko-AI-systemer"},
-        })
+        graph = self._make_mock_graph(
+            {
+                "ANNEX:III": {"type": "annex", "title": "Højrisiko-AI-systemer"},
+            }
+        )
 
-        with patch("src.eval.eval_case_generator.load_citation_graph", return_value=graph):
+        with patch(
+            "src.eval.eval_case_generator.load_citation_graph", return_value=graph
+        ):
             result = _build_article_index("test-corpus")
 
         assert "Bilag III" in result
@@ -692,8 +735,15 @@ class TestBuildArticleIndex:
 
     def test_build_article_index_fallback_no_graph(self):
         """Falls back to load_article_content when citation graph is None."""
-        with patch("src.eval.eval_case_generator.load_citation_graph", return_value=None), \
-             patch("src.eval.eval_case_generator.load_article_content", return_value="fallback content") as mock_fallback:
+        with (
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_article_content",
+                return_value="fallback content",
+            ) as mock_fallback,
+        ):
             result = _build_article_index("missing-corpus")
 
         mock_fallback.assert_called_once_with("missing-corpus")
@@ -707,11 +757,15 @@ class TestBuildArticleIndex:
             max_cases=5,
         )
 
-        mock_graph = self._make_mock_graph({
-            "1": {"type": "article", "title": "Scope"},
-        })
+        mock_graph = self._make_mock_graph(
+            {
+                "1": {"type": "article", "title": "Scope"},
+            }
+        )
 
-        with patch("src.eval.eval_case_generator.load_citation_graph", return_value=mock_graph):
+        with patch(
+            "src.eval.eval_case_generator.load_citation_graph", return_value=mock_graph
+        ):
             prompt = _build_generation_prompt(request, mock_corpus_metadata)
 
         assert "expected_anchors" in prompt
@@ -813,7 +867,6 @@ class TestValidateAnchors:
 
 from src.eval.eval_case_generator import (
     assign_difficulty,
-    _build_discovery_prompt,
     _distribute_by_synthesis_mode,
 )
 
@@ -824,7 +877,8 @@ class TestAssignDifficulty:
     def test_da_001_discovery_mode_is_hard(self):
         """DA-001: discovery mode → 'hard'."""
         case = GeneratedCase(
-            id="disc", prompt="Topic question",
+            id="disc",
+            prompt="Topic question",
             synthesis_mode="discovery",
             expected_corpora=("dora", "nis2"),
             expected_anchors=(),
@@ -834,7 +888,8 @@ class TestAssignDifficulty:
     def test_da_002_comparison_2_corpora_single_anchor_easy(self):
         """DA-002: comparison + 2 corpora + single-article anchors → 'easy'."""
         case = GeneratedCase(
-            id="easy", prompt="Compare A and B",
+            id="easy",
+            prompt="Compare A and B",
             synthesis_mode="comparison",
             expected_corpora=("ai-act", "gdpr"),
             expected_anchors=("article:6",),
@@ -844,7 +899,8 @@ class TestAssignDifficulty:
     def test_da_003_comparison_multi_article_medium(self):
         """DA-003: comparison + 2+ corpora + multi-article anchors → 'medium'."""
         case = GeneratedCase(
-            id="med", prompt="Compare A and B on multiple points",
+            id="med",
+            prompt="Compare A and B on multiple points",
             synthesis_mode="comparison",
             expected_corpora=("ai-act", "gdpr"),
             expected_anchors=("article:6", "article:13", "article:21"),
@@ -854,7 +910,8 @@ class TestAssignDifficulty:
     def test_da_004_aggregation_3_plus_corpora_medium(self):
         """DA-004: aggregation + 3+ corpora → 'medium'."""
         case = GeneratedCase(
-            id="agg", prompt="What do all say?",
+            id="agg",
+            prompt="What do all say?",
             synthesis_mode="aggregation",
             expected_corpora=("ai-act", "gdpr", "nis2"),
             expected_anchors=(),
@@ -864,7 +921,8 @@ class TestAssignDifficulty:
     def test_da_005_3_plus_corpora_named_hard(self):
         """DA-005: 3+ corpora (non-discovery, non-aggregation) → 'hard'."""
         case = GeneratedCase(
-            id="hard", prompt="Compare all three",
+            id="hard",
+            prompt="Compare all three",
             synthesis_mode="comparison",
             expected_corpora=("ai-act", "gdpr", "nis2"),
             expected_anchors=("article:6", "article:13"),
@@ -888,12 +946,21 @@ class TestBuildDiscoveryPrompt:
             max_cases=5,
         )
 
-        with patch("src.eval.eval_case_generator.load_citation_graph", return_value=None), \
-             patch("src.eval.eval_case_generator.load_article_content", return_value=""):
+        with (
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+            patch("src.eval.eval_case_generator.load_article_content", return_value=""),
+        ):
             prompt = _build_discovery_prompt(request, mock_corpus_metadata)
 
         prompt_lower = prompt.lower()
-        assert "without" in prompt_lower or "must not" in prompt_lower or "do not" in prompt_lower or "uden" in prompt_lower
+        assert (
+            "without" in prompt_lower
+            or "must not" in prompt_lower
+            or "do not" in prompt_lower
+            or "uden" in prompt_lower
+        )
 
     def test_dp_003_prompt_mentions_topic_based(self, mock_corpus_metadata):
         """DP-003: Discovery prompt is explicitly about topic-based questions."""
@@ -903,8 +970,12 @@ class TestBuildDiscoveryPrompt:
             max_cases=5,
         )
 
-        with patch("src.eval.eval_case_generator.load_citation_graph", return_value=None), \
-             patch("src.eval.eval_case_generator.load_article_content", return_value=""):
+        with (
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+            patch("src.eval.eval_case_generator.load_article_content", return_value=""),
+        ):
             prompt = _build_discovery_prompt(request, mock_corpus_metadata)
 
         assert "topic" in prompt.lower() or "emne" in prompt.lower()
@@ -938,7 +1009,6 @@ class TestDistributeBySynthesisMode:
             )
 
 
-
 # =========================================================================
 # Phase 10: Tests for mode-based test type assignment (R1.5)
 # =========================================================================
@@ -953,7 +1023,8 @@ class TestModeBasedTestTypes:
         """TT-001: Discovery case gets corpus_coverage + base types."""
         cases = [
             GeneratedCase(
-                id="disc", prompt="Topic question",
+                id="disc",
+                prompt="Topic question",
                 synthesis_mode="discovery",
                 expected_corpora=("ai-act", "gdpr"),
                 expected_anchors=(),
@@ -971,7 +1042,8 @@ class TestModeBasedTestTypes:
         """TT-002: Comparison case gets comparison_completeness + base types."""
         cases = [
             GeneratedCase(
-                id="comp", prompt="Compare X and Y",
+                id="comp",
+                prompt="Compare X and Y",
                 synthesis_mode="comparison",
                 expected_corpora=("ai-act", "gdpr"),
                 expected_anchors=("article:6",),
@@ -987,19 +1059,22 @@ class TestModeBasedTestTypes:
         """TT-003: Mixed discovery + comparison cases get mode-specific types."""
         cases = [
             GeneratedCase(
-                id="disc", prompt="Topic question",
+                id="disc",
+                prompt="Topic question",
                 synthesis_mode="discovery",
                 expected_corpora=("ai-act", "gdpr"),
                 expected_anchors=(),
             ),
             GeneratedCase(
-                id="comp", prompt="Compare X and Y",
+                id="comp",
+                prompt="Compare X and Y",
                 synthesis_mode="comparison",
                 expected_corpora=("ai-act", "gdpr"),
                 expected_anchors=("article:6",),
             ),
             GeneratedCase(
-                id="agg", prompt="What do all say?",
+                id="agg",
+                prompt="What do all say?",
                 synthesis_mode="aggregation",
                 expected_corpora=("ai-act", "gdpr", "nis2"),
                 expected_anchors=(),
@@ -1037,14 +1112,19 @@ class TestDiscoveryPromptDispatch:
             max_cases=3,
         )
 
-        with patch("src.eval.eval_case_generator._build_discovery_prompt") as mock_disc, \
-             patch("src.eval.eval_case_generator._build_generation_prompt") as mock_gen, \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", return_value=[]), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch("src.eval.eval_case_generator._build_discovery_prompt") as mock_disc,
+            patch("src.eval.eval_case_generator._build_generation_prompt") as mock_gen,
+            patch("src.eval.eval_case_generator._call_llm_for_cases", return_value=[]),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             mock_disc.return_value = "discovery prompt"
             mock_gen.return_value = "general prompt"
 
             from src.eval.eval_case_generator import generate_cross_law_cases
+
             _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
             mock_disc.assert_called_once()
@@ -1058,14 +1138,19 @@ class TestDiscoveryPromptDispatch:
             max_cases=3,
         )
 
-        with patch("src.eval.eval_case_generator._build_discovery_prompt") as mock_disc, \
-             patch("src.eval.eval_case_generator._build_generation_prompt") as mock_gen, \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", return_value=[]), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch("src.eval.eval_case_generator._build_discovery_prompt") as mock_disc,
+            patch("src.eval.eval_case_generator._build_generation_prompt") as mock_gen,
+            patch("src.eval.eval_case_generator._call_llm_for_cases", return_value=[]),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             mock_disc.return_value = "discovery prompt"
             mock_gen.return_value = "general prompt"
 
             from src.eval.eval_case_generator import generate_cross_law_cases
+
             _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
             mock_gen.assert_called_once()
@@ -1087,7 +1172,9 @@ class TestDiscoveryPromptFormat:
             "gdpr": {"name": "GDPR", "fullname": "GDPR"},
         }
 
-        with patch("src.eval.eval_case_generator._build_article_index", return_value=""):
+        with patch(
+            "src.eval.eval_case_generator._build_article_index", return_value=""
+        ):
             prompt = _build_discovery_prompt(request, metadata)
 
         # The prompt must NOT contain double braces (invalid JSON)
@@ -1095,7 +1182,9 @@ class TestDiscoveryPromptFormat:
         assert "}}" not in prompt, "Prompt contains '}}' — invalid JSON example"
 
         # The prompt MUST contain single braces (valid JSON)
-        assert '{ ' in prompt or '{"' in prompt or '{\n' in prompt, "Prompt missing JSON opening brace"
+        assert "{ " in prompt or '{"' in prompt or "{\n" in prompt, (
+            "Prompt missing JSON opening brace"
+        )
 
     def test_generation_prompt_json_example_has_single_braces(self):
         """Sanity check: the standard generation prompt also uses single braces."""
@@ -1109,7 +1198,9 @@ class TestDiscoveryPromptFormat:
             "gdpr": {"name": "GDPR", "fullname": "GDPR"},
         }
 
-        with patch("src.eval.eval_case_generator._build_article_index", return_value=""):
+        with patch(
+            "src.eval.eval_case_generator._build_article_index", return_value=""
+        ):
             prompt = _build_generation_prompt(request, metadata)
 
         assert "{{" not in prompt, "Prompt contains '{{' — invalid JSON example"
@@ -1127,7 +1218,9 @@ class TestDiscoveryPromptFormat:
             "gdpr": {"name": "GDPR", "fullname": "GDPR"},
         }
 
-        with patch("src.eval.eval_case_generator._build_article_index", return_value=""):
+        with patch(
+            "src.eval.eval_case_generator._build_article_index", return_value=""
+        ):
             prompt = _build_discovery_prompt(request, metadata)
 
         # Prompt must mention the actual corpus IDs for expected_corpora usage
@@ -1148,6 +1241,7 @@ class TestArticleSpecAndGroup:
     def test_article_spec_is_frozen(self):
         """ArticleSpec should be immutable."""
         from src.eval.eval_case_generator import ArticleSpec
+
         spec = ArticleSpec(
             corpus_id="ai-act",
             article_id="6",
@@ -1161,6 +1255,7 @@ class TestArticleSpecAndGroup:
     def test_article_spec_correct_fields(self):
         """ArticleSpec has all required fields."""
         from src.eval.eval_case_generator import ArticleSpec
+
         spec = ArticleSpec(
             corpus_id="gdpr",
             article_id="13",
@@ -1177,10 +1272,9 @@ class TestArticleSpecAndGroup:
     def test_article_group_is_frozen(self):
         """ArticleGroup should be immutable."""
         from src.eval.eval_case_generator import ArticleSpec, ArticleGroup
+
         group = ArticleGroup(
-            articles=(
-                ArticleSpec("ai-act", "6", "article:6", "Title", "Content"),
-            ),
+            articles=(ArticleSpec("ai-act", "6", "article:6", "Title", "Content"),),
             shared_role="obligations",
         )
         with pytest.raises(AttributeError):
@@ -1189,6 +1283,7 @@ class TestArticleSpecAndGroup:
     def test_article_group_tuple_of_specs(self):
         """ArticleGroup contains a tuple of ArticleSpec."""
         from src.eval.eval_case_generator import ArticleSpec, ArticleGroup
+
         specs = (
             ArticleSpec("ai-act", "6", "article:6", "Klassificering", "AI..."),
             ArticleSpec("gdpr", "35", "article:35", "DPIA", "Beskyttelse..."),
@@ -1262,6 +1357,7 @@ class TestLoadArticleChunks:
     def test_load_returns_truncated_text(self, tmp_path):
         """_load_article_chunks returns text truncated to max_chars."""
         import json
+
         chunks_path = tmp_path / "test-corpus_chunks.jsonl"
         chunk = {
             "text": "A" * 500,
@@ -1270,28 +1366,49 @@ class TestLoadArticleChunks:
         chunks_path.write_text(json.dumps(chunk) + "\n")
 
         from src.eval.eval_case_generator import _load_article_chunks
-        result = _load_article_chunks(str(tmp_path), "test-corpus", ["6"], max_chars=100)
+
+        result = _load_article_chunks(
+            str(tmp_path), "test-corpus", ["6"], max_chars=100
+        )
         assert "6" in result
         assert len(result["6"]) <= 103  # 100 + "..."
 
     def test_load_handles_missing_file(self, tmp_path):
         """_load_article_chunks returns empty dict for missing file."""
         from src.eval.eval_case_generator import _load_article_chunks
+
         result = _load_article_chunks(str(tmp_path), "nonexistent", ["6"])
         assert result == {}
 
     def test_load_filters_by_article_id(self, tmp_path):
         """_load_article_chunks only returns requested articles."""
         import json
+
         chunks_path = tmp_path / "test-corpus_chunks.jsonl"
         lines = [
-            json.dumps({"text": "Article 6 text", "metadata": {"article": "6", "article_title": "Art 6"}}),
-            json.dumps({"text": "Article 7 text", "metadata": {"article": "7", "article_title": "Art 7"}}),
-            json.dumps({"text": "Article 8 text", "metadata": {"article": "8", "article_title": "Art 8"}}),
+            json.dumps(
+                {
+                    "text": "Article 6 text",
+                    "metadata": {"article": "6", "article_title": "Art 6"},
+                }
+            ),
+            json.dumps(
+                {
+                    "text": "Article 7 text",
+                    "metadata": {"article": "7", "article_title": "Art 7"},
+                }
+            ),
+            json.dumps(
+                {
+                    "text": "Article 8 text",
+                    "metadata": {"article": "8", "article_title": "Art 8"},
+                }
+            ),
         ]
         chunks_path.write_text("\n".join(lines) + "\n")
 
         from src.eval.eval_case_generator import _load_article_chunks
+
         result = _load_article_chunks(str(tmp_path), "test-corpus", ["6", "8"])
         assert "6" in result
         assert "8" in result
@@ -1300,15 +1417,29 @@ class TestLoadArticleChunks:
     def test_load_concatenates_multiple_chunks(self, tmp_path):
         """_load_article_chunks concatenates text from multiple chunks for same article."""
         import json
+
         chunks_path = tmp_path / "test-corpus_chunks.jsonl"
         lines = [
-            json.dumps({"text": "First chunk.", "metadata": {"article": "6", "article_title": "Art 6"}}),
-            json.dumps({"text": "Second chunk.", "metadata": {"article": "6", "article_title": "Art 6"}}),
+            json.dumps(
+                {
+                    "text": "First chunk.",
+                    "metadata": {"article": "6", "article_title": "Art 6"},
+                }
+            ),
+            json.dumps(
+                {
+                    "text": "Second chunk.",
+                    "metadata": {"article": "6", "article_title": "Art 6"},
+                }
+            ),
         ]
         chunks_path.write_text("\n".join(lines) + "\n")
 
         from src.eval.eval_case_generator import _load_article_chunks
-        result = _load_article_chunks(str(tmp_path), "test-corpus", ["6"], max_chars=500)
+
+        result = _load_article_chunks(
+            str(tmp_path), "test-corpus", ["6"], max_chars=500
+        )
         assert "First chunk." in result["6"]
         assert "Second chunk." in result["6"]
 
@@ -1316,7 +1447,9 @@ class TestLoadArticleChunks:
 class TestSelectAnchorArticles:
     """Tests for _select_anchor_articles()."""
 
-    def _make_mock_graph(self, roles_map: dict[str, list[str]], titles: dict[str, str] | None = None):
+    def _make_mock_graph(
+        self, roles_map: dict[str, list[str]], titles: dict[str, str] | None = None
+    ):
         """Create mock CitationGraph with role → article_id mapping."""
         mock_graph = MagicMock()
         nodes = {}
@@ -1353,10 +1486,15 @@ class TestSelectAnchorArticles:
         from src.eval.eval_case_generator import _select_anchor_articles
 
         graph_a = self._make_mock_graph({"obligations": ["6"]}, {"6": "Risikostyring"})
-        graph_b = self._make_mock_graph({"obligations": ["21"]}, {"21": "Risikostyring"})
+        graph_b = self._make_mock_graph(
+            {"obligations": ["21"]}, {"21": "Risikostyring"}
+        )
         cache = {"ai-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={"6": "Text A", "21": "Text B"}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks",
+            return_value={"6": "Text A", "21": "Text B"},
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=5,
@@ -1364,7 +1502,9 @@ class TestSelectAnchorArticles:
             )
 
         assert len(groups) >= 1
-        obligations_group = next((g for g in groups if g.shared_role == "obligations"), None)
+        obligations_group = next(
+            (g for g in groups if g.shared_role == "obligations"), None
+        )
         assert obligations_group is not None
         assert len(obligations_group.articles) == 2
 
@@ -1385,12 +1525,21 @@ class TestSelectAnchorArticles:
         from src.eval.eval_case_generator import _select_anchor_articles
 
         # Both corpora have all 5 roles
-        roles = {"obligations": ["6"], "enforcement": ["10"], "scope": ["1"], "definitions": ["3"], "classification": ["5"]}
+        roles = {
+            "obligations": ["6"],
+            "enforcement": ["10"],
+            "scope": ["1"],
+            "definitions": ["3"],
+            "classification": ["5"],
+        }
         graph_a = self._make_mock_graph(roles)
         graph_b = self._make_mock_graph(roles)
         cache = {"ai-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={"6": "T", "10": "T", "1": "T", "3": "T", "5": "T"}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks",
+            return_value={"6": "T", "10": "T", "1": "T", "3": "T", "5": "T"},
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=2,
@@ -1407,7 +1556,10 @@ class TestSelectAnchorArticles:
         graph_b = self._make_mock_graph({"enforcement": ["10"]})  # Different role
         cache = {"ai-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={"6": "T", "10": "T"}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks",
+            return_value={"6": "T", "10": "T"},
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=5,
@@ -1430,8 +1582,20 @@ class TestBuildInvertedPrompt:
         """Helper: create a sample ArticleGroup."""
         return ArticleGroup(
             articles=(
-                ArticleSpec("ai-act", "6", "article:6", "Klassificering", "AI-systemer klassificeres..."),
-                ArticleSpec("gdpr", "35", "article:35", "DPIA", "Konsekvensanalyse af databeskyttelse..."),
+                ArticleSpec(
+                    "ai-act",
+                    "6",
+                    "article:6",
+                    "Klassificering",
+                    "AI-systemer klassificeres...",
+                ),
+                ArticleSpec(
+                    "gdpr",
+                    "35",
+                    "article:35",
+                    "DPIA",
+                    "Konsekvensanalyse af databeskyttelse...",
+                ),
             ),
             shared_role="obligations",
         )
@@ -1439,6 +1603,7 @@ class TestBuildInvertedPrompt:
     def test_prompt_contains_article_content(self):
         """Inverted prompt includes article text from both corpora."""
         from src.eval.eval_case_generator import _build_inverted_prompt
+
         group = self._make_group()
         metadata = {"ai-act": {"name": "AI Act"}, "gdpr": {"name": "GDPR"}}
         prompt = _build_inverted_prompt(group, metadata, "comparison")
@@ -1448,6 +1613,7 @@ class TestBuildInvertedPrompt:
     def test_prompt_lists_anchor_keys(self):
         """Inverted prompt lists anchor keys with titles for LLM accuracy."""
         from src.eval.eval_case_generator import _build_inverted_prompt
+
         group = self._make_group()
         metadata = {"ai-act": {"name": "AI Act"}, "gdpr": {"name": "GDPR"}}
         prompt = _build_inverted_prompt(group, metadata, "comparison")
@@ -1460,6 +1626,7 @@ class TestBuildInvertedPrompt:
     def test_prompt_specifies_synthesis_mode(self):
         """Inverted prompt mentions the synthesis mode."""
         from src.eval.eval_case_generator import _build_inverted_prompt
+
         group = self._make_group()
         metadata = {"ai-act": {"name": "AI Act"}, "gdpr": {"name": "GDPR"}}
         prompt = _build_inverted_prompt(group, metadata, "comparison")
@@ -1468,6 +1635,7 @@ class TestBuildInvertedPrompt:
     def test_prompt_json_schema_parseable(self):
         """Inverted prompt contains valid JSON schema example."""
         from src.eval.eval_case_generator import _build_inverted_prompt
+
         group = self._make_group()
         metadata = {"ai-act": {"name": "AI Act"}, "gdpr": {"name": "GDPR"}}
         prompt = _build_inverted_prompt(group, metadata, "comparison")
@@ -1480,6 +1648,7 @@ class TestBuildInvertedPrompt:
     def test_prompt_requests_danish(self):
         """Inverted prompt requests Danish output."""
         from src.eval.eval_case_generator import _build_inverted_prompt
+
         group = self._make_group()
         metadata = {"ai-act": {"name": "AI Act"}, "gdpr": {"name": "GDPR"}}
         prompt = _build_inverted_prompt(group, metadata, "comparison")
@@ -1488,11 +1657,16 @@ class TestBuildInvertedPrompt:
     def test_discovery_mode_avoids_law_names(self):
         """Discovery variant instructs to not mention law names."""
         from src.eval.eval_case_generator import _build_inverted_prompt
+
         group = self._make_group()
         metadata = {"ai-act": {"name": "AI Act"}, "gdpr": {"name": "GDPR"}}
         prompt = _build_inverted_prompt(group, metadata, "discovery")
         prompt_lower = prompt.lower()
-        assert "do not" in prompt_lower or "must not" in prompt_lower or "uden" in prompt_lower
+        assert (
+            "do not" in prompt_lower
+            or "must not" in prompt_lower
+            or "uden" in prompt_lower
+        )
 
 
 # =========================================================================
@@ -1514,24 +1688,39 @@ class TestInvertedGeneration:
 
         mock_group = ArticleGroup(
             articles=(
-                ArticleSpec("ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"),
+                ArticleSpec(
+                    "ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"
+                ),
                 ArticleSpec("gdpr", "35", "gdpr:article:35", "DPIA", "GDPR text"),
             ),
             shared_role="obligations",
         )
 
         # LLM picks both seed anchors as relevant
-        llm_response = [{
-            "id": "auto_inverted_obligations",
-            "prompt": "Sammenlign krav",
-            "synthesis_mode": "comparison",
-            "expected_corpora": ["ai-act", "gdpr"],
-            "expected_anchors": ["ai-act:article:6", "gdpr:article:35"],
-        }]
+        llm_response = [
+            {
+                "id": "auto_inverted_obligations",
+                "prompt": "Sammenlign krav",
+                "synthesis_mode": "comparison",
+                "expected_corpora": ["ai-act", "gdpr"],
+                "expected_anchors": ["ai-act:article:6", "gdpr:article:35"],
+            }
+        ]
 
-        with patch("src.eval.eval_case_generator._select_anchor_articles", return_value=[mock_group]), \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", new_callable=AsyncMock, return_value=llm_response), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch(
+                "src.eval.eval_case_generator._select_anchor_articles",
+                return_value=[mock_group],
+            ),
+            patch(
+                "src.eval.eval_case_generator._call_llm_for_cases",
+                new_callable=AsyncMock,
+                return_value=llm_response,
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             cases = _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
         assert len(cases) >= 1
@@ -1550,24 +1739,39 @@ class TestInvertedGeneration:
 
         mock_group = ArticleGroup(
             articles=(
-                ArticleSpec("ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"),
+                ArticleSpec(
+                    "ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"
+                ),
                 ArticleSpec("gdpr", "35", "gdpr:article:35", "DPIA", "GDPR text"),
             ),
             shared_role="obligations",
         )
 
         # LLM returns WRONG anchors — none match seeds → fall back to all seeds
-        llm_response = [{
-            "id": "auto_inverted",
-            "prompt": "Sammenlign krav",
-            "synthesis_mode": "comparison",
-            "expected_corpora": ["ai-act", "gdpr"],
-            "expected_anchors": ["article:99", "article:100"],
-        }]
+        llm_response = [
+            {
+                "id": "auto_inverted",
+                "prompt": "Sammenlign krav",
+                "synthesis_mode": "comparison",
+                "expected_corpora": ["ai-act", "gdpr"],
+                "expected_anchors": ["article:99", "article:100"],
+            }
+        ]
 
-        with patch("src.eval.eval_case_generator._select_anchor_articles", return_value=[mock_group]), \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", new_callable=AsyncMock, return_value=llm_response), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch(
+                "src.eval.eval_case_generator._select_anchor_articles",
+                return_value=[mock_group],
+            ),
+            patch(
+                "src.eval.eval_case_generator._call_llm_for_cases",
+                new_callable=AsyncMock,
+                return_value=llm_response,
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             cases = _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
         # Invalid anchors dropped, falls back to all corpus-qualified seeds
@@ -1586,24 +1790,39 @@ class TestInvertedGeneration:
 
         mock_group = ArticleGroup(
             articles=(
-                ArticleSpec("ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"),
+                ArticleSpec(
+                    "ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"
+                ),
                 ArticleSpec("gdpr", "35", "gdpr:article:35", "DPIA", "GDPR text"),
             ),
             shared_role="obligations",
         )
 
         # LLM picks only one of the two seed anchors
-        llm_response = [{
-            "id": "auto_inverted",
-            "prompt": "Hvad kræver AI-forordningen om klassificering?",
-            "synthesis_mode": "comparison",
-            "expected_corpora": ["ai-act", "gdpr"],
-            "expected_anchors": ["ai-act:article:6"],
-        }]
+        llm_response = [
+            {
+                "id": "auto_inverted",
+                "prompt": "Hvad kræver AI-forordningen om klassificering?",
+                "synthesis_mode": "comparison",
+                "expected_corpora": ["ai-act", "gdpr"],
+                "expected_anchors": ["ai-act:article:6"],
+            }
+        ]
 
-        with patch("src.eval.eval_case_generator._select_anchor_articles", return_value=[mock_group]), \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", new_callable=AsyncMock, return_value=llm_response), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch(
+                "src.eval.eval_case_generator._select_anchor_articles",
+                return_value=[mock_group],
+            ),
+            patch(
+                "src.eval.eval_case_generator._call_llm_for_cases",
+                new_callable=AsyncMock,
+                return_value=llm_response,
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             cases = _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
         # LLM's subset used (only the one it chose)
@@ -1619,15 +1838,25 @@ class TestInvertedGeneration:
             generation_strategy="standard",
         )
 
-        with patch("src.eval.eval_case_generator._call_llm_for_cases", new_callable=AsyncMock, return_value=mock_llm_response), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch(
+                "src.eval.eval_case_generator._call_llm_for_cases",
+                new_callable=AsyncMock,
+                return_value=mock_llm_response,
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             cases = _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
         assert len(cases) == 2
         # Standard path: anchors come from LLM (empty in this case)
         assert cases[0].expected_anchors == ()
 
-    def test_inverted_falls_back_when_no_graphs(self, mock_corpus_metadata, mock_llm_response):
+    def test_inverted_falls_back_when_no_graphs(
+        self, mock_corpus_metadata, mock_llm_response
+    ):
         """Inverted with no citation graphs → falls back to standard."""
         request = GenerationRequest(
             target_corpora=("ai-act", "gdpr"),
@@ -1636,9 +1865,19 @@ class TestInvertedGeneration:
             generation_strategy="inverted",
         )
 
-        with patch("src.eval.eval_case_generator._select_anchor_articles", return_value=[]), \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", new_callable=AsyncMock, return_value=mock_llm_response), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch(
+                "src.eval.eval_case_generator._select_anchor_articles", return_value=[]
+            ),
+            patch(
+                "src.eval.eval_case_generator._call_llm_for_cases",
+                new_callable=AsyncMock,
+                return_value=mock_llm_response,
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             cases = _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
         # Falls back to standard path
@@ -1657,7 +1896,9 @@ class TestInvertedGeneration:
 
         mock_group = ArticleGroup(
             articles=(
-                ArticleSpec("ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"),
+                ArticleSpec(
+                    "ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"
+                ),
                 ArticleSpec("gdpr", "35", "gdpr:article:35", "DPIA", "GDPR text"),
                 ArticleSpec("nis2", "1", "nis2:article:1", "Scope", "NIS2 text"),
             ),
@@ -1666,17 +1907,30 @@ class TestInvertedGeneration:
 
         # LLM decides the routing question is about ai-act and gdpr (not nis2)
         # LLM also picks only the relevant anchors
-        llm_response = [{
-            "id": "routing_q",
-            "prompt": "Hvilken lov gælder for AI-systemer der behandler persondata?",
-            "synthesis_mode": "routing",
-            "expected_corpora": ["ai-act", "gdpr"],
-            "expected_anchors": ["ai-act:article:6", "gdpr:article:35"],
-        }]
+        llm_response = [
+            {
+                "id": "routing_q",
+                "prompt": "Hvilken lov gælder for AI-systemer der behandler persondata?",
+                "synthesis_mode": "routing",
+                "expected_corpora": ["ai-act", "gdpr"],
+                "expected_anchors": ["ai-act:article:6", "gdpr:article:35"],
+            }
+        ]
 
-        with patch("src.eval.eval_case_generator._select_anchor_articles", return_value=[mock_group]), \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", new_callable=AsyncMock, return_value=llm_response), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch(
+                "src.eval.eval_case_generator._select_anchor_articles",
+                return_value=[mock_group],
+            ),
+            patch(
+                "src.eval.eval_case_generator._call_llm_for_cases",
+                new_callable=AsyncMock,
+                return_value=llm_response,
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             cases = _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
         # LLM's expected_corpora used (not all 3 seed corpora)
@@ -1699,23 +1953,40 @@ class TestInvertedGeneration:
 
         mock_group = ArticleGroup(
             articles=(
-                ArticleSpec("ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"),
+                ArticleSpec(
+                    "ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"
+                ),
                 ArticleSpec("gdpr", "35", "gdpr:article:35", "DPIA", "GDPR text"),
             ),
             shared_role="obligations",
         )
 
-        llm_response = [{
-            "id": "comp_q",
-            "prompt": "Sammenlign krav",
-            "synthesis_mode": "comparison",
-            "expected_corpora": ["ai-act"],  # LLM only says 1, but comparison needs all
-            "expected_anchors": [],
-        }]
+        llm_response = [
+            {
+                "id": "comp_q",
+                "prompt": "Sammenlign krav",
+                "synthesis_mode": "comparison",
+                "expected_corpora": [
+                    "ai-act"
+                ],  # LLM only says 1, but comparison needs all
+                "expected_anchors": [],
+            }
+        ]
 
-        with patch("src.eval.eval_case_generator._select_anchor_articles", return_value=[mock_group]), \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", new_callable=AsyncMock, return_value=llm_response), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch(
+                "src.eval.eval_case_generator._select_anchor_articles",
+                return_value=[mock_group],
+            ),
+            patch(
+                "src.eval.eval_case_generator._call_llm_for_cases",
+                new_callable=AsyncMock,
+                return_value=llm_response,
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             cases = _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
         # Comparison mode: all seed corpora expected
@@ -1735,14 +2006,18 @@ class TestInvertedGeneration:
         mock_groups = [
             ArticleGroup(
                 articles=(
-                    ArticleSpec("ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"),
+                    ArticleSpec(
+                        "ai-act", "6", "ai-act:article:6", "Klassificering", "AI text"
+                    ),
                     ArticleSpec("gdpr", "35", "gdpr:article:35", "DPIA", "GDPR text"),
                 ),
                 shared_role="obligations",
             ),
             ArticleGroup(
                 articles=(
-                    ArticleSpec("ai-act", "1", "ai-act:article:1", "Scope", "Scope text"),
+                    ArticleSpec(
+                        "ai-act", "1", "ai-act:article:1", "Scope", "Scope text"
+                    ),
                     ArticleSpec("gdpr", "1", "gdpr:article:1", "Scope", "Scope text"),
                 ),
                 shared_role="scope",
@@ -1751,17 +2026,36 @@ class TestInvertedGeneration:
 
         # Each LLM call returns 2 cases with relevant anchors from seeds
         llm_batch = [
-            {"id": "q1", "prompt": "Spørgsmål 1", "synthesis_mode": "comparison",
-             "expected_corpora": ["ai-act", "gdpr"],
-             "expected_anchors": ["ai-act:article:6", "gdpr:article:35"]},
-            {"id": "q2", "prompt": "Spørgsmål 2", "synthesis_mode": "comparison",
-             "expected_corpora": ["ai-act", "gdpr"],
-             "expected_anchors": ["ai-act:article:6"]},
+            {
+                "id": "q1",
+                "prompt": "Spørgsmål 1",
+                "synthesis_mode": "comparison",
+                "expected_corpora": ["ai-act", "gdpr"],
+                "expected_anchors": ["ai-act:article:6", "gdpr:article:35"],
+            },
+            {
+                "id": "q2",
+                "prompt": "Spørgsmål 2",
+                "synthesis_mode": "comparison",
+                "expected_corpora": ["ai-act", "gdpr"],
+                "expected_anchors": ["ai-act:article:6"],
+            },
         ]
 
-        with patch("src.eval.eval_case_generator._select_anchor_articles", return_value=mock_groups), \
-             patch("src.eval.eval_case_generator._call_llm_for_cases", new_callable=AsyncMock, return_value=llm_batch), \
-             patch("src.eval.eval_case_generator.load_citation_graph", return_value=None):
+        with (
+            patch(
+                "src.eval.eval_case_generator._select_anchor_articles",
+                return_value=mock_groups,
+            ),
+            patch(
+                "src.eval.eval_case_generator._call_llm_for_cases",
+                new_callable=AsyncMock,
+                return_value=llm_batch,
+            ),
+            patch(
+                "src.eval.eval_case_generator.load_citation_graph", return_value=None
+            ),
+        ):
             cases = _run(generate_cross_law_cases(request, mock_corpus_metadata))
 
         # Should produce 4 cases (2 groups × 2 per group)
@@ -1784,7 +2078,9 @@ class TestCorpusQualifiedAnchorKeys:
     keys like ai-act:article:6 prevent false positives.
     """
 
-    def _make_mock_graph(self, roles_map: dict[str, list[str]], titles: dict[str, str] | None = None):
+    def _make_mock_graph(
+        self, roles_map: dict[str, list[str]], titles: dict[str, str] | None = None
+    ):
         """Create mock CitationGraph."""
         mock_graph = MagicMock()
         nodes = {}
@@ -1816,10 +2112,15 @@ class TestCorpusQualifiedAnchorKeys:
         from src.eval.eval_case_generator import _select_anchor_articles
 
         graph_a = self._make_mock_graph({"obligations": ["6"]}, {"6": "Risikostyring"})
-        graph_b = self._make_mock_graph({"obligations": ["21"]}, {"21": "Risikostyring"})
+        graph_b = self._make_mock_graph(
+            {"obligations": ["21"]}, {"21": "Risikostyring"}
+        )
         cache = {"ai-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={"6": "Text A", "21": "Text B"}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks",
+            return_value={"6": "Text A", "21": "Text B"},
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=5,
@@ -1829,8 +2130,9 @@ class TestCorpusQualifiedAnchorKeys:
         assert len(groups) >= 1
         for group in groups:
             for spec in group.articles:
-                assert spec.anchor_key.startswith(f"{spec.corpus_id}:"), \
+                assert spec.anchor_key.startswith(f"{spec.corpus_id}:"), (
                     f"anchor_key '{spec.anchor_key}' must start with '{spec.corpus_id}:'"
+                )
 
     def test_article_anchor_key_format(self):
         """Article anchor keys follow {corpus_id}:article:{N} format."""
@@ -1840,7 +2142,10 @@ class TestCorpusQualifiedAnchorKeys:
         graph_b = self._make_mock_graph({"scope": ["1"]})
         cache = {"data-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={"1": "Text"}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks",
+            return_value={"1": "Text"},
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("data-act", "gdpr"),
                 max_groups=5,
@@ -1862,13 +2167,18 @@ class TestCorpusQualifiedAnchorKeys:
         node = MagicMock()
         node.title = "Annex III"
         graph.nodes = {"ANNEX:III": node}
-        graph.get_articles_by_role = lambda role: ["ANNEX:III"] if role == "obligations" else []
+        graph.get_articles_by_role = lambda role: (
+            ["ANNEX:III"] if role == "obligations" else []
+        )
         graph.get_foundational_articles = lambda: {"obligations": ["ANNEX:III"]}
 
         graph_b = self._make_mock_graph({"obligations": ["6"]})
         cache = {"ai-act": graph, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={"ANNEX:III": "Text", "6": "Text"}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks",
+            return_value={"ANNEX:III": "Text", "6": "Text"},
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=5,
@@ -1876,7 +2186,9 @@ class TestCorpusQualifiedAnchorKeys:
             )
 
         assert len(groups) >= 1
-        ai_act_specs = [s for g in groups for s in g.articles if s.corpus_id == "ai-act"]
+        ai_act_specs = [
+            s for g in groups for s in g.articles if s.corpus_id == "ai-act"
+        ]
         assert any(s.anchor_key == "ai-act:annex:III" for s in ai_act_specs)
 
     def test_fallback_foundational_also_corpus_qualified(self):
@@ -1884,10 +2196,15 @@ class TestCorpusQualifiedAnchorKeys:
         from src.eval.eval_case_generator import _select_anchor_articles
 
         graph_a = self._make_mock_graph({"obligations": ["6"]})
-        graph_b = self._make_mock_graph({"enforcement": ["10"]})  # Different role — no overlap
+        graph_b = self._make_mock_graph(
+            {"enforcement": ["10"]}
+        )  # Different role — no overlap
         cache = {"ai-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={"6": "T", "10": "T"}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks",
+            return_value={"6": "T", "10": "T"},
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=5,
@@ -1897,8 +2214,9 @@ class TestCorpusQualifiedAnchorKeys:
         assert len(groups) >= 1
         for group in groups:
             for spec in group.articles:
-                assert spec.anchor_key.startswith(f"{spec.corpus_id}:"), \
+                assert spec.anchor_key.startswith(f"{spec.corpus_id}:"), (
                     f"Fallback anchor_key '{spec.anchor_key}' must be corpus-qualified"
+                )
 
 
 # =========================================================================
@@ -1916,7 +2234,9 @@ class TestDeepArticleSelection:
     the retrieval system's ability to find specific substantive content.
     """
 
-    def _make_mock_graph(self, roles_map: dict[str, list[str]], titles: dict[str, str] | None = None):
+    def _make_mock_graph(
+        self, roles_map: dict[str, list[str]], titles: dict[str, str] | None = None
+    ):
         """Create mock CitationGraph with multiple articles per role."""
         mock_graph = MagicMock()
         nodes = {}
@@ -1962,7 +2282,13 @@ class TestDeepArticleSelection:
         # "obligations" has articles 1, 2, 9, 25, 47 — should prefer 25 or 47 over 1
         graph_a = self._make_mock_graph(
             {"obligations": ["1", "2", "9", "25", "47"]},
-            {"1": "Scope", "2": "Definitions", "9": "Risk mgmt", "25": "Obligations", "47": "Conformity"},
+            {
+                "1": "Scope",
+                "2": "Definitions",
+                "9": "Risk mgmt",
+                "25": "Obligations",
+                "47": "Conformity",
+            },
         )
         graph_b = self._make_mock_graph(
             {"obligations": ["1", "2", "24", "42"]},
@@ -1970,7 +2296,9 @@ class TestDeepArticleSelection:
         )
         cache = {"ai-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks", return_value={}
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=10,
@@ -2006,7 +2334,9 @@ class TestDeepArticleSelection:
         )
         cache = {"ai-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks", return_value={}
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=10,
@@ -2033,7 +2363,9 @@ class TestDeepArticleSelection:
         )
         cache = {"ai-act": graph_a, "gdpr": graph_b}
 
-        with patch("src.eval.eval_case_generator._load_article_chunks", return_value={}):
+        with patch(
+            "src.eval.eval_case_generator._load_article_chunks", return_value={}
+        ):
             groups = _select_anchor_articles(
                 target_corpora=("ai-act", "gdpr"),
                 max_groups=10,
@@ -2042,5 +2374,6 @@ class TestDeepArticleSelection:
 
         # Should get multiple groups — not just one per role
         oblig_groups = [g for g in groups if g.shared_role == "obligations"]
-        assert len(oblig_groups) >= 2, \
+        assert len(oblig_groups) >= 2, (
             f"Expected multiple obligation groups for diversity, got {len(oblig_groups)}"
+        )

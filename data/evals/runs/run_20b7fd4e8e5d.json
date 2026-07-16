@@ -1,0 +1,394 @@
+{
+  "run_id": "run_20b7fd4e8e5d",
+  "suite_id": "dataadgang_og_cybersikkerhed_routing_inverted_39c3c205",
+  "timestamp": "2026-02-11T21:19:55.629168+00:00",
+  "total": 10,
+  "passed": 8,
+  "failed": 2,
+  "pass_rate": 0.8,
+  "duration_seconds": 53.98056079191156,
+  "run_mode": "full",
+  "max_retries": 0,
+  "results": [
+    {
+      "case_id": "data_protection_and_trade",
+      "prompt": "Hvilken forordning gælder, hvis en virksomhed ønsker at dele personoplysninger om kunder i forbindelse med handel med tredjelande, samtidig med at de skal overholde reglerne for beskyttelse af personoplysninger?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": false,
+      "duration_ms": 15325.814041076228,
+      "scores": {
+        "anchor_presence": {
+          "passed": false,
+          "score": 0.0,
+          "message": "missing_any_of=['gdpr:article:1', 'elan:article:1']"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": false,
+          "score": 0.5,
+          "message": "Missing laws: gdpr"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "data_delivering_research",
+      "prompt": "Hvilken lovgivning gælder for en offentlig myndighed, der ønsker at dele data indsamlet under ekstraordinære omstændigheder med forskningsinstitutioner?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": true,
+      "duration_ms": 15702.032417058945,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 1/1 expected laws"
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "case_id": "data_processing_scenario",
+      "prompt": "Hvilken forordning gælder for behandling af personoplysninger i forbindelse med elektronisk udveksling af dokumenter til handel med tredjelande?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": true,
+      "duration_ms": 9442.583833122626,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.5,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 2/2 expected laws"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "tvistbilagelse_og_personoplysninger",
+      "prompt": "Hvilken lovgivning gælder, hvis en offentlig myndighed skal behandle personoplysninger vedrørende straffedomme, samtidig med at der opstår en tvist om datadeling mellem brugere og dataindehavere?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": true,
+      "duration_ms": 30899.08849983476,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 2/2 expected laws"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "interoperabilitet_og_databeskyttelse",
+      "prompt": "Hvilken lovgivning gælder for situationen, hvor en virksomhed ønsker at sikre, at deres databehandlingstjenester er interoperable og samtidig overholder databeskyttelsesstandarder i EU?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": false,
+      "duration_ms": 16941.43291702494,
+      "scores": {
+        "anchor_presence": {
+          "passed": false,
+          "score": 0.0,
+          "message": "missing_any_of=['data-act:article:35', 'gdpr:article:68']"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 2/2 expected laws"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "data_request_and_privacy",
+      "prompt": "Hvilken lovgivning gælder, når offentlige myndigheder anmoder om data, og samtidig skal sikre, at personoplysninger beskyttes i henhold til gældende regler?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": true,
+      "duration_ms": 32848.99612492882,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.5,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 2/2 expected laws"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "data_privacy_incident",
+      "prompt": "Hvilken lovgivning gælder, hvis en virksomhed oplever en væsentlig hændelse, der involverer personoplysninger, og som påvirker tilgængeligheden af deres indholdsleveringsnetværk?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": true,
+      "duration_ms": 33134.92983300239,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 2/2 expected laws"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "auto_inverted_classification_1",
+      "prompt": "Hvilken lovgivning gælder for behandling af personoplysninger i forbindelse med elektronisk udveksling af dokumenter til handel med tredjelande?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": true,
+      "duration_ms": 12560.65637501888,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 2/2 expected laws"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "auto_inverted_classification",
+      "prompt": "Hvilke krav skal en leverandør af en applikation, der anvender intelligente kontrakter til datadeling, overholde i henhold til gældende lovgivning, hvis der også er begrænsninger i databeskyttelsesretten?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": true,
+      "duration_ms": 19968.38974999264,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 2/2 expected laws"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "data_processing_scenario_1",
+      "prompt": "Hvilken forordning gælder for en virksomhed, der indsamler og behandler personoplysninger fra brugere af et forbundet produkt, samtidig med at den tilrådighedsstiller produktdata til offentlige myndigheder?",
+      "synthesis_mode": "routing",
+      "target_corpora": [
+        "data-act",
+        "elan",
+        "gdpr",
+        "nis2-cir-2024-2690",
+        "dora",
+        "reg-sandkasser"
+      ],
+      "passed": true,
+      "duration_ms": 29199.11566702649,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "routing_precision": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Routed to 2/2 expected laws"
+        }
+      },
+      "difficulty": "medium"
+    }
+  ]
+}

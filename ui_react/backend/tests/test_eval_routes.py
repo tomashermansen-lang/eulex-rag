@@ -1,9 +1,7 @@
 """Tests for eval dashboard API routes."""
 
-import json
-import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class TestEvalOverview:
@@ -29,9 +27,10 @@ class TestEvalOverview:
 """)
 
         # Mock the paths
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("routes.eval._load_latest_run", return_value=None):
-
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("routes.eval._load_latest_run", return_value=None),
+        ):
             response = client.get("/api/eval/overview")
 
         assert response.status_code == 200
@@ -50,7 +49,14 @@ class TestEvalOverview:
         assert response.status_code == 200
         data = response.json()
 
-        expected_types = ["retrieval", "faithfulness", "relevancy", "abstention", "robustness", "multi_hop"]
+        expected_types = [
+            "retrieval",
+            "faithfulness",
+            "relevancy",
+            "abstention",
+            "robustness",
+            "multi_hop",
+        ]
         assert data["test_types"] == expected_types
 
 
@@ -70,8 +76,25 @@ class TestEvalRuns:
     def test_runs_list_with_filter(self, client):
         """Should filter runs by law parameter."""
         mock_runs = [
-            ("run1", {"meta": {"law": "ai-act", "timestamp": "2026-01-01T00:00:00Z"}, "summary": {"total": 10, "passed": 10, "failed": 0, "pass_rate": 1.0}}),
-            ("run2", {"meta": {"law": "gdpr", "timestamp": "2026-01-02T00:00:00Z"}, "summary": {"total": 5, "passed": 5, "failed": 0, "pass_rate": 1.0}}),
+            (
+                "run1",
+                {
+                    "meta": {"law": "ai-act", "timestamp": "2026-01-01T00:00:00Z"},
+                    "summary": {
+                        "total": 10,
+                        "passed": 10,
+                        "failed": 0,
+                        "pass_rate": 1.0,
+                    },
+                },
+            ),
+            (
+                "run2",
+                {
+                    "meta": {"law": "gdpr", "timestamp": "2026-01-02T00:00:00Z"},
+                    "summary": {"total": 5, "passed": 5, "failed": 0, "pass_rate": 1.0},
+                },
+            ),
         ]
 
         with patch("routes.eval._load_all_runs", return_value=mock_runs):
@@ -104,7 +127,7 @@ class TestTriggerEval:
         with patch("routes.eval._load_golden_cases", return_value=[]):
             response = client.post(
                 "/api/eval/trigger",
-                json={"law": "nonexistent", "run_mode": "retrieval_only"}
+                json={"law": "nonexistent", "run_mode": "retrieval_only"},
             )
 
         assert response.status_code == 404
@@ -116,12 +139,14 @@ class TestTriggerEval:
         with patch("routes.eval._load_golden_cases", return_value=mock_cases):
             response = client.post(
                 "/api/eval/trigger",
-                json={"law": "test-law", "run_mode": "retrieval_only"}
+                json={"law": "test-law", "run_mode": "retrieval_only"},
             )
 
         # Should return streaming response
         assert response.status_code == 200
-        assert response.headers.get("content-type") == "text/event-stream; charset=utf-8"
+        assert (
+            response.headers.get("content-type") == "text/event-stream; charset=utf-8"
+        )
 
 
 class TestEvalCasesCRUD:
@@ -155,8 +180,10 @@ class TestEvalCasesCRUD:
       - article:2
 """)
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.get("/api/eval/cases/test-law")
 
         assert response.status_code == 200
@@ -171,8 +198,10 @@ class TestEvalCasesCRUD:
         evals_dir = tmp_path / "data" / "evals"
         evals_dir.mkdir(parents=True)
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.get("/api/eval/cases/nonexistent")
 
         assert response.status_code == 200
@@ -198,8 +227,10 @@ class TestEvalCasesCRUD:
     behavior: answer
 """)
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.get("/api/eval/cases/test-law/test-law-01-basic")
 
         assert response.status_code == 200
@@ -216,8 +247,10 @@ class TestEvalCasesCRUD:
         golden_file = evals_dir / "golden_cases_test-law.yaml"
         golden_file.write_text("[]")
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.get("/api/eval/cases/test-law/nonexistent")
 
         assert response.status_code == 404
@@ -240,8 +273,10 @@ class TestEvalCasesCRUD:
             },
         }
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.post("/api/eval/cases/test-law", json=case_data)
 
         assert response.status_code == 201
@@ -263,8 +298,10 @@ class TestEvalCasesCRUD:
             "profile": "INVALID",
         }
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.post("/api/eval/cases/test-law", json=case_data)
 
         assert response.status_code == 422
@@ -292,13 +329,20 @@ class TestEvalCasesCRUD:
             "prompt": "Updated question that is definitely long enough to pass validation?",
         }
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
-            response = client.put("/api/eval/cases/test-law/test-law-01-basic", json=update_data)
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
+            response = client.put(
+                "/api/eval/cases/test-law/test-law-01-basic", json=update_data
+            )
 
         assert response.status_code == 200
         data = response.json()
-        assert data["prompt"] == "Updated question that is definitely long enough to pass validation?"
+        assert (
+            data["prompt"]
+            == "Updated question that is definitely long enough to pass validation?"
+        )
         assert data["origin"] == "manual"  # Changed from auto to manual
 
     def test_update_case_not_found_returns_404(self, client, tmp_path):
@@ -309,11 +353,13 @@ class TestEvalCasesCRUD:
         golden_file = evals_dir / "golden_cases_test-law.yaml"
         golden_file.write_text("[]")
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.put(
                 "/api/eval/cases/test-law/nonexistent",
-                json={"prompt": "Updated question that is long enough?"}
+                json={"prompt": "Updated question that is long enough?"},
             )
 
         assert response.status_code == 404
@@ -337,8 +383,10 @@ class TestEvalCasesCRUD:
     behavior: answer
 """)
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.delete("/api/eval/cases/test-law/test-law-01-to-delete")
 
         assert response.status_code == 204
@@ -351,8 +399,10 @@ class TestEvalCasesCRUD:
         golden_file = evals_dir / "golden_cases_test-law.yaml"
         golden_file.write_text("[]")
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
             response = client.delete("/api/eval/cases/test-law/nonexistent")
 
         assert response.status_code == 404
@@ -376,9 +426,13 @@ class TestEvalCasesCRUD:
     behavior: answer
 """)
 
-        with patch("routes.eval._get_evals_dir", return_value=evals_dir), \
-             patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
-            response = client.post("/api/eval/cases/test-law/test-law-01-original/duplicate")
+        with (
+            patch("routes.eval._get_evals_dir", return_value=evals_dir),
+            patch("services.eval_cases._get_evals_dir", return_value=evals_dir),
+        ):
+            response = client.post(
+                "/api/eval/cases/test-law/test-law-01-original/duplicate"
+            )
 
         assert response.status_code == 201
         data = response.json()

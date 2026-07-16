@@ -1,19 +1,10 @@
 from __future__ import annotations
 
 import re
-import os
-from pathlib import Path
-from typing import Any, Dict, List, Tuple, Optional, Callable
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Callable
 
 from .constants import (
-    _TRUTHY_ENV_VALUES,
-    _INTENT_ENFORCEMENT_KEYWORDS_SUBSTR,
-    _INTENT_ENFORCEMENT_KEYWORDS_EXACT,
-    _INTENT_REQUIREMENTS_KEYWORDS_STRONG_SUBSTR,
-    _INTENT_REQUIREMENTS_KEYWORDS_WEAK_SUBSTR,
-    _INTENT_REQUIREMENTS_KEYWORDS_VERBS,
-    _INTENT_CLASSIFICATION_KEYWORDS_SUBSTR,
-    _INTENT_SCOPE_KEYWORDS_STRONG_SUBSTR,
     contains_normative_claim,
 )
 from .types import (
@@ -22,14 +13,16 @@ from .types import (
     LegalClaimGateResult,
     UserProfile,
 )
-from .helpers import _truthy_env
-from . import helpers
+from .constants import _truthy_env
+from . import query_helpers
 from .concept_config import Policy as AnchorPolicy
-from ..common.corpus_registry import normalize_alias, normalize_corpus_id
-from .corpus_resolver import load_resolver_for_project_root, CorpusResolver
-from .intent_router import disambiguate_intent
+from ..common.corpus_registry import normalize_corpus_id
+from .corpus_resolver import CorpusResolver
 
-def rescue_rules_feature_enabled(*, required_anchors_payload: dict[str, Any] | None) -> bool:
+
+def rescue_rules_feature_enabled(
+    *, required_anchors_payload: dict[str, Any] | None
+) -> bool:
     """Rescue rules are disabled in normal drift.
 
     Enable only when:
@@ -37,7 +30,9 @@ def rescue_rules_feature_enabled(*, required_anchors_payload: dict[str, Any] | N
     - explicit feature flag is enabled: ANCHOR_RESCUE_RULES=1
     """
 
-    return bool(required_anchors_payload is not None) or _truthy_env("ANCHOR_RESCUE_RULES")
+    return bool(required_anchors_payload is not None) or _truthy_env(
+        "ANCHOR_RESCUE_RULES"
+    )
 
 
 def _policy_required_support_for_profile(
@@ -131,17 +126,27 @@ def _apply_required_support_guard(
     it overrides the default (last-wins in policy merge).
     """
 
-    has_article_support = any(bool(r.get("article")) for r in list(references_structured or []))
-    has_annex_support = any(bool(r.get("annex")) for r in list(references_structured or []))
+    has_article_support = any(
+        bool(r.get("article")) for r in list(references_structured or [])
+    )
+    has_annex_support = any(
+        bool(r.get("annex")) for r in list(references_structured or [])
+    )
 
-    policy_info = _policy_normative_guard_match_info(policy=policy, profile=resolved_profile)
+    policy_info = _policy_normative_guard_match_info(
+        policy=policy, profile=resolved_profile
+    )
     override_required_support = policy_info.get("policy_required_support")
 
     # Determine whether we should enforce any guard at all.
-    enforce_due_to_intent = resolved_profile == UserProfile.ENGINEERING and claim_intent_final in {
-        ClaimIntent.REQUIREMENTS,
-        ClaimIntent.CLASSIFICATION,
-    }
+    enforce_due_to_intent = (
+        resolved_profile == UserProfile.ENGINEERING
+        and claim_intent_final
+        in {
+            ClaimIntent.REQUIREMENTS,
+            ClaimIntent.CLASSIFICATION,
+        }
+    )
     has_normative_claim = False
     try:
         has_normative_claim = bool(contains_normative_claim(answer_text))
@@ -155,9 +160,13 @@ def _apply_required_support_guard(
             "policy_required_support": policy_info.get("policy_required_support"),
             "required_support_used": None,
             "policy_matched": bool(policy_info.get("policy_matched")),
-            "policy_matched_reason": str(policy_info.get("policy_matched_reason") or ""),
+            "policy_matched_reason": str(
+                policy_info.get("policy_matched_reason") or ""
+            ),
             "profile": str(resolved_profile.value),
-            "intent": str(getattr(claim_intent_final, "value", claim_intent_final) or ""),
+            "intent": str(
+                getattr(claim_intent_final, "value", claim_intent_final) or ""
+            ),
             "should_enforce": False,
         }
         return answer_text, references_structured
@@ -177,7 +186,11 @@ def _apply_required_support_guard(
     if required_support == "any":
         return answer_text, references_structured
 
-    has_required_support = bool(has_article_support) if required_support == "article" else bool(has_article_support or has_annex_support)
+    has_required_support = (
+        bool(has_article_support)
+        if required_support == "article"
+        else bool(has_article_support or has_annex_support)
+    )
 
     # Always provide machine-readable context.
     run_meta["normative_guard"] = {
@@ -209,193 +222,15 @@ def _apply_required_support_guard(
     return answer_text, references_structured
 
 
-def _intent_match_signals(prompt_text: str) -> dict[str, bool]:
-    q = str(prompt_text or "").strip().lower()
-    if not q:
-        return {"enforcement": False, "requirements": False, "classification": False, "scope": False}
-
-    enforcement = any(k in q for k in _INTENT_ENFORCEMENT_KEYWORDS_SUBSTR) or any(
-        re.search(rf"(?i)\\b{re.escape(w)}\\b", q) for w in _INTENT_ENFORCEMENT_KEYWORDS_EXACT
-    )
-    requirements = any(k in q for k in _INTENT_REQUIREMENTS_KEYWORDS_STRONG_SUBSTR) or (
-        any(k in q for k in _INTENT_REQUIREMENTS_KEYWORDS_WEAK_SUBSTR)
-        and any(k in q for k in ("krav", "kræver", "kræves", "skal", "must", "should", "hvordan", "overhold", "efterlev", "implement"))
-    )
-    classification = any(k in q for k in _INTENT_CLASSIFICATION_KEYWORDS_SUBSTR)
-    scope = any(k in q for k in _INTENT_SCOPE_KEYWORDS_STRONG_SUBSTR)
-    return {
-        "enforcement": bool(enforcement),
-        "requirements": bool(requirements),
-        "classification": bool(classification),
-        "scope": bool(scope),
-    }
-
-
-def _detect_intent_cues(prompt_text: str) -> dict[str, Any]:
-    """Return matched cue tokens for observability.
-
-    This is *not* a new classifier; it mirrors existing deterministic heuristics
-    but provides explainability (matched tokens) for audit/debug.
-    """
-
-    q = str(prompt_text or "").strip().lower()
-    if not q:
-        return {
-            "requirements_cues_detected": False,
-            "requirements_cues_matched": [],
-            "enforcement_cues_detected": False,
-            "enforcement_cues_matched": [],
-        }
-
-    enforcement_matched = [k for k in _INTENT_ENFORCEMENT_KEYWORDS_SUBSTR if k in q]
-    enforcement_word_matched: list[str] = []
-    for w in _INTENT_ENFORCEMENT_KEYWORDS_EXACT:
-        try:
-            if re.search(rf"(?i)\b{re.escape(w)}\b", q):
-                enforcement_word_matched.append(str(w))
-        except Exception:  # noqa: BLE001
-            if str(w).lower() in q:
-                enforcement_word_matched.append(str(w))
-    enforcement_matched = sorted(set([*enforcement_matched, *enforcement_word_matched]))
-
-    req_strong = [k for k in _INTENT_REQUIREMENTS_KEYWORDS_STRONG_SUBSTR if k in q]
-    req_weak = [k for k in _INTENT_REQUIREMENTS_KEYWORDS_WEAK_SUBSTR if k in q]
-    req_verbs = [k for k in _INTENT_REQUIREMENTS_KEYWORDS_VERBS if k in q]
-    requirements_detected = bool(req_strong) or (bool(req_weak) and bool(req_verbs))
-    requirements_matched = sorted(set([*req_strong, *req_weak, *req_verbs]))
-
-    return {
-        "requirements_cues_detected": bool(requirements_detected),
-        "requirements_cues_matched": list(requirements_matched),
-        "enforcement_cues_detected": bool(enforcement_matched),
-        "enforcement_cues_matched": list(enforcement_matched),
-    }
-
-
-def classify_question_intent(prompt_text: str) -> ClaimIntent:
-    """Classify the user's intent for claim-stage gating.
-
-    Deterministic, heuristic-only, and intentionally small.
-    """
-
-    q = str(prompt_text or "").strip().lower()
-    if not q:
-        return ClaimIntent.GENERAL
-
-    # NOTE: Order matters. We prefer the most safety-sensitive intents first.
-    signals = _intent_match_signals(q)
-    if signals["enforcement"]:
-        return ClaimIntent.ENFORCEMENT
-
-    if signals["requirements"]:
-        return ClaimIntent.REQUIREMENTS
-
-    if signals["classification"]:
-        return ClaimIntent.CLASSIFICATION
-
-    # SCOPE is specifically about the law's applicability/anvendelsesområde.
-    # Avoid treating phrases like "Hvornår gælder retten til ..." as scope.
-    if any(k in q for k in _INTENT_SCOPE_KEYWORDS_STRONG_SUBSTR):
-        return ClaimIntent.SCOPE
-
-
-    if "gælder" in q:
-        # Generic: treat "gælder <law/corpus>" as scope when the question explicitly
-        # mentions any known corpus alias/display name from the registry.
-        try:
-            project_root = Path(__file__).resolve().parents[2]
-            resolver = load_resolver_for_project_root(str(project_root))
-            if resolver.any_alias_in(normalize_alias(q)):
-                return ClaimIntent.SCOPE
-        except Exception:  # noqa: BLE001
-            pass
-
-    return ClaimIntent.GENERAL
-
-
-def classify_question_intent_with_router(
-    prompt_text: str,
-    *,
-    enable_router: bool = True,
-    last_exchange: list | None = None,
-    query_was_rewritten: bool = False,
-) -> tuple[ClaimIntent, dict]:
-    """Classify intent using keyword heuristics + LLM router for disambiguation.
-
-    This is the recommended function to use. It:
-    1. Uses fast keyword heuristics to get candidate intent
-    2. If candidate is a gated intent (CLASSIFICATION, ENFORCEMENT, REQUIREMENTS, SCOPE),
-       calls LLM router to check if question is about LAW_CONTENT vs USER_SYSTEM
-    3. Overrides to GENERAL if question is about law content (not user's own system)
-
-    Args:
-        prompt_text: The user's question
-        enable_router: If False, skip LLM call (useful for testing)
-        last_exchange: Optional last user+assistant exchange for context augmentation.
-        query_was_rewritten: Whether the query was changed by the rewriter.
-
-    Returns:
-        Tuple of (final_intent, debug_info)
-    """
-    # First: fast keyword heuristics
-    candidate = classify_question_intent(prompt_text)
-
-    # Then: LLM disambiguation if gated
-    return disambiguate_intent(
-        prompt_text,
-        candidate,
-        enable_router=enable_router,
-        last_exchange=last_exchange,
-        query_was_rewritten=query_was_rewritten,
-    )
-
-
-def _apply_answer_policy_to_claim_intent(
-    *,
-    resolved_profile: UserProfile,
-    classifier_intent: ClaimIntent,
-    policy: AnchorPolicy | None,
-    question: str | None = None,
-) -> tuple[ClaimIntent, dict[str, Any]]:
-    """Apply config-driven answer_policy to claim-stage intent.
-
-    This is used to prevent off-topic ENGINEERING answers when retrieval is good but
-    heuristic enforcement signals would otherwise override requirements-oriented planning.
-    """
-
-    dbg: dict[str, Any] = {
-        "classifier_intent": str(getattr(classifier_intent, "value", classifier_intent) or ""),
-        "policy_present": bool(policy is not None),
-        "policy_intent_category": None,
-        "final_intent": str(getattr(classifier_intent, "value", classifier_intent) or ""),
-        "override_applied": False,
-    }
-
-    if policy is None:
-        return classifier_intent, dbg
-
-    # If policy explicitly sets intent_category, we may override the classifier.
-    # Currently only supports overriding ENFORCEMENT -> REQUIREMENTS if the policy says so.
-    ap = getattr(policy, "answer_policy", None)
-    if ap is None:
-        return classifier_intent, dbg
-
-    policy_intent = str(getattr(ap, "intent_category", "") or "").strip().upper()
-    dbg["policy_intent_category"] = policy_intent
-
-    if not policy_intent:
-        return classifier_intent, dbg
-
-    if classifier_intent == ClaimIntent.ENFORCEMENT and policy_intent == "REQUIREMENTS":
-        # Override: The user asked about enforcement (e.g. "bøde"), but the policy
-        # dictates this is a requirements question (e.g. "Hvad er kravene?").
-        # This happens when enforcement keywords appear in a requirements context.
-        dbg["override_applied"] = True
-        dbg["final_intent"] = "REQUIREMENTS"
-        dbg["requirements_cues_detected"] = True
-        return ClaimIntent.REQUIREMENTS, dbg
-
-    return classifier_intent, dbg
+# Intent classification functions moved to intent_router.py (Phase 8a)
+# Re-export for backward compatibility
+from .intent_router import (  # noqa: E402, F401
+    _intent_match_signals,
+    _detect_intent_cues,
+    classify_question_intent,
+    classify_question_intent_with_router,
+    _apply_answer_policy_to_claim_intent,
+)
 
 
 def _engineering_apply_answer_policy_requirements_enforcement(
@@ -414,7 +249,9 @@ def _engineering_apply_answer_policy_requirements_enforcement(
         "applied": False,
         "skipped_reason": None,
         "min_section3_bullets": getattr(answer_policy, "min_section3_bullets", None),
-        "include_audit_evidence": bool(getattr(answer_policy, "include_audit_evidence", False)),
+        "include_audit_evidence": bool(
+            getattr(answer_policy, "include_audit_evidence", False)
+        ),
         "added_section3_bullets": 0,
         "added_audit_section": False,
     }
@@ -428,7 +265,9 @@ def _engineering_apply_answer_policy_requirements_enforcement(
         dbg["skipped_reason"] = "empty_or_missing_ref"
         return txt, dbg
 
-    intent_category = str(getattr(answer_policy, "intent_category", "") or "").strip().upper()
+    intent_category = (
+        str(getattr(answer_policy, "intent_category", "") or "").strip().upper()
+    )
     if intent_category != "REQUIREMENTS":
         dbg["skipped_reason"] = "not_requirements_category"
         return txt, dbg
@@ -477,7 +316,7 @@ def _engineering_apply_answer_policy_requirements_enforcement(
             needed = mb - len(bullet_lines)
 
     if needed > 0:
-        inserts.extend([f"- UTILSTRÆKKELIG_EVIDENS" for _ in range(needed)])
+        inserts.extend(["- UTILSTRÆKKELIG_EVIDENS" for _ in range(needed)])
         dbg["added_section3_bullets"] = int(needed)
 
     if not inserts:
@@ -489,109 +328,8 @@ def _engineering_apply_answer_policy_requirements_enforcement(
     return "\n".join(new_lines), dbg
 
 
-def classify_evidence_type_from_metadata(ref_or_chunk_metadata: dict[str, Any] | None) -> EvidenceType:
-    """Infer evidence type from existing metadata strings.
-
-    Must NOT hardcode specific article numbers; relies only on metadata text labels.
-
-    Searches these metadata fields for evidence type keywords:
-    - heading_path, heading_path_display, toc_path, title, location_id, source, display
-    - article_title, chapter_title, section_title, annex_title (EUR-Lex structural titles)
-    """
-
-    meta = dict(ref_or_chunk_metadata or {})
-    # Collect likely label fields (TOC/heading/title/location) into a single searchable text.
-    parts: list[str] = []
-    for key in [
-        "heading_path",
-        "heading_path_display",
-        "toc_path",
-        "title",
-        "location_id",
-        "source",
-        "display",
-        # EUR-Lex structural title fields (enriched at ingestion time).
-        "article_title",
-        "chapter_title",
-        "section_title",
-        "annex_title",
-    ]:
-        v = meta.get(key)
-        if isinstance(v, str) and v.strip():
-            parts.append(v.strip())
-        elif isinstance(v, list):
-            # Some ingests may store heading_path as a list.
-            parts.extend([str(x).strip() for x in v if str(x).strip()])
-
-    hay = " ".join(parts).lower()
-    if not hay:
-        return EvidenceType.UNKNOWN
-
-    forbidden_kw = ["forbud", "forbudte", "prohibited", "forbidden"]
-    if any(k in hay for k in forbidden_kw):
-        return EvidenceType.FORBIDDEN
-
-    enforcement_kw = [
-        "håndhævelse",
-        "sanktion",
-        "sanktioner",
-        "bøde",
-        "bøder",
-        "klage",
-        "tilsyn",
-        "markedsovervåg",
-        "complaint",
-        "enforcement",
-        "market surveillance",
-        "surveillance authority",
-        "supervision",
-        "penalt",
-        "fine",
-        "sanction",
-        "remedy",
-        "redress",
-    ]
-    if any(k in hay for k in enforcement_kw):
-        return EvidenceType.ENFORCEMENT
-
-    definition_kw = [
-        "definition",
-        "definitions",
-        "definitioner",
-        "begreb",
-        "begreber",
-        "forstås ved",
-        "means",
-        "shall mean",
-    ]
-    if any(k in hay for k in definition_kw):
-        return EvidenceType.DEFINITION
-
-    scope_kw = [
-        "anvendelsesområde",
-        "scope",
-        "applicability",
-        "definition",
-        "definitions",
-        "omfang",
-    ]
-    if any(k in hay for k in scope_kw):
-        return EvidenceType.SCOPE
-
-    classification_kw = [
-        "højrisiko",
-        "high-risk",
-        "high risk",
-        "klassific",
-        "classification",
-        "annex",
-        "bilag",
-        "kategori",
-    ]
-    if any(k in hay for k in classification_kw):
-        return EvidenceType.CLASSIFICATION
-
-    return EvidenceType.UNKNOWN
+# Evidence classification moved to evidence_classifier.py (Phase 8a)
+from .evidence_classifier import classify_evidence_type_from_metadata  # noqa: E402,F401
 
 
 def _conditionalize_requirements_if_needed(answer_text: str) -> str:
@@ -605,7 +343,9 @@ def _conditionalize_requirements_if_needed(answer_text: str) -> str:
         return txt
 
     # Trigger only when we see strong normative keywords.
-    normative_re = re.compile(r"\b(MUST|SHALL|SHOULD)\b|\bskal\b|\bkræver\b", re.IGNORECASE)
+    normative_re = re.compile(
+        r"\b(MUST|SHALL|SHOULD)\b|\bskal\b|\bkræver\b", re.IGNORECASE
+    )
     if not normative_re.search(txt):
         return txt
 
@@ -632,9 +372,13 @@ def _conditionalize_requirements_if_needed(answer_text: str) -> str:
             if re.match(r"\s*(Hvis|If)\b", rest, flags=re.IGNORECASE):
                 out.append(line)
             else:
-                out.append(f"{prefix}Hvis systemet klassificeres som højrisiko (eller på anden måde omfattes af krav), så: {rest}")
+                out.append(
+                    f"{prefix}Hvis systemet klassificeres som højrisiko (eller på anden måde omfattes af krav), så: {rest}"
+                )
         else:
-            out.append(f"Hvis systemet klassificeres som højrisiko (eller på anden måde omfattes af krav), så: {line}")
+            out.append(
+                f"Hvis systemet klassificeres som højrisiko (eller på anden måde omfattes af krav), så: {line}"
+            )
 
     return "\n".join(out)
 
@@ -649,163 +393,13 @@ def _question_has_legal_assumption_bypass(question: str) -> bool:
     return ("antag at" in q) or ("forudsat at" in q)
 
 
-def _scope_extract_article_stk_litra_mentions(text: str) -> dict[tuple[str, str], set[str]]:
-    """Extract {(article, stk): {litra letters}} from a display string.
-
-    Only uses deterministic regexes; intended for SCOPE display consistency.
-    """
-
-    txt = str(text or "")
-    if not txt.strip():
-        return {}
-
-    out: dict[tuple[str, str], set[str]] = {}
-    # Match: Artikel 2, stk. 1[, litra c]
-    pat = re.compile(
-        r"(?i)\b(?:artikel|article)\s+(\d{1,3}[a-z]?)\s*,\s*stk\.?\s*(\d{1,3})\b(?:\s*,\s*litra\s+([a-z])\b)?"
-    )
-    for m in pat.finditer(txt):
-        art = str(m.group(1) or "").strip().upper()
-        stk = str(m.group(2) or "").strip()
-        lit = str(m.group(3) or "").strip().lower() or None
-        if not (art and stk):
-            continue
-        key = (art, stk)
-        if key not in out:
-            out[key] = set()
-        if lit:
-            out[key].add(lit)
-    return out
-
-
-def _scope_apply_litra_consistency_to_display(
-    *,
-    answer_text: str,
-    reference_lines: list[str],
-) -> tuple[str, list[str]]:
-    """SCOPE-only display consistency for litra.
-
-    Conditional: only applies when the same (Artikel, stk.) appears in both
-    `answer_text` and at least one `reference_line`.
-
-    Rule per matching (Artikel, stk.):
-    - If both sides have litra and letters mismatch => downgrade both to Artikel+stk.
-    - If only one side has litra => downgrade both to Artikel+stk.
-    - If both have litra and letters match => keep litra.
-
-    Never touches citation markers like [1].
-    """
-
-    ans = str(answer_text or "")
-    ref_lines = [str(x or "") for x in list(reference_lines or [])]
-    if not ans.strip() or not ref_lines:
-        return ans, ref_lines
-
-    ans_map = _scope_extract_article_stk_litra_mentions(ans)
-    if not ans_map:
-        return ans, ref_lines
-
-    # Aggregate litra letters per (Artikel, stk.) across all reference lines.
-    ref_map: dict[tuple[str, str], set[str]] = {}
-    for line in ref_lines:
-        m = _scope_extract_article_stk_litra_mentions(line)
-        for key, lits in m.items():
-            ref_map.setdefault(key, set()).update(set(lits or set()))
-
-    matching_pairs = set(ans_map.keys()) & set(ref_map.keys())
-    if not matching_pairs:
-        return ans, ref_lines
-
-    def _needs_downgrade(pair: tuple[str, str]) -> bool:
-        a = set(ans_map.get(pair) or set())
-        r = set(ref_map.get(pair) or set())
-        if bool(a) != bool(r):
-            return True
-        if a and r and a.isdisjoint(r):
-            return True
-        return False
-
-    downgrade_pairs = [p for p in sorted(matching_pairs) if _needs_downgrade(p)]
-    if not downgrade_pairs:
-        return ans, ref_lines
-
-    def _remove_litra_for_pair(s: str, art: str, stk: str) -> str:
-        # Remove only the litra for the specific (Artikel, stk.) mention.
-        art_esc = re.escape(str(art))
-        stk_esc = re.escape(str(stk))
-        base = rf"(?i)\b((?:artikel|article)\s+{art_esc}\s*,\s*stk\.?\s*{stk_esc})\b"
-        out = re.sub(base + r"\s*,\s*litra\s+[a-z]\b", r"\1", s)
-        out = re.sub(base + r"\s+litra\s+[a-z]\b", r"\1", out)
-        # Keep spacing tidy without touching [n] markers.
-        out = re.sub(r"[ \t]{2,}", " ", out)
-        out = re.sub(r"\s+([,.;:])", r"\1", out)
-        return out
-
-    out_ans = ans
-    out_refs = list(ref_lines)
-    for art, stk in downgrade_pairs:
-        out_ans = _remove_litra_for_pair(out_ans, art, stk)
-        out_refs = [_remove_litra_for_pair(x, art, stk) for x in out_refs]
-
-    return out_ans.strip(), [x.strip() for x in out_refs]
-
-
-def _engineering_remove_normative_bullets_from_systemkrav_section_for_scope(answer_text: str) -> str:
-    """ENGINEERING+SCOPE: remove '- SKAL'/'- BØR' bullets from 'Konkrete systemkrav'.
-
-    If the section becomes empty, replace it with a single neutral line.
-    """
-
-    txt = str(answer_text or "")
-    if not txt.strip():
-        return txt
-
-    lines = txt.splitlines()
-
-    def _find_section_range(section_heading_re: re.Pattern[str]) -> tuple[int, int] | None:
-        start = None
-        for i, line in enumerate(lines):
-            if section_heading_re.match(line or ""):
-                start = i
-                break
-        if start is None:
-            return None
-        end = len(lines)
-        for j in range(start + 1, len(lines)):
-            if re.match(r"^\s*\d+\.\s+\S+", lines[j] or ""):
-                end = j
-                break
-        return int(start), int(end)
-
-    rng = _find_section_range(re.compile(r"^\s*3\.\s*Konkrete systemkrav\s*$", flags=re.IGNORECASE))
-    if rng is None:
-        return txt
-    start, end = rng
-
-    body = lines[start + 1 : end]
-    filtered: list[str] = []
-    for line in body:
-        line_str = str(line or "")
-        if re.match(r"^\s*-\s*(SKAL|BØR)\b", line_str, flags=re.IGNORECASE):
-            # Never remove explicit citations; rewrite cited requirement bullets to neutral hjemmel.
-            cites = re.findall(r"\[\d{1,3}\]", line_str)
-            if cites:
-                filtered.append(f"- Relevant hjemmel: {' '.join(cites)}")
-            continue
-        # Defensive: in case normalization hasn't run yet.
-        if re.match(r"^\s*-\s*(MUST|SHALL|SHOULD)\b", line_str, flags=re.IGNORECASE):
-            cites = re.findall(r"\[\d{1,3}\]", line_str)
-            if cites:
-                filtered.append(f"- Relevant hjemmel: {' '.join(cites)}")
-            continue
-        filtered.append(line_str)
-
-    has_content = any(str(l).strip() for l in filtered)
-    if not has_content:
-        filtered = ["Ingen konkrete systemkrav for et anvendelsesområde-spørgsmål."]
-
-    lines = list(lines[: start + 1]) + filtered + list(lines[end:])
-    return "\n".join(lines).strip()
+# Scope display transforms moved to scope_transforms.py (Phase 8a)
+from .scope_transforms import (  # noqa: E402,F401
+    _scope_extract_article_stk_litra_mentions,
+    _scope_apply_litra_consistency_to_display,
+    _engineering_remove_normative_bullets_from_systemkrav_section_for_scope,
+    apply_scope_post_processing,
+)
 
 
 def _engineering_scaffold_answer_if_missing_anchors_and_citations(
@@ -843,7 +437,9 @@ def _engineering_scaffold_answer_if_missing_anchors_and_citations(
         return txt
 
     # Build a neutral list of available sources.
-    lines = ["Jeg har fundet følgende relevante kilder, men kan ikke give et specifikt svar ud fra dem:"]
+    lines = [
+        "Jeg har fundet følgende relevante kilder, men kan ikke give et specifikt svar ud fra dem:"
+    ]
     count = 0
     for r in refs:
         if count >= max_anchors:
@@ -851,7 +447,7 @@ def _engineering_scaffold_answer_if_missing_anchors_and_citations(
         idx = r.get("idx")
         if not idx:
             continue
-        
+
         # Try to construct a label.
         label = ""
         art = str(r.get("article") or "").strip()
@@ -865,7 +461,7 @@ def _engineering_scaffold_answer_if_missing_anchors_and_citations(
                 ax = str(r.get("annex") or "").strip()
                 if ax:
                     label = f"Bilag {ax}"
-        
+
         if label:
             lines.append(f"- {label} [{idx}]")
             count += 1
@@ -946,11 +542,16 @@ def apply_claim_stage_gate_for_legal(
     # 4. AI Act "High-Risk" assumption guard.
     # If the question assumes high-risk but the answer doesn't mention high-risk requirements,
     # we might be answering generically.
-    elif _question_explicitly_assumes_classification(question) and not _question_has_legal_assumption_bypass(question):
+    elif _question_explicitly_assumes_classification(
+        question
+    ) and not _question_has_legal_assumption_bypass(question):
         # Check if answer actually addresses high-risk.
-        if "højrisiko" not in answer_text.lower() and "high-risk" not in answer_text.lower():
-             answer_text = f"Bemærk: Du spurgte om højrisiko-systemer, men svaret er generelt.\n\n{answer_text}"
-             # allow_fallback remains True
+        if (
+            "højrisiko" not in answer_text.lower()
+            and "high-risk" not in answer_text.lower()
+        ):
+            answer_text = f"Bemærk: Du spurgte om højrisiko-systemer, men svaret er generelt.\n\n{answer_text}"
+            # allow_fallback remains True
 
     # Default: pass through.
     # For LEGAL, we also enforce a "conclusion first" style if possible, but that's a prompt concern.
@@ -958,7 +559,7 @@ def apply_claim_stage_gate_for_legal(
 
     # Final check: If the answer is purely "I don't know" or empty, we allow fallback.
     if not answer_text.strip() or "jeg kan ikke" in answer_text.lower()[:50]:
-         return LegalClaimGateResult(
+        return LegalClaimGateResult(
             answer_text=answer_text,
             references_structured_all=final_refs,
             allow_reference_fallback=True,
@@ -974,10 +575,14 @@ def apply_claim_stage_gate_for_legal(
         k0 = [x for x in final_refs if isinstance(x, dict) and x.get("idx")]
         if k0:
             lines.append("")
-            lines.append(f"- Afklar systemets formål, output og beslutningskontekst før endelig vurdering [{k0[0]['idx']}].")
+            lines.append(
+                f"- Afklar systemets formål, output og beslutningskontekst før endelig vurdering [{k0[0]['idx']}]."
+            )
         else:
-             lines.append("")
-             lines.append("- Afklar systemets formål, output og beslutningskontekst før endelig vurdering.")
+            lines.append("")
+            lines.append(
+                "- Afklar systemets formål, output og beslutningskontekst før endelig vurdering."
+            )
 
     return LegalClaimGateResult(
         answer_text="\n".join(lines).strip(),
@@ -1169,18 +774,22 @@ def should_abstain(
         )
 
     # If the user references a specific article, ensure we have at least one hit tagged with that article.
-    article = helpers._extract_article_ref(question)
-    recital = helpers._extract_recital_ref(question)
-    if article and helpers._looks_like_substantive_question(question):
-        if not any(str((meta or {}).get("article", "")).upper() == article for _, meta in hits):
+    article = query_helpers._extract_article_ref(question)
+    recital = query_helpers._extract_recital_ref(question)
+    if article and query_helpers._looks_like_substantive_question(question):
+        if not any(
+            str((meta or {}).get("article", "")).upper() == article for _, meta in hits
+        ):
             return (
                 f"Jeg kan ikke finde chunks, der matcher Artikel {article}, i de hentede kilder. "
                 "Jeg svarer ikke ved at gætte. Prøv evt. at spørge mere specifikt eller gen-indlæse kilderne."
             )
 
     # If the user references a specific recital, ensure we have at least one hit tagged with that recital.
-    if recital and helpers._looks_like_substantive_question(question):
-        if not any(str((meta or {}).get("recital", "")).strip() == recital for _, meta in hits):
+    if recital and query_helpers._looks_like_substantive_question(question):
+        if not any(
+            str((meta or {}).get("recital", "")).strip() == recital for _, meta in hits
+        ):
             return (
                 f"Jeg kan ikke finde chunks, der matcher Betragtning {recital}, i de hentede kilder. "
                 "Jeg svarer ikke ved at gætte. Prøv evt. at spørge mere specifikt eller gen-indlæse kilderne."
@@ -1195,35 +804,32 @@ def should_abstain(
         except Exception:  # noqa: BLE001
             best = 0.0
 
-        # Hard max distance check - use passed value, then settings, then env var
+        # Hard max distance check - use passed value, then settings (which reads env + config)
         hard_max = hard_max_distance
         if hard_max is None:
-            # Try loading from settings (which supports RAG_HARD_MAX_DISTANCE env override)
             try:
                 from ..common.config_loader import load_settings
+
                 settings = load_settings()
                 hard_max = settings.rag_hard_max_distance
             except Exception:  # noqa: BLE001
                 hard_max = None
-            # Final fallback to env var with default 1.3
-            if hard_max is None:
-                try:
-                    hard_max = float(os.getenv("RAG_HARD_MAX_DISTANCE", "1.3"))
-                except Exception:  # noqa: BLE001
-                    hard_max = 1.3
         try:
-            hard_max_f = float(hard_max)
+            hard_max_f = float(hard_max) if hard_max is not None else 1.0
         except Exception:  # noqa: BLE001
             hard_max_f = 1.0
 
         if best > hard_max_f:
-            if article and any(str((meta or {}).get("article", "")).upper() == article for _, meta in hits):
+            if article and any(
+                str((meta or {}).get("article", "")).upper() == article
+                for _, meta in hits
+            ):
                 return None
             # Build related content block if we have references
-            related_block = _build_related_content_block(references_structured, question)
-            base_msg = (
-                "Jeg fandt relateret indhold, men ikke tilstrækkeligt grundlag for et sikkert svar."
+            related_block = _build_related_content_block(
+                references_structured, question
             )
+            base_msg = "Jeg fandt relateret indhold, men ikke tilstrækkeligt grundlag for et sikkert svar."
             if related_block:
                 return base_msg + "\n" + related_block
             return base_msg
@@ -1235,17 +841,23 @@ def should_abstain(
         if used_distances:
             best = min(used_distances)
             if best > max_distance:
-                if article and any(str((meta or {}).get("article", "")).upper() == article for _, meta in hits):
+                if article and any(
+                    str((meta or {}).get("article", "")).upper() == article
+                    for _, meta in hits
+                ):
                     return None
-                if recital and any(str((meta or {}).get("recital", "")).strip() == recital for _, meta in hits):
+                if recital and any(
+                    str((meta or {}).get("recital", "")).strip() == recital
+                    for _, meta in hits
+                ):
                     return None
                 if allow_low_evidence_answer:
                     return None
                 # Build related content block if we have references
-                related_block = _build_related_content_block(references_structured, question)
-                base_msg = (
-                    "Jeg fandt relateret indhold, men ikke tilstrækkeligt grundlag for et sikkert svar."
+                related_block = _build_related_content_block(
+                    references_structured, question
                 )
+                base_msg = "Jeg fandt relateret indhold, men ikke tilstrækkeligt grundlag for et sikkert svar."
                 if related_block:
                     return base_msg + "\n" + related_block
                 return base_msg
@@ -1257,12 +869,11 @@ def should_abstain(
 # Claim-stage gates (extracted from rag.py answer_structured)
 # ---------------------------------------------------------------------------
 
-from dataclasses import dataclass, field
-
 
 @dataclass
 class ClaimStageGateResult:
     """Result of applying claim-stage gates."""
+
     answer_text: str
     did_abstain: bool = False
     bypass_required_support_gate: bool = False
@@ -1278,7 +889,9 @@ def apply_claim_stage_gates(
     has_used_scope_or_def: bool,
     has_used_classification: bool,
     references_structured_all: List[Dict[str, Any]],
-    inject_enforcement_citations_fn: Optional[Callable[[str, List[Dict[str, Any]]], str]] = None,
+    inject_enforcement_citations_fn: Optional[
+        Callable[[str, List[Dict[str, Any]]], str]
+    ] = None,
 ) -> ClaimStageGateResult:
     """Apply claim-stage gates that depend on evidence actually used in the answer.
 
@@ -1302,12 +915,15 @@ def apply_claim_stage_gates(
     debug: Dict[str, Any] = {}
 
     # Determine bypass conditions
-    legal_assumption_bypass = (user_profile == UserProfile.LEGAL) and _question_has_legal_assumption_bypass(question)
+    legal_assumption_bypass = (
+        user_profile == UserProfile.LEGAL
+    ) and _question_has_legal_assumption_bypass(question)
     legal_classification_assumed = (user_profile == UserProfile.LEGAL) and (
         _question_explicitly_assumes_classification(question) or legal_assumption_bypass
     )
     engineering_classification_assumed = (user_profile == UserProfile.ENGINEERING) and (
-        _question_explicitly_assumes_classification(question) or _question_has_legal_assumption_bypass(question)
+        _question_explicitly_assumes_classification(question)
+        or _question_has_legal_assumption_bypass(question)
     )
 
     debug["legal_assumption_bypass"] = legal_assumption_bypass
@@ -1315,7 +931,11 @@ def apply_claim_stage_gates(
     debug["engineering_classification_assumed"] = engineering_classification_assumed
 
     # ENGINEERING SCOPE gate: no categorical JA/NEJ without scope/definition evidence
-    if user_profile == UserProfile.ENGINEERING and intent_used == ClaimIntent.SCOPE and not has_used_scope_or_def:
+    if (
+        user_profile == UserProfile.ENGINEERING
+        and intent_used == ClaimIntent.SCOPE
+        and not has_used_scope_or_def
+    ):
         result.answer_text = (
             "1. Klassifikation og betingelser\n"
             "- Kan ikke afgøres ud fra den foreliggende evidens.\n\n"
@@ -1332,7 +952,10 @@ def apply_claim_stage_gates(
         debug["gate_applied"] = "engineering_scope_no_evidence"
 
     # ENGINEERING ENFORCEMENT gate: describe procedures but no system requirements
-    if user_profile == UserProfile.ENGINEERING and intent_used == ClaimIntent.ENFORCEMENT:
+    if (
+        user_profile == UserProfile.ENGINEERING
+        and intent_used == ClaimIntent.ENFORCEMENT
+    ):
         result.answer_text = (
             "1. Klassifikation og betingelser\n"
             "- AFHÆNGER AF (hvilken rolle/jurisdiktion og hvilket regelsæt der spørges til).\n\n"
@@ -1346,7 +969,9 @@ def apply_claim_stage_gates(
         debug["gate_applied"] = "engineering_enforcement"
 
     # CLASSIFICATION evidence restriction (both profiles)
-    if intent_used == ClaimIntent.CLASSIFICATION and not (user_profile == UserProfile.LEGAL and legal_classification_assumed):
+    if intent_used == ClaimIntent.CLASSIFICATION and not (
+        user_profile == UserProfile.LEGAL and legal_classification_assumed
+    ):
         if not has_used_classification:
             if user_profile == UserProfile.ENGINEERING:
                 result.answer_text = (
@@ -1377,24 +1002,42 @@ def apply_claim_stage_gates(
         or re.search(r"(?i)\b(højrisiko|high[- ]risk)\b", str(result.answer_text or ""))
     )
     if mentions_high_risk and not has_used_classification:
-        if user_profile == UserProfile.ENGINEERING and intent_used == ClaimIntent.REQUIREMENTS:
+        if (
+            user_profile == UserProfile.ENGINEERING
+            and intent_used == ClaimIntent.REQUIREMENTS
+        ):
             if not engineering_classification_assumed:
-                result.answer_text = "Krav kan ikke fastlægges, før klassifikation er afklaret."
+                result.answer_text = (
+                    "Krav kan ikke fastlægges, før klassifikation er afklaret."
+                )
                 result.did_abstain = True
                 result.bypass_required_support_gate = True
                 debug["gate_applied"] = "engineering_requirements_needs_classification"
-        elif user_profile == UserProfile.ENGINEERING and contains_normative_claim(result.answer_text):
+        elif user_profile == UserProfile.ENGINEERING and contains_normative_claim(
+            result.answer_text
+        ):
             if not engineering_classification_assumed:
-                result.answer_text = "Krav kan ikke fastlægges, før klassifikation er afklaret."
+                result.answer_text = (
+                    "Krav kan ikke fastlægges, før klassifikation er afklaret."
+                )
                 result.did_abstain = True
                 result.bypass_required_support_gate = True
                 debug["gate_applied"] = "engineering_normative_needs_classification"
-        elif user_profile == UserProfile.LEGAL and contains_normative_claim(result.answer_text) and not legal_classification_assumed:
-            result.answer_text = _conditionalize_requirements_if_needed(result.answer_text)
+        elif (
+            user_profile == UserProfile.LEGAL
+            and contains_normative_claim(result.answer_text)
+            and not legal_classification_assumed
+        ):
+            result.answer_text = _conditionalize_requirements_if_needed(
+                result.answer_text
+            )
             debug["gate_applied"] = "legal_conditionalize_requirements"
 
     # ENGINEERING + ENFORCEMENT: inject neutral hjemmel citations
-    if user_profile == UserProfile.ENGINEERING and intent_used == ClaimIntent.ENFORCEMENT:
+    if (
+        user_profile == UserProfile.ENGINEERING
+        and intent_used == ClaimIntent.ENFORCEMENT
+    ):
         if inject_enforcement_citations_fn is not None:
             result.answer_text = inject_enforcement_citations_fn(
                 answer_text=result.answer_text,
@@ -1496,7 +1139,9 @@ def apply_pre_engineering_policy_gates(
     # Update run_meta with intent
     if corpus_debug_on:
         run_meta.setdefault("corpus_debug", {})
-        run_meta["corpus_debug"]["intent_used"] = str(getattr(intent_used, "value", intent_used) or "")
+        run_meta["corpus_debug"]["intent_used"] = str(
+            getattr(intent_used, "value", intent_used) or ""
+        )
 
     result.debug = debug
     return result
@@ -1551,7 +1196,9 @@ def apply_post_engineering_policy_gates(
         answer_text=result.answer_text,
         references_structured=result.references_structured_all,
     )
-    used_id_set = set(str(x or "").strip() for x in (used_chunk_ids or []) if str(x or "").strip())
+    used_id_set = set(
+        str(x or "").strip() for x in (used_chunk_ids or []) if str(x or "").strip()
+    )
     used_refs = [
         r
         for r in list(result.references_structured_all or [])
@@ -1566,7 +1213,9 @@ def apply_post_engineering_policy_gates(
     # Import EvidenceType locally to avoid circular imports
     from .types import EvidenceType
 
-    has_used_scope_or_def = bool({EvidenceType.SCOPE, EvidenceType.DEFINITION} & used_evidence_types)
+    has_used_scope_or_def = bool(
+        {EvidenceType.SCOPE, EvidenceType.DEFINITION} & used_evidence_types
+    )
     has_used_classification = EvidenceType.CLASSIFICATION in used_evidence_types
 
     debug["evidence_types"] = {
@@ -1598,10 +1247,12 @@ def apply_post_engineering_policy_gates(
     # Update run_meta
     if result.did_abstain:
         run_meta.setdefault("abstain", {})
-        run_meta["abstain"].update({
-            "abstained": True,
-            "reason": "classification_required_before_requirements",
-        })
+        run_meta["abstain"].update(
+            {
+                "abstained": True,
+                "reason": "classification_required_before_requirements",
+            }
+        )
 
     if gate_result.debug:
         run_meta.setdefault("claim_stage_gates", {})
@@ -1673,36 +1324,51 @@ def apply_all_policy_gates(
     )
 
 
-def apply_scope_post_processing(
+# apply_scope_post_processing removed — now imported from scope_transforms.py above
+
+
+# ---------------------------------------------------------------------------
+# Step 6.4: Convenience gate for answer_structured (extracted from RAGEngine)
+# ---------------------------------------------------------------------------
+
+
+def should_abstain_gate(
     *,
-    answer_text: str,
-    reference_lines: List[str],
-    intent_used: ClaimIntent,
-    resolved_profile: UserProfile,
-) -> Tuple[str, List[str]]:
-    """Apply scope-specific display post-processing.
+    question: str,
+    hits: list[tuple[str, dict[str, Any]]],
+    distances: list[float] | None = None,
+    fallback_distances: list[float] | None = None,
+    corpus_id: str = "",
+    max_distance: float | None = None,
+    hard_max_distance: float | None = None,
+    resolver_fn: Callable | None = None,
+    allow_low_evidence_answer: bool = False,
+    references_structured: list[dict[str, Any]] | None = None,
+    corpus_scope: str = "single",
+) -> str | None:
+    """Convenience wrapper that resolves resolver_fn and defaults distances.
 
-    Only applies when intent_used == SCOPE.
-    Mutates answer_text and reference_lines for UI display only.
-
-    Args:
-        answer_text: The answer text
-        reference_lines: Reference lines for display
-        intent_used: The classified intent
-        resolved_profile: User profile
-
-    Returns:
-        Tuple of (answer_text, reference_lines)
+    This replaces RAGEngine._should_abstain — gathers context then calls
+    should_abstain() with explicit params.
     """
-    if intent_used != ClaimIntent.SCOPE:
-        return answer_text, reference_lines
+    resolver = None
+    if resolver_fn is not None:
+        try:
+            resolver = resolver_fn()
+        except Exception:  # noqa: BLE001
+            pass
 
-    if resolved_profile == UserProfile.ENGINEERING:
-        answer_text = _engineering_remove_normative_bullets_from_systemkrav_section_for_scope(answer_text)
+    used_distances = distances if distances is not None else (fallback_distances or [])
 
-    answer_text, reference_lines = _scope_apply_litra_consistency_to_display(
-        answer_text=answer_text,
-        reference_lines=list(reference_lines or []),
+    return should_abstain(
+        question=question,
+        hits=hits,
+        distances=used_distances,
+        corpus_id=corpus_id,
+        resolver=resolver,
+        max_distance=max_distance,
+        hard_max_distance=hard_max_distance,
+        allow_low_evidence_answer=allow_low_evidence_answer,
+        references_structured=references_structured,
+        corpus_scope=corpus_scope,
     )
-
-    return answer_text, reference_lines

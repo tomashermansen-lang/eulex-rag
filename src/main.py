@@ -3,11 +3,17 @@ import sys
 from pathlib import Path
 
 from .engine.rag import RAGEngine, RAGEngineError
-from .common.corpus_registry import default_registry_path, load_registry, normalize_corpus_id
+from .common.corpus_registry import (
+    default_registry_path,
+    load_registry,
+    normalize_corpus_id,
+)
 from .common.config_loader import load_settings
 
 
-def parse_args(*, default_docs_path: str, available_laws: list[str]) -> argparse.Namespace:
+def parse_args(
+    *, default_docs_path: str, available_laws: list[str]
+) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Mini RAG CLI")
     parser.add_argument(
         "--law",
@@ -67,7 +73,9 @@ def run():
     settings = load_settings()
     corpora = settings.corpora or {}
     available_laws = sorted(corpora.keys())
-    args = parse_args(default_docs_path=str(settings.docs_path), available_laws=available_laws)
+    args = parse_args(
+        default_docs_path=str(settings.docs_path), available_laws=available_laws
+    )
 
     project_root = Path(__file__).resolve().parent.parent
     registry_path = (
@@ -85,7 +93,9 @@ def run():
 
     corpus = corpora.get(law_id)
     if corpus is None:
-        raise SystemExit(f"Ukendt --law '{law_id}'. Gyldige værdier: {', '.join(available_laws)}")
+        raise SystemExit(
+            f"Ukendt --law '{law_id}'. Gyldige værdier: {', '.join(available_laws)}"
+        )
 
     reg = load_registry(registry_path)
     key = normalize_corpus_id(law_id)
@@ -102,7 +112,11 @@ def run():
         chat_model=settings.chat_model,
         # Note: top_k is now dynamic via retrieval_pool_size and max_context_* from config
         vector_store_path=str(settings.vector_store_path),
-        max_distance=(corpus.max_distance if corpus.max_distance is not None else settings.rag_max_distance),
+        max_distance=(
+            corpus.max_distance
+            if corpus.max_distance is not None
+            else settings.rag_max_distance
+        ),
         hybrid_vec_k=settings.hybrid_vec_k,
         ranking_weights=settings.ranking_weights,
     )

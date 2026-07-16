@@ -17,6 +17,7 @@ Usage:
     python -m src.eval.eval_runner --law ai-act --pipeline-analysis
     python -m src.eval.eval_runner --law ai-act --case "case_id"
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,7 +27,6 @@ import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -57,13 +57,13 @@ from .reporters import (
     JsonReporter,
     ProgressionTracker,
 )
-from .eval_core import EvalConfig
 from .types import GoldenCase, ExpectedBehavior, RunMode
 
 
 # ---------------------------------------------------------------------------
 # Run mode helpers (maps legacy flags to unified run modes)
 # ---------------------------------------------------------------------------
+
 
 def _derive_run_mode(skip_llm: bool, llm_judge: bool | None) -> RunMode:
     """Derive RunMode from legacy CLI flags.
@@ -92,6 +92,7 @@ def _derive_run_mode(skip_llm: bool, llm_judge: bool | None) -> RunMode:
 # Case loading
 # ---------------------------------------------------------------------------
 
+
 def _normalize_anchor(anchor: str) -> str:
     """Normalize anchor for comparison."""
     raw = str(anchor or "").strip().lower()
@@ -103,6 +104,7 @@ def _load_yaml_or_json(path: Path) -> Any:
     text = path.read_text(encoding="utf-8")
     try:
         import yaml
+
         return yaml.safe_load(text)
     except Exception:
         return json.loads(text)
@@ -132,11 +134,11 @@ def load_golden_cases(path: Path) -> list[GoldenCase]:
             raise ValueError(f"{path}: case[{index}] missing 'prompt'")
 
         expected_raw = item.get("expected") or {}
-        
+
         # Parse expected behavior
         contract_default = profile == "ENGINEERING"
         contract_check = expected_raw.get("contract_check", contract_default)
-        
+
         min_citations = expected_raw.get("min_citations")
         max_citations = expected_raw.get("max_citations")
         if contract_check:
@@ -148,7 +150,9 @@ def load_golden_cases(path: Path) -> list[GoldenCase]:
         # Parse behavior field (default: "answer")
         behavior = str(expected_raw.get("behavior") or "answer").strip().lower()
         if behavior not in {"answer", "abstain"}:
-            raise ValueError(f"{path}: case[{index}] invalid behavior '{behavior}' (must be 'answer' or 'abstain')")
+            raise ValueError(
+                f"{path}: case[{index}] invalid behavior '{behavior}' (must be 'answer' or 'abstain')"
+            )
 
         # Parse cross-law expected behavior fields
         min_corpora_cited = expected_raw.get("min_corpora_cited")
@@ -156,10 +160,22 @@ def load_golden_cases(path: Path) -> list[GoldenCase]:
         required_corpora = tuple(str(c).strip() for c in required_corpora_raw)
 
         expected = ExpectedBehavior(
-            must_include_any_of=[_normalize_anchor(a) for a in expected_raw.get("must_include_any_of") or []],
-            must_include_any_of_2=[_normalize_anchor(a) for a in expected_raw.get("must_include_any_of_2") or []],
-            must_include_all_of=[_normalize_anchor(a) for a in expected_raw.get("must_include_all_of") or []],
-            must_not_include_any_of=[_normalize_anchor(a) for a in expected_raw.get("must_not_include_any_of") or []],
+            must_include_any_of=[
+                _normalize_anchor(a)
+                for a in expected_raw.get("must_include_any_of") or []
+            ],
+            must_include_any_of_2=[
+                _normalize_anchor(a)
+                for a in expected_raw.get("must_include_any_of_2") or []
+            ],
+            must_include_all_of=[
+                _normalize_anchor(a)
+                for a in expected_raw.get("must_include_all_of") or []
+            ],
+            must_not_include_any_of=[
+                _normalize_anchor(a)
+                for a in expected_raw.get("must_not_include_any_of") or []
+            ],
             contract_check=bool(contract_check),
             min_citations=min_citations,
             max_citations=max_citations,
@@ -184,17 +200,19 @@ def load_golden_cases(path: Path) -> list[GoldenCase]:
             if synthesis_mode == "null":
                 synthesis_mode = None
 
-        cases.append(GoldenCase(
-            id=case_id,
-            profile=profile,
-            prompt=prompt,
-            expected=expected,
-            test_types=test_types,
-            origin=origin,
-            corpus_scope=corpus_scope,
-            target_corpora=target_corpora,
-            synthesis_mode=synthesis_mode,
-        ))
+        cases.append(
+            GoldenCase(
+                id=case_id,
+                profile=profile,
+                prompt=prompt,
+                expected=expected,
+                test_types=test_types,
+                origin=origin,
+                corpus_scope=corpus_scope,
+                target_corpora=target_corpora,
+                synthesis_mode=synthesis_mode,
+            )
+        )
 
     # Deterministic ordering
     cases.sort(key=lambda c: c.id)
@@ -223,12 +241,14 @@ def _find_cases_file(law: str, cases_file: str | None = None) -> Path:
         repo_root / "data" / "evals" / f"golden_{law}.yaml",
         repo_root / "data" / "evals" / f"golden_{law}.json",
     ]
-    
+
     for path in candidates:
         if path.exists():
             return path
-    
-    raise ValueError(f"No golden cases file found for law '{law}'. Tried: {[str(p) for p in candidates]}")
+
+    raise ValueError(
+        f"No golden cases file found for law '{law}'. Tried: {[str(p) for p in candidates]}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -254,6 +274,7 @@ def _get_engine(law: str, model_override: str | None = None) -> ask.RAGEngine:
         if model_override:
             # Build engine with specific model for escalation
             from ..common.config_loader import load_settings
+
             settings = load_settings()
             # Create a modified settings object with the fallback model
             _thread_local.engines[cache_key] = ask.RAGEngine(
@@ -263,9 +284,11 @@ def _get_engine(law: str, model_override: str | None = None) -> ask.RAGEngine:
                 embedding_model=settings.embedding_model,
                 chat_model=model_override,  # Use fallback model
                 vector_store_path=str(settings.vector_store_path),
-                max_distance=(settings.corpora[law].max_distance
-                              if settings.corpora[law].max_distance is not None
-                              else settings.rag_max_distance),
+                max_distance=(
+                    settings.corpora[law].max_distance
+                    if settings.corpora[law].max_distance is not None
+                    else settings.rag_max_distance
+                ),
                 hybrid_vec_k=settings.hybrid_vec_k,
                 ranking_weights=settings.ranking_weights,
             )
@@ -278,6 +301,7 @@ def _get_engine(law: str, model_override: str | None = None) -> ask.RAGEngine:
 # Retry logic
 # ---------------------------------------------------------------------------
 
+
 def _retry_with_backoff(func, *args, max_attempts: int = 5, **kwargs):
     """Retry function with exponential backoff for transient errors."""
     base_delay = 0.5
@@ -286,12 +310,15 @@ def _retry_with_backoff(func, *args, max_attempts: int = 5, **kwargs):
             return func(*args, **kwargs)
         except Exception as e:
             msg = str(e).lower()
-            is_retryable = any(x in msg for x in ["429", "500", "502", "503", "504", "rate limit", "timeout"])
-            
+            is_retryable = any(
+                x in msg
+                for x in ["429", "500", "502", "503", "504", "rate limit", "timeout"]
+            )
+
             if not is_retryable or attempt == max_attempts - 1:
                 raise
-            
-            delay = min(base_delay * (2 ** attempt), 10.0)
+
+            delay = min(base_delay * (2**attempt), 10.0)
             time.sleep(delay)
 
 
@@ -312,16 +339,17 @@ def _build_context_text(references_structured: list[dict]) -> str:
                 anchor_parts.append(f"Recital {ref['recital']}")
             if ref.get("annex"):
                 anchor_parts.append(f"Annex {ref['annex']}")
-            
+
             prefix = f"[{', '.join(anchor_parts)}] " if anchor_parts else ""
             parts.append(f"{prefix}{text}")
-    
+
     return "\n\n".join(parts)
 
 
 # ---------------------------------------------------------------------------
 # Core evaluation logic
 # ---------------------------------------------------------------------------
+
 
 def evaluate_case(
     case: GoldenCase,
@@ -351,7 +379,9 @@ def evaluate_case(
     start = time.perf_counter()
 
     # Resolve profile
-    profile = UserProfile.ENGINEERING if case.profile == "ENGINEERING" else UserProfile.LEGAL
+    profile = (
+        UserProfile.ENGINEERING if case.profile == "ENGINEERING" else UserProfile.LEGAL
+    )
 
     # EVAL = PROD: No special treatment. We don't send required_anchors to ask.ask.
     # The expected anchors are ONLY used for SCORING after retrieval, not to influence retrieval.
@@ -369,18 +399,18 @@ def evaluate_case(
         contract_min_citations=case.expected.min_citations,
         dry_run=skip_llm,
     )
-    
+
     # Convert expected to scorer format
     expected = GoldenExpected(
         must_include_any_of=case.expected.must_include_any_of,
         must_include_any_of_2=case.expected.must_include_any_of_2,
         must_include_all_of=case.expected.must_include_all_of,
     )
-    
+
     # Apply scorers
     if scorers is None:
         scorers = [AnchorScorer(), ContractScorer(), PipelineBreakdownScorer()]
-    
+
     scores: dict[str, Score] = {}
     for scorer in scorers:
         scores[scorer.name] = scorer.score(
@@ -388,13 +418,16 @@ def evaluate_case(
             retrieval_metrics=result.retrieval_metrics,
             references_structured=result.references_structured,
         )
-    
+
     # Apply LLM-as-judge scorers if enabled (and not in dry_run/skip_llm mode)
     if llm_judge and not skip_llm:
         # Build context text from ALL references sent to LLM (not just the ones cited)
         # This is crucial for faithfulness scoring - we need to check if claims are
         # supported by the full context the LLM received, not just what it cited.
-        all_refs = result.retrieval_metrics.get("references_structured_all") or result.references_structured
+        all_refs = (
+            result.retrieval_metrics.get("references_structured_all")
+            or result.references_structured
+        )
         context_text = _build_context_text(all_refs)
         answer_text = result.answer or ""
 
@@ -445,12 +478,12 @@ def evaluate_case(
                 progress_callback=llm_judge_progress_callback,
             )
             scores["answer_relevancy"] = relevancy_result
-    
+
     # Determine overall pass/fail
     passed = all(s.passed for s in scores.values())
-    
+
     duration_ms = (time.perf_counter() - start) * 1000
-    
+
     return CaseResult(
         case_id=case.id,
         profile=case.profile,
@@ -480,7 +513,7 @@ def run_eval(
 ) -> EvalSummary:
     """
     Run evaluation on golden test cases.
-    
+
     Args:
         law: Which law/corpus to evaluate (ai-act, gdpr, dora)
         cases_file: Optional path to golden cases file
@@ -497,16 +530,16 @@ def run_eval(
         dump_failures: If True, write detailed failure info
         verbose: Verbose output
         max_retries: Maximum number of retry attempts for flaky tests (default: 3)
-    
+
     Returns:
         EvalSummary with all results
     """
     start_time = time.perf_counter()
-    
+
     # Load cases
     cases_path = _find_cases_file(law, cases_file)
     all_cases = load_golden_cases(cases_path)
-    
+
     # Filter cases
     cases = all_cases
     if case_ids:
@@ -516,7 +549,7 @@ def run_eval(
         cases = [c for c in cases if c.profile in profiles_upper]
     if limit and limit > 0:
         cases = cases[:limit]
-    
+
     if not cases:
         print(f"No cases found for law={law}", file=sys.stderr)
         return EvalSummary(
@@ -528,14 +561,18 @@ def run_eval(
             duration_seconds=0,
             results=[],
         )
-    
+
     # Setup reporters
     progress_reporter = ProgressReporter(len(cases), show_progress=progress)
     failure_reporter = FailureReporter(verbose=verbose)
     pipeline_reporter = PipelineAnalysisReporter() if pipeline_analysis else None
-    llm_judge_reporter = LLMJudgeProgressReporter(verbose=verbose) if llm_judge else None
-    faithfulness_debug_reporter = FaithfulnessDebugReporter() if debug_faithfulness else None
-    
+    llm_judge_reporter = (
+        LLMJudgeProgressReporter(verbose=verbose) if llm_judge else None
+    )
+    faithfulness_debug_reporter = (
+        FaithfulnessDebugReporter() if debug_faithfulness else None
+    )
+
     # EVAL = PROD: LLM-judge is enabled by default unless explicitly disabled or skip_llm
     if llm_judge is None:
         llm_judge = not skip_llm
@@ -544,18 +581,19 @@ def run_eval(
     scorers = [AnchorScorer(), PipelineBreakdownScorer()]
     if not skip_llm:
         scorers.append(ContractScorer())
-    
+
     # Run evaluation
     progress_reporter.start(law)
-    
+
     if llm_judge and not skip_llm:
         print("  📊 LLM-as-judge enabled (Faithfulness + Relevancy)")
         # Enable live rate limit tracking in verbose mode
         from .scorers import get_rate_limit_tracker
+
         tracker = get_rate_limit_tracker()
         tracker.reset()
         tracker.set_verbose(verbose)
-    
+
     # Get concurrency setting from config
     settings = get_settings_yaml()
     eval_settings = settings.get("eval", {})
@@ -570,7 +608,7 @@ def run_eval(
     if escalation_enabled and fallback_model:
         print(f"  🚀 Model escalation enabled (fallback: {fallback_model})")
         print(f"     Phase 1: Primary model @ concurrency {max_workers}")
-        print(f"     Phase 2: Fallback model @ concurrency 1 (failed cases only)")
+        print("     Phase 2: Fallback model @ concurrency 1 (failed cases only)")
 
     # Use parallel processing when multiple workers configured
     use_parallel = max_workers > 1
@@ -622,7 +660,9 @@ def run_eval(
 
                 if attempt <= max_primary_retries:
                     if verbose:
-                        print(f"  🔄 Retrying {case.id} (attempt {attempt}/{max_primary_retries})")
+                        print(
+                            f"  🔄 Retrying {case.id} (attempt {attempt}/{max_primary_retries})"
+                        )
 
             except Exception as e:
                 last_result = CaseResult(
@@ -642,7 +682,7 @@ def run_eval(
             passed=last_result.passed,
             scores=last_result.scores,
             duration_ms=last_result.duration_ms,
-            retrieval_metrics=getattr(last_result, 'retrieval_metrics', {}),
+            retrieval_metrics=getattr(last_result, "retrieval_metrics", {}),
             retry_count=max_primary_retries,
             escalated=False,
         )
@@ -680,20 +720,26 @@ def run_eval(
                 case_id=case.id,
                 profile=case.profile,
                 passed=False,
-                scores={"error": Score(passed=False, score=0.0, message=f"Escalation failed: {e}")},
+                scores={
+                    "error": Score(
+                        passed=False, score=0.0, message=f"Escalation failed: {e}"
+                    )
+                },
                 duration_ms=0,
                 retry_count=max_primary_retries,
                 escalated=True,
                 escalation_model=fallback_model,
             )
-    
+
     # =========================================================================
     # PHASE 1: Run all cases with primary model
     # =========================================================================
     if use_parallel:
         print(f"  ⚡ Phase 1: Parallel execution ({max_workers} workers)")
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_case = {executor.submit(process_case, case): case for case in cases}
+            future_to_case = {
+                executor.submit(process_case, case): case for case in cases
+            }
 
             for future in as_completed(future_to_case):
                 case = future_to_case[future]
@@ -704,7 +750,9 @@ def run_eval(
                         case_id=case.id,
                         profile=case.profile,
                         passed=False,
-                        scores={"error": Score(passed=False, score=0.0, message=str(e))},
+                        scores={
+                            "error": Score(passed=False, score=0.0, message=str(e))
+                        },
                         duration_ms=0,
                     )
 
@@ -713,7 +761,11 @@ def run_eval(
 
                     # Report progress
                     anchor_score = result.scores.get("anchor_presence")
-                    message = anchor_score.message if anchor_score and not anchor_score.passed else ""
+                    message = (
+                        anchor_score.message
+                        if anchor_score and not anchor_score.passed
+                        else ""
+                    )
                     progress_reporter.update(case.id, result.passed, message)
 
                     # Track failures
@@ -731,14 +783,16 @@ def run_eval(
                         faithfulness_debug_reporter.report(result)
     else:
         # Sequential execution (skip_llm mode or single worker)
-        print(f"  ⚡ Phase 1: Sequential execution")
+        print("  ⚡ Phase 1: Sequential execution")
         for case in cases:
             result = process_case(case)
             results.append(result)
 
             # Report progress
             anchor_score = result.scores.get("anchor_presence")
-            message = anchor_score.message if anchor_score and not anchor_score.passed else ""
+            message = (
+                anchor_score.message if anchor_score and not anchor_score.passed else ""
+            )
             progress_reporter.update(case.id, result.passed, message)
 
             # Track failures
@@ -767,12 +821,16 @@ def run_eval(
             faith_score = failed_result.scores.get("faithfulness")
             relevancy_score = failed_result.scores.get("answer_relevancy")
             # Only escalate generation failures (faithfulness/relevancy), not retrieval failures
-            if (faith_score and not faith_score.passed) or (relevancy_score and not relevancy_score.passed):
+            if (faith_score and not faith_score.passed) or (
+                relevancy_score and not relevancy_score.passed
+            ):
                 if failed_result.case_id in case_lookup:
                     cases_to_escalate.append(case_lookup[failed_result.case_id])
 
         if cases_to_escalate:
-            print(f"\n  🚀 Phase 2: Escalating {len(cases_to_escalate)} failed cases to {fallback_model} (concurrency 1)")
+            print(
+                f"\n  🚀 Phase 2: Escalating {len(cases_to_escalate)} failed cases to {fallback_model} (concurrency 1)"
+            )
 
             for case in cases_to_escalate:
                 escalated_result = process_escalation_case(case)
@@ -784,7 +842,9 @@ def run_eval(
                         break
 
                 # Update failures list
-                failures = [f for f in failures if f.case_id != escalated_result.case_id]
+                failures = [
+                    f for f in failures if f.case_id != escalated_result.case_id
+                ]
                 if not escalated_result.passed:
                     failures.append(escalated_result)
 
@@ -800,10 +860,12 @@ def run_eval(
                 if faithfulness_debug_reporter:
                     faithfulness_debug_reporter.report(escalated_result)
         else:
-            print(f"\n  ℹ️  No cases eligible for escalation (failures are retrieval-related, not generation)")
+            print(
+                "\n  ℹ️  No cases eligible for escalation (failures are retrieval-related, not generation)"
+            )
     elif escalation_enabled and fallback_model and not failures:
-        print(f"\n  ✅ All cases passed - no escalation needed")
-    
+        print("\n  ✅ All cases passed - no escalation needed")
+
     # Build summary
     duration_seconds = time.perf_counter() - start_time
 
@@ -836,45 +898,47 @@ def run_eval(
         retry_stats=retry_stats,
         escalation_stats=escalation_stats,
     )
-    
+
     # Report summary
     progress_reporter.finish(summary)
     failure_reporter.report_summary(failures)
-    
+
     # Show rate limit stats if LLM judge was used
     if llm_judge and not skip_llm:
         from .scorers import get_rate_limit_tracker
+
         tracker = get_rate_limit_tracker()
         tracker.print_summary()
         tracker.reset()  # Reset for next eval run
-    
+
     # Write output
     if output_dir:
         output_path = Path(output_dir)
     else:
         output_path = Path(__file__).resolve().parents[2] / "runs"
-    
+
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%SZ")
     json_path = output_path / f"{timestamp}_eval_{law}.json"
     JsonReporter(json_path).write(summary)
     print(f"\n📄 Results written to: {json_path}")
-    
+
     # Optionally copy to stable name
     stable_path = output_path / f"eval_{law}.json"
     JsonReporter(stable_path).write(summary)
-    
+
     # Record to progression tracking file
     progression_path = output_path / "progression.json"
     progression_tracker = ProgressionTracker(progression_path)
     progression_tracker.record(summary)
     print(f"📈 Progression recorded to: {progression_path}")
-    
+
     return summary
 
 
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
 
 def _parse_case_ids(raw: str) -> set[str]:
     """Parse comma-separated case IDs."""
@@ -903,37 +967,85 @@ Examples:
   python -m src.eval.eval_runner --law ai-act --history
         """,
     )
-    
-    parser.add_argument("--law", required=True, help="Law/corpus to evaluate (ai-act, gdpr, dora)")
-    parser.add_argument("--cases-file", help="Path to golden cases file (default: auto-detect)")
-    parser.add_argument("--case", dest="case_ids", help="Comma-separated case IDs to run")
-    parser.add_argument("--profile", dest="profiles", help="Comma-separated profiles (LEGAL, ENGINEERING)")
+
+    parser.add_argument(
+        "--law", required=True, help="Law/corpus to evaluate (ai-act, gdpr, dora)"
+    )
+    parser.add_argument(
+        "--cases-file", help="Path to golden cases file (default: auto-detect)"
+    )
+    parser.add_argument(
+        "--case", dest="case_ids", help="Comma-separated case IDs to run"
+    )
+    parser.add_argument(
+        "--profile",
+        dest="profiles",
+        help="Comma-separated profiles (LEGAL, ENGINEERING)",
+    )
     parser.add_argument("--limit", type=int, help="Maximum number of cases to run")
-    parser.add_argument("--skip-llm", action="store_true", help="Run pipeline but skip LLM generation")
-    parser.add_argument("--no-llm-judge", action="store_true", help="Disable LLM-as-judge scorers (enabled by default)")
-    parser.add_argument("--debug-faithfulness", action="store_true", help="Show detailed faithfulness debug output per claim")
-    parser.add_argument("--pipeline-analysis", action="store_true", help="Show detailed pipeline breakdown (always included in output)")
-    parser.add_argument("--no-progress", action="store_true", help="Disable progress bar")
+    parser.add_argument(
+        "--skip-llm", action="store_true", help="Run pipeline but skip LLM generation"
+    )
+    parser.add_argument(
+        "--no-llm-judge",
+        action="store_true",
+        help="Disable LLM-as-judge scorers (enabled by default)",
+    )
+    parser.add_argument(
+        "--debug-faithfulness",
+        action="store_true",
+        help="Show detailed faithfulness debug output per claim",
+    )
+    parser.add_argument(
+        "--pipeline-analysis",
+        action="store_true",
+        help="Show detailed pipeline breakdown (always included in output)",
+    )
+    parser.add_argument(
+        "--no-progress", action="store_true", help="Disable progress bar"
+    )
     parser.add_argument("--out", dest="output_dir", help="Output directory for results")
-    parser.add_argument("--dump-failures", action="store_true", help="Write detailed failure info")
-    parser.add_argument("--max-retries", type=int, default=3, help="Maximum retry attempts for flaky tests (default: 3)")
-    parser.add_argument("--history", action="store_true", help="Show progression history instead of running eval")
-    parser.add_argument("--history-limit", type=int, default=10, help="Number of history entries to show (default: 10)")
+    parser.add_argument(
+        "--dump-failures", action="store_true", help="Write detailed failure info"
+    )
+    parser.add_argument(
+        "--max-retries",
+        type=int,
+        default=3,
+        help="Maximum retry attempts for flaky tests (default: 3)",
+    )
+    parser.add_argument(
+        "--history",
+        action="store_true",
+        help="Show progression history instead of running eval",
+    )
+    parser.add_argument(
+        "--history-limit",
+        type=int,
+        default=10,
+        help="Number of history entries to show (default: 10)",
+    )
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
-    
+
     args = parser.parse_args()
-    
+
     # Handle history command
     if args.history:
-        output_path = Path(args.output_dir) if args.output_dir else Path(__file__).resolve().parents[2] / "runs"
+        output_path = (
+            Path(args.output_dir)
+            if args.output_dir
+            else Path(__file__).resolve().parents[2] / "runs"
+        )
         progression_path = output_path / "progression.json"
         tracker = ProgressionTracker(progression_path)
         tracker.print_history(law=args.law, limit=args.history_limit)
         return 0
-    
+
     case_ids = _parse_case_ids(args.case_ids) if args.case_ids else None
-    profiles = {p.strip().upper() for p in args.profiles.split(",")} if args.profiles else None
-    
+    profiles = (
+        {p.strip().upper() for p in args.profiles.split(",")} if args.profiles else None
+    )
+
     # EVAL = PROD: llm_judge is True by default, --no-llm-judge disables it
     llm_judge = None if not args.no_llm_judge else False
 
@@ -954,9 +1066,9 @@ Examples:
             verbose=args.verbose,
             max_retries=args.max_retries,
         )
-        
+
         return 0 if summary.failed == 0 else 1
-        
+
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 1

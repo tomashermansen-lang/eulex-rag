@@ -21,7 +21,6 @@ __pycache__/
 .coverage
 coverage.xml
 htmlcov/
-ui_react/frontend/coverage/
 
 # Generated data artifacts
 data/vector_store/
@@ -38,7 +37,7 @@ data/processed/**
 !data/processed/citation_graph_*.json
 !data/processed/example_questions.json
 
-# Eval output artifacts (inputs live in data/evals/*.yaml)
+# Eval output artifacts (inputs live in data/evals/*.json)
 data/evals/runs/
 data/evals/*_eval_run.json
 
@@ -46,23 +45,42 @@ data/evals/*_eval_run.json
 runs/**
 !runs/
 !runs/README.md
+!runs/post_promo_evidence.md
 
 # Logs and Debug
 *.log
 debug_case.json
 debug*.json
 
+# Archive artifacts
+archive/legacy_eval/runs/**
+
 # Debug artifacts (generated)
 **/*.run_meta.json
 **/*.debug.json
 **/*.suggested.json
+
+# UI local artifacts
+ui/.streamlit/
+ui/.cache/
+ui/exports/
+ui/output/
+
+# Failure debug bundles are diagnostics; keep local
+archive/legacy_eval/debug_bundles/
+
+# Raw source documents (committed)
 
 # Vector DB files
 chroma/
 chromadb/
 chroma_db/
 data/chroma_db/
+INTERNAL_WALKTHROUGH.md
 .eval_cache/
+
+# Tiktoken BPE cache (pre-populated offline for sandbox compatibility)
+.tiktoken_cache/
 
 # Node modules (frontend)
 ui_react/frontend/node_modules/
@@ -70,5 +88,24 @@ ui_react/frontend/node_modules/
 # Server PID file (runtime artifact)
 ui_react/.server_pids
 
-# Claude logs (generated, local only)
+# Plan files (local development notes)
+PLAN_*.md
+IMPLEMENTATION_PLAN.md
+
+# Claude settings (local — settings.local.json is per-machine permissions)
+
+# Claude hook logs (generated, local only)
 .claude/logs/
+
+# Implementation plans (local only, root-level)
+*_PLAN.md
+*_IMPLEMENTATION_PLAN.md
+# Allow plan docs inside docs/ directories (needed for worktrees)
+!docs/**/*_PLAN.md
+ui_react/frontend/coverage/
+
+# Personal drafts (not for repo)
+linkedin_drafts*
+phone_pitch*
+
+sonar-project.properties

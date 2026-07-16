@@ -1,6 +1,6 @@
 # Commands Reference
 
-**Tip**: Alle kommandoer køres fra projektets rod (`./).
+**Tip**: Alle kommandoer køres fra projektets rod (`<projekt-rod>`).
 
 ## Virtual Environment
 

@@ -1,4 +1,5 @@
 """Tests for sibling chunk expansion in retrieval."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
@@ -13,7 +14,9 @@ class TestSiblingExpansion:
     def _make_retriever(self) -> Retriever:
         """Create a Retriever with a mock collection."""
         mock_collection = MagicMock()
-        return Retriever(collection=mock_collection, embedding_model="text-embedding-3-large")
+        return Retriever(
+            collection=mock_collection, embedding_model="text-embedding-3-large"
+        )
 
     def test_expand_to_siblings_empty_input(self):
         """Should return empty results for empty input."""
@@ -66,13 +69,19 @@ class TestSiblingExpansion:
         # Original retrieved chunk
         original_ids = ["chunk-1"]
         original_docs = ["First chunk of article 5"]
-        original_metas = [{"article": "5", "location_id": "loc:v1/article:5", "chunk_index": 0}]
+        original_metas = [
+            {"article": "5", "location_id": "loc:v1/article:5", "chunk_index": 0}
+        ]
         original_dists = [0.5]
 
         # Mock collection.get to return siblings
         mock_collection.get.return_value = {
             "ids": ["chunk-1", "chunk-2", "chunk-3"],
-            "documents": ["First chunk of article 5", "Second chunk of article 5", "Third chunk of article 5"],
+            "documents": [
+                "First chunk of article 5",
+                "Second chunk of article 5",
+                "Third chunk of article 5",
+            ],
             "metadatas": [
                 {"article": "5", "location_id": "loc:v1/article:5", "chunk_index": 0},
                 {"article": "5", "location_id": "loc:v1/article:5", "chunk_index": 1},
@@ -267,7 +276,9 @@ class TestSiblingExpansionIntegration:
     """Integration tests for sibling expansion with config."""
 
     @patch("src.engine.retrieval.get_sibling_expansion_settings")
-    def test_query_collection_with_distances_calls_expansion_when_enabled(self, mock_settings):
+    def test_query_collection_with_distances_calls_expansion_when_enabled(
+        self, mock_settings
+    ):
         """Should call _expand_to_siblings when enabled in config."""
         mock_settings.return_value = {"enabled": True, "max_siblings": 2}
 
@@ -287,7 +298,9 @@ class TestSiblingExpansionIntegration:
             ],
         }
 
-        retriever = Retriever(collection=mock_collection, embedding_model="text-embedding-3-large")
+        retriever = Retriever(
+            collection=mock_collection, embedding_model="text-embedding-3-large"
+        )
 
         with patch.object(retriever, "_embed", return_value=[[0.1] * 1536]):
             hits, distances = retriever._query_collection_with_distances(
@@ -313,7 +326,9 @@ class TestSiblingExpansionIntegration:
             "distances": [[0.5]],
         }
 
-        retriever = Retriever(collection=mock_collection, embedding_model="text-embedding-3-large")
+        retriever = Retriever(
+            collection=mock_collection, embedding_model="text-embedding-3-large"
+        )
 
         with patch.object(retriever, "_embed", return_value=[[0.1] * 1536]):
             hits, distances = retriever._query_collection_with_distances(
@@ -348,7 +363,9 @@ class TestSiblingExpansionIntegration:
             ],
         }
 
-        retriever = Retriever(collection=mock_collection, embedding_model="text-embedding-3-large")
+        retriever = Retriever(
+            collection=mock_collection, embedding_model="text-embedding-3-large"
+        )
 
         with patch.object(retriever, "_embed", return_value=[[0.1] * 1536]):
             # Explicitly enable expansion even though config says disabled

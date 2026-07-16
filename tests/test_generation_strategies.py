@@ -1,6 +1,5 @@
 """Tests for src/engine/generation_strategies.py - Strategy pattern generation."""
 
-import pytest
 from unittest.mock import MagicMock, patch
 
 from src.engine.generation_types import (
@@ -84,7 +83,9 @@ class TestExecuteLegalJsonGeneration:
         valid_json = '{"summary": "Test summary", "key_points": ["Point 1 [1]"]}'
         llm_fn = MagicMock(return_value=valid_json)
 
-        with patch("src.engine.generation_strategies.execute_legal_json_generation") as mock:
+        with patch(
+            "src.engine.generation_strategies.execute_legal_json_generation"
+        ) as mock:
             mock.return_value = StructuredGenerationResult(
                 answer_text="Test summary",
                 raw_llm_response=valid_json,
@@ -115,7 +116,10 @@ class TestExecuteLegalJsonGeneration:
         )
 
         # Should fall back to prose
-        assert result.debug.get("json_parse_ok") is False or result.debug.get("legal_json_fallback_to_prose") is True
+        assert (
+            result.debug.get("json_parse_ok") is False
+            or result.debug.get("legal_json_fallback_to_prose") is True
+        )
         assert "[1]" in result.answer_text or "Not valid JSON" in result.answer_text
 
     def test_fails_without_fallback(self):
@@ -189,10 +193,12 @@ class TestExecuteStructuredGeneration:
         config = GenerationConfig.for_legal()
         llm_fn = MagicMock(return_value="Should not be called")
 
-        custom_strategy = MagicMock(return_value=StructuredGenerationResult(
-            answer_text="Custom strategy result",
-            raw_llm_response="custom",
-        ))
+        custom_strategy = MagicMock(
+            return_value=StructuredGenerationResult(
+                answer_text="Custom strategy result",
+                raw_llm_response="custom",
+            )
+        )
 
         result = execute_structured_generation(
             prompt="test",

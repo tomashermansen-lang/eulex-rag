@@ -3,9 +3,6 @@
 TDD: These tests are written BEFORE the implementation.
 """
 
-import pytest
-from unittest.mock import MagicMock
-
 
 class TestPrepareMultiCorpusContext:
     """Tests for prepare_multi_corpus_context function."""
@@ -31,7 +28,7 @@ class TestPrepareMultiCorpusContext:
 
     def test_pmc_002_tracks_per_corpus_evidence(self):
         """per_corpus_evidence tracks which corpora contributed."""
-        from src.engine.planning import prepare_multi_corpus_context, MultiCorpusContext
+        from src.engine.planning import prepare_multi_corpus_context
         from src.engine.synthesis_router import SynthesisMode, SynthesisContext
 
         synthesis_ctx = SynthesisContext(

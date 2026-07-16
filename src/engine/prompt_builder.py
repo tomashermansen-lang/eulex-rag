@@ -9,10 +9,10 @@ from selected chunks. It transforms retrieved/selected chunks into:
 
 Single Responsibility: Build LLM prompts and context from selected chunks.
 """
+
 from __future__ import annotations
 
 import os
-import re
 from dataclasses import dataclass, field
 from typing import Any, List, Tuple, Dict, Callable, TYPE_CHECKING
 
@@ -31,6 +31,7 @@ class PromptContext:
     Contains all data needed to construct the LLM prompt and populate
     the response payload with reference information.
     """
+
     included: List[Tuple[str, Dict[str, Any], str, str | None]]
     references: List[str]
     context_blocks: List[str]
@@ -59,7 +60,18 @@ def _derive_structural_fields(meta: Dict[str, Any]) -> Dict[str, str]:
         key, val = part.split(":", 1)
         key = key.strip().lower()
         val = val.strip()
-        if key in ("chapter", "section", "article", "paragraph", "annex", "recital", "litra", "annex_point", "annex_section", "annex_subpoint"):
+        if key in (
+            "chapter",
+            "section",
+            "article",
+            "paragraph",
+            "annex",
+            "recital",
+            "litra",
+            "annex_point",
+            "annex_section",
+            "annex_subpoint",
+        ):
             if val and key not in out:
                 out[key] = val
     return out
@@ -114,7 +126,9 @@ def _sandwich_order(items: List[Any]) -> List[Any]:
 
 def build_references_structured(
     included: List[Tuple[str, Dict[str, Any], str, str | None]],
-    format_metadata_fn: Callable[[Dict[str, Any], str], Tuple[str, Dict[str, Any], Dict[str, Any]]],
+    format_metadata_fn: Callable[
+        [Dict[str, Any], str], Tuple[str, Dict[str, Any], Dict[str, Any]]
+    ],
 ) -> Tuple[List[str], List[str], List[Dict[str, Any]]]:
     """Build structured references from included chunks.
 
@@ -141,7 +155,9 @@ def build_references_structured(
         litra_val = sanitized_meta.get("litra") or derived.get("litra")
         annex_val = (meta or {}).get("annex") or derived.get("annex")
         annex_point_val = (meta or {}).get("annex_point") or derived.get("annex_point")
-        annex_section_val = (meta or {}).get("annex_section") or derived.get("annex_section")
+        annex_section_val = (meta or {}).get("annex_section") or derived.get(
+            "annex_section"
+        )
         recital_val = (meta or {}).get("recital") or derived.get("recital")
         chapter_val = (meta or {}).get("chapter") or derived.get("chapter")
         section_val = (meta or {}).get("section") or derived.get("section")
@@ -352,7 +368,9 @@ def build_context_string(
 
 def build_prompt_context(
     selected: "Tuple[SelectedChunk, ...]",
-    format_metadata_fn: Callable[[Dict[str, Any], str], Tuple[str, Dict[str, Any], Dict[str, Any]]],
+    format_metadata_fn: Callable[
+        [Dict[str, Any], str], Tuple[str, Dict[str, Any], Dict[str, Any]]
+    ],
     corpus_id: str,
     *,
     enable_raw_anchor_log: bool = False,
@@ -380,12 +398,14 @@ def build_prompt_context(
     included: List[Tuple[str, Dict[str, Any], str, str | None]] = []
     for sel in selected:
         chunk = sel.chunk
-        included.append((
-            chunk.document,
-            dict(chunk.metadata),
-            chunk.chunk_id,
-            sel.precise_ref,
-        ))
+        included.append(
+            (
+                chunk.document,
+                dict(chunk.metadata),
+                chunk.chunk_id,
+                sel.precise_ref,
+            )
+        )
 
     # Apply context positioning strategy
     if context_positioning == "sandwich" and len(included) > 3:
@@ -479,7 +499,9 @@ def build_prompt(
             format_rules += PT.LEGAL_SUMMARY_SUFFIX
 
     else:
-        engineering_json_mode = str(os.getenv("ENGINEERING_JSON_MODE", "") or "").strip().lower() in {"1", "true", "yes", "on"}
+        engineering_json_mode = str(
+            os.getenv("ENGINEERING_JSON_MODE", "") or ""
+        ).strip().lower() in {"1", "true", "yes", "on"}
 
         if engineering_json_mode:
             # For ENGINEERING JSON-mode: enforce a strict machine-validated schema.
@@ -490,10 +512,14 @@ def build_prompt(
 
     task = ""
     if plan.intent == Intent.CHAPTER_SUMMARY:
-        ch = (ctx.focus.chapter if ctx.focus else None) or str((plan.where or {}).get("chapter") or "")
+        ch = (ctx.focus.chapter if ctx.focus else None) or str(
+            (plan.where or {}).get("chapter") or ""
+        )
         task = PT.CHAPTER_SUMMARY_TASK.format(chapter=ch)
     elif plan.intent == Intent.ARTICLE_SUMMARY:
-        art = (ctx.focus.article if ctx.focus else None) or str((plan.where or {}).get("article") or "")
+        art = (ctx.focus.article if ctx.focus else None) or str(
+            (plan.where or {}).get("article") or ""
+        )
         task = PT.ARTICLE_SUMMARY_TASK.format(article=art)
     elif plan.intent == Intent.STRUCTURE:
         task = PT.STRUCTURE_TASK
@@ -501,7 +527,9 @@ def build_prompt(
     # Build history section if provided (simplified - query rewriting handles context)
     history_section = ""
     if history_context and history_context.strip():
-        history_section = PT.HISTORY_CONTEXT_TEMPLATE.format(history_context=history_context)
+        history_section = PT.HISTORY_CONTEXT_TEMPLATE.format(
+            history_context=history_context
+        )
 
     # Use centralized prompt assembly template
     return PT.PROMPT_TEMPLATE.format(
@@ -565,7 +593,9 @@ def build_answer_policy_suffix(
         return ""
 
     try:
-        intent_category = str(getattr(answer_policy, "intent_category", "") or "").strip().upper()
+        intent_category = (
+            str(getattr(answer_policy, "intent_category", "") or "").strip().upper()
+        )
         requirements_first = bool(getattr(answer_policy, "requirements_first", False))
         include_audit = bool(getattr(answer_policy, "include_audit_evidence", False))
         min_bullets = getattr(answer_policy, "min_section3_bullets", None)
@@ -574,7 +604,9 @@ def build_answer_policy_suffix(
         lines.append(f"- intent_category: {intent_category}")
 
         if requirements_first and intent_category == "REQUIREMENTS":
-            lines.append("- requirements_first: Når der er tvetydighed, SKAL svaret være krav-/implementeringsorienteret (Sektion 3) fremfor håndhævelse/sanktioner.")
+            lines.append(
+                "- requirements_first: Når der er tvetydighed, SKAL svaret være krav-/implementeringsorienteret (Sektion 3) fremfor håndhævelse/sanktioner."
+            )
 
         if min_bullets is not None:
             try:
@@ -585,7 +617,9 @@ def build_answer_policy_suffix(
                 pass
 
         if include_audit:
-            lines.append("- Under Sektion 3: tilføj undersektion 'Minimum ved tilsyn (evidens/artefakter)'. Hvis utilstrækkelig evidens, brug UTILSTRÆKKELIG_EVIDENS.")
+            lines.append(
+                "- Under Sektion 3: tilføj undersektion 'Minimum ved tilsyn (evidens/artefakter)'. Hvis utilstrækkelig evidens, brug UTILSTRÆKKELIG_EVIDENS."
+            )
 
         return "\n".join(lines)
     except Exception:  # noqa: BLE001
@@ -686,7 +720,9 @@ def get_corpus_display_name(
     return corpus_id.upper().replace("_", "-")
 
 
-def _corpus_display_name(corpus_id: str, resolver: "CorpusResolver | None" = None) -> str:
+def _corpus_display_name(
+    corpus_id: str, resolver: "CorpusResolver | None" = None
+) -> str:
     """Get display name for corpus ID (internal helper)."""
     return get_corpus_display_name(corpus_id, resolver)
 
@@ -767,7 +803,9 @@ def build_aggregation_prompt(
     lines: List[str] = []
     lines.append("Du skal besvare et spørgsmål baseret på flere EU-retsakter.")
     lines.append("Identificer hvad HVER lov siger om emnet og giv et samlet svar.")
-    lines.append("Citer ALTID den specifikke lov sammen med artiklen (f.eks. [1] AI-Act, Artikel 5).")
+    lines.append(
+        "Citer ALTID den specifikke lov sammen med artiklen (f.eks. [1] AI-Act, Artikel 5)."
+    )
     lines.append("")
     lines.append("KILDER PER LOV:")
 
@@ -784,7 +822,9 @@ def build_aggregation_prompt(
     lines.append("")
     lines.append(f"SPØRGSMÅL: {question}")
     lines.append("")
-    lines.append("Besvar spørgsmålet og sammenfat hvad HVER lov siger. Citer kilder fra hver relevant lov.")
+    lines.append(
+        "Besvar spørgsmålet og sammenfat hvad HVER lov siger. Citer kilder fra hver relevant lov."
+    )
 
     return "\n".join(lines)
 
@@ -814,7 +854,9 @@ def build_comparison_prompt(
         Prompt string
     """
     lines: List[str] = []
-    lines.append("Du skal sammenligne to EU-retsakter og identificere ligheder og forskelle.")
+    lines.append(
+        "Du skal sammenligne to EU-retsakter og identificere ligheder og forskelle."
+    )
     lines.append("Strukturer dit svar med: 1) Ligheder, 2) Forskelle, 3) Konklusion.")
     lines.append("Citer ALTID den specifikke lov sammen med artiklen.")
     lines.append("")
@@ -840,7 +882,9 @@ def build_comparison_prompt(
     lines.append("")
     lines.append(f"SPØRGSMÅL: {question}")
     lines.append("")
-    lines.append(f"Sammenlign {corpus_a_name} og {corpus_b_name}. Identificer ligheder og forskelle.")
+    lines.append(
+        f"Sammenlign {corpus_a_name} og {corpus_b_name}. Identificer ligheder og forskelle."
+    )
 
     return "\n".join(lines)
 
@@ -870,7 +914,15 @@ def build_routing_prompt(
 
     for corpus_id, count in sorted(corpus_matches.items(), key=lambda x: -x[1]):
         display_name = _corpus_display_name(corpus_id)
-        relevance = "Høj" if count >= 5 else "Medium" if count >= 2 else "Lav" if count >= 1 else "Ingen"
+        relevance = (
+            "Høj"
+            if count >= 5
+            else "Medium"
+            if count >= 2
+            else "Lav"
+            if count >= 1
+            else "Ingen"
+        )
         lines.append(f"- {display_name}: {relevance} ({count} relevante uddrag)")
 
     lines.append("")
@@ -886,7 +938,9 @@ def build_routing_prompt(
 # ---------------------------------------------------------------------------
 
 
-def _group_refs_by_corpus(references: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+def _group_refs_by_corpus(
+    references: List[Dict[str, Any]],
+) -> Dict[str, List[Dict[str, Any]]]:
     """Group references by corpus_id."""
     by_corpus: Dict[str, List[Dict[str, Any]]] = {}
     for ref in references:
@@ -977,8 +1031,12 @@ def build_multi_corpus_prompt(
 # Discovery Preamble
 # ---------------------------------------------------------------------------
 
-_DEFAULT_TEMPLATE_AUTO = "Baseret på dit spørgsmål har jeg fundet relevante bestemmelser i {law_names}."
-_DEFAULT_TEMPLATE_SUGGEST = "Dit spørgsmål kan relatere sig til {law_names}. Svaret kan være ufuldstændigt."
+_DEFAULT_TEMPLATE_AUTO = (
+    "Baseret på dit spørgsmål har jeg fundet relevante bestemmelser i {law_names}."
+)
+_DEFAULT_TEMPLATE_SUGGEST = (
+    "Dit spørgsmål kan relatere sig til {law_names}. Svaret kan være ufuldstændigt."
+)
 
 
 def build_discovery_preamble(

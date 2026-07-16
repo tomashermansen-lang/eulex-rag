@@ -100,7 +100,11 @@ def test_contract_matches_by_reference_idx_not_list_position() -> None:
         allow_additional_uncited_refs=True,
         max_citations=None,
     )
-    assert not any(x.code in {"CITED_IDX_MISSING_IN_STRUCTURED", "CITATIONS_NO_MATCHING_REFS"} for x in v)
+    assert not any(
+        x.code in {"CITED_IDX_MISSING_IN_STRUCTURED", "CITATIONS_NO_MATCHING_REFS"}
+        for x in v
+    )
+
 
 def test_contract_fail_min_citations_not_met() -> None:
     violations = validate_engineering_contract(

@@ -103,22 +103,27 @@ class TestAskEndpointCrossLaw:
         """Create test client."""
         import sys
         from pathlib import Path
+
         backend_path = Path(__file__).parent.parent
         if str(backend_path) not in sys.path:
             sys.path.insert(0, str(backend_path))
 
         from main import app
+
         return TestClient(app)
 
     def test_ask_with_single_scope_works_as_before(self, client):
         """Single scope query uses existing single-law path."""
         # This test verifies backward compatibility
-        response = client.post("/api/ask", json={
-            "question": "What is Article 6?",
-            "law": "ai_act",
-            "user_profile": "LEGAL",
-            "corpus_scope": "single",
-        })
+        response = client.post(
+            "/api/ask",
+            json={
+                "question": "What is Article 6?",
+                "law": "ai_act",
+                "user_profile": "LEGAL",
+                "corpus_scope": "single",
+            },
+        )
 
         # Should succeed or fail gracefully
         # 200 = success, 400 = corpus not found, 500 = internal error
@@ -127,10 +132,13 @@ class TestAskEndpointCrossLaw:
 
     def test_ask_request_validation_rejects_invalid_scope(self, client):
         """Invalid corpus_scope is rejected."""
-        response = client.post("/api/ask", json={
-            "question": "What is Article 6?",
-            "law": "ai_act",
-            "corpus_scope": "invalid_scope",  # Not valid
-        })
+        response = client.post(
+            "/api/ask",
+            json={
+                "question": "What is Article 6?",
+                "law": "ai_act",
+                "corpus_scope": "invalid_scope",  # Not valid
+            },
+        )
 
         assert response.status_code == 422  # Validation error

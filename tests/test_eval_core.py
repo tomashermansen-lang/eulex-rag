@@ -7,8 +7,6 @@ Run with: pytest tests/test_eval_core.py -v
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -17,6 +15,7 @@ import pytest
 # ---------------------------------------------------------------------------
 # Test EvalConfig dataclass
 # ---------------------------------------------------------------------------
+
 
 class TestEvalConfig:
     """Test EvalConfig dataclass and its properties."""
@@ -75,6 +74,7 @@ class TestEvalConfig:
 # Test evaluate_cases_iter generator
 # ---------------------------------------------------------------------------
 
+
 class TestEvaluateCasesIter:
     """Test the core evaluation iterator."""
 
@@ -83,9 +83,7 @@ class TestEvaluateCasesIter:
         """Create a mock ask result."""
         result = MagicMock()
         result.answer = "Test answer"
-        result.references_structured = [
-            {"article": "1", "chunk_text": "Test chunk"}
-        ]
+        result.references_structured = [{"article": "1", "chunk_text": "Test chunk"}]
         result.retrieval_metrics = {
             "references_structured": [{"article": "1"}],
             "run": {"context_positioning": "top"},
@@ -194,6 +192,7 @@ class TestEvaluateCasesIter:
 # Test retry logic
 # ---------------------------------------------------------------------------
 
+
 class TestRetryLogic:
     """Test case retry behavior."""
 
@@ -218,6 +217,7 @@ class TestRetryLogic:
         config = EvalConfig(law="test", run_mode="retrieval_only", max_retries=0)
 
         call_count = 0
+
         def mock_ask_side_effect(*args, **kwargs):
             nonlocal call_count
             call_count += 1
@@ -242,6 +242,7 @@ class TestRetryLogic:
         config = EvalConfig(law="test", run_mode="retrieval_only", max_retries=2)
 
         call_count = 0
+
         def mock_ask_side_effect(*args, **kwargs):
             nonlocal call_count
             call_count += 1
@@ -272,6 +273,7 @@ class TestRetryLogic:
         config = EvalConfig(law="test", run_mode="retrieval_only", max_retries=3)
 
         call_count = 0
+
         def mock_ask_side_effect(*args, **kwargs):
             nonlocal call_count
             call_count += 1
@@ -281,7 +283,9 @@ class TestRetryLogic:
             # Include proper format for AnchorScorer - anchors_in_top_k is the key field
             result.retrieval_metrics = {
                 "references_structured": [{"article": "1"}],
-                "run": {"anchors_in_top_k": ["article:1"]},  # This is what AnchorScorer checks
+                "run": {
+                    "anchors_in_top_k": ["article:1"]
+                },  # This is what AnchorScorer checks
             }
             return result
 
@@ -298,6 +302,7 @@ class TestRetryLogic:
 # ---------------------------------------------------------------------------
 # Test escalation logic
 # ---------------------------------------------------------------------------
+
 
 class TestEscalationLogic:
     """Test model escalation behavior."""
@@ -331,6 +336,7 @@ class TestEscalationLogic:
         )
 
         models_used = []
+
         def mock_ask_side_effect(*args, **kwargs):
             # Track which model/engine was used
             engine = kwargs.get("engine")
@@ -343,8 +349,10 @@ class TestEscalationLogic:
             result.retrieval_metrics = {"references_structured": [{"article": "1"}]}
             return result
 
-        with patch("src.eval.eval_core.ask") as mock_ask, \
-             patch("src.eval.eval_core._build_engine") as mock_build:
+        with (
+            patch("src.eval.eval_core.ask") as mock_ask,
+            patch("src.eval.eval_core._build_engine") as mock_build,
+        ):
             mock_ask.ask.side_effect = mock_ask_side_effect
 
             # First call fails, escalation succeeds
@@ -368,6 +376,7 @@ class TestEscalationLogic:
         )
 
         call_count = 0
+
         def mock_ask_side_effect(*args, **kwargs):
             nonlocal call_count
             call_count += 1
@@ -392,6 +401,7 @@ class TestEscalationLogic:
 # ---------------------------------------------------------------------------
 # Test summary statistics
 # ---------------------------------------------------------------------------
+
 
 class TestSummaryStatistics:
     """Test EvalSummary statistics computation."""
@@ -419,6 +429,7 @@ class TestSummaryStatistics:
         config = EvalConfig(law="test", run_mode="retrieval_only")
 
         call_count = 0
+
         def mock_ask_side_effect(*args, **kwargs):
             nonlocal call_count
             call_count += 1
@@ -426,7 +437,9 @@ class TestSummaryStatistics:
             # First 2 pass, last 1 fails
             if call_count <= 2:
                 result.references_structured = [{"article": str(call_count - 1)}]
-                result.retrieval_metrics = {"references_structured": [{"article": str(call_count - 1)}]}
+                result.retrieval_metrics = {
+                    "references_structured": [{"article": str(call_count - 1)}]
+                }
             else:
                 result.references_structured = []
                 result.retrieval_metrics = {}
@@ -447,6 +460,7 @@ class TestSummaryStatistics:
 # ---------------------------------------------------------------------------
 # Test scorers configuration
 # ---------------------------------------------------------------------------
+
 
 class TestScorersConfiguration:
     """Test that correct scorers are applied based on run_mode."""
@@ -491,14 +505,14 @@ class TestScorersConfiguration:
     def test_full_with_judge_includes_llm_scorers(self, mock_golden_case):
         """full_with_judge mode includes LLM-judge scorers."""
         from src.eval.eval_core import EvalConfig, evaluate_cases_iter
-        from src.eval.reporters import CaseResult
 
         config = EvalConfig(law="test", run_mode="full_with_judge")
 
-        with patch("src.eval.eval_core.ask") as mock_ask, \
-             patch("src.eval.eval_core.FaithfulnessScorer") as mock_faith, \
-             patch("src.eval.eval_core.AnswerRelevancyScorer") as mock_rel:
-
+        with (
+            patch("src.eval.eval_core.ask") as mock_ask,
+            patch("src.eval.eval_core.FaithfulnessScorer") as mock_faith,
+            patch("src.eval.eval_core.AnswerRelevancyScorer") as mock_rel,
+        ):
             result = MagicMock()
             result.answer = "Test answer"
             result.references_structured = [{"article": "1", "chunk_text": "Text"}]
@@ -510,11 +524,15 @@ class TestScorersConfiguration:
 
             # Mock LLM scorers
             mock_faith_instance = MagicMock()
-            mock_faith_instance.score.return_value = MagicMock(passed=True, score=1.0, message="OK")
+            mock_faith_instance.score.return_value = MagicMock(
+                passed=True, score=1.0, message="OK"
+            )
             mock_faith.return_value = mock_faith_instance
 
             mock_rel_instance = MagicMock()
-            mock_rel_instance.score.return_value = MagicMock(passed=True, score=1.0, message="OK")
+            mock_rel_instance.score.return_value = MagicMock(
+                passed=True, score=1.0, message="OK"
+            )
             mock_rel.return_value = mock_rel_instance
 
             results = list(evaluate_cases_iter([mock_golden_case], config))
@@ -527,6 +545,7 @@ class TestScorersConfiguration:
 # ---------------------------------------------------------------------------
 # Test abstention cases require full_with_judge mode
 # ---------------------------------------------------------------------------
+
 
 class TestAbstentionCasesRequireLLMJudge:
     """Test that abstain cases don't falsely pass in retrieval_only mode.
@@ -585,9 +604,12 @@ class TestAbstentionCasesRequireLLMJudge:
         abstention_score = case_result.scores.get("abstention")
 
         # Abstention score should exist and indicate not-evaluated
-        assert abstention_score is not None, "Abstain cases must have an abstention score"
-        assert abstention_score.details.get("not_evaluated") is True, \
+        assert abstention_score is not None, (
+            "Abstain cases must have an abstention score"
+        )
+        assert abstention_score.details.get("not_evaluated") is True, (
             "Abstain cases in retrieval_only mode should be marked as not_evaluated"
+        )
 
     def test_abstain_case_not_passed_in_full_mode(self, abstain_golden_case):
         """Abstain cases should NOT be marked as passed in full mode (without judge).
@@ -614,11 +636,16 @@ class TestAbstentionCasesRequireLLMJudge:
 
         # Should have abstention score with not_evaluated indicator
         abstention_score = case_result.scores.get("abstention")
-        assert abstention_score is not None, "Abstain cases must have an abstention score"
-        assert abstention_score.details.get("not_evaluated") is True, \
+        assert abstention_score is not None, (
+            "Abstain cases must have an abstention score"
+        )
+        assert abstention_score.details.get("not_evaluated") is True, (
             "Abstain cases in full mode (without judge) should be marked as not_evaluated"
+        )
 
-    def test_abstain_case_properly_evaluated_in_full_with_judge(self, abstain_golden_case):
+    def test_abstain_case_properly_evaluated_in_full_with_judge(
+        self, abstain_golden_case
+    ):
         """Abstain cases should be properly evaluated in full_with_judge mode."""
         from src.eval.eval_core import EvalConfig, evaluate_cases_iter
         from src.eval.reporters import CaseResult
@@ -627,7 +654,9 @@ class TestAbstentionCasesRequireLLMJudge:
 
         with patch("src.eval.eval_core.ask") as mock_ask:
             result = MagicMock()
-            result.answer = "Jeg kan ikke vurdere din compliance uden konkrete oplysninger."
+            result.answer = (
+                "Jeg kan ikke vurdere din compliance uden konkrete oplysninger."
+            )
             result.references_structured = []
             result.retrieval_metrics = {
                 "run": {},
@@ -642,16 +671,20 @@ class TestAbstentionCasesRequireLLMJudge:
 
         # Should have abstention score that was actually evaluated
         abstention_score = case_result.scores.get("abstention")
-        assert abstention_score is not None, "Abstain cases must have an abstention score"
+        assert abstention_score is not None, (
+            "Abstain cases must have an abstention score"
+        )
 
         # In full_with_judge mode, should NOT be marked as not_evaluated
-        assert abstention_score.details.get("not_evaluated") is not True, \
+        assert abstention_score.details.get("not_evaluated") is not True, (
             "Abstain cases in full_with_judge mode should be properly evaluated"
+        )
 
 
 # ---------------------------------------------------------------------------
 # Test configured concurrency (R1)
 # ---------------------------------------------------------------------------
+
 
 class TestConfiguredConcurrency:
     """eval.default_concurrency from settings.yaml controls ThreadPoolExecutor."""
@@ -659,6 +692,7 @@ class TestConfiguredConcurrency:
     @pytest.fixture
     def mock_golden_case(self):
         from src.eval.types import GoldenCase, ExpectedBehavior
+
         return GoldenCase(
             id="conc-case-1",
             profile="LEGAL",
@@ -681,9 +715,11 @@ class TestConfiguredConcurrency:
                 captured_max_workers = max_workers
                 super().__init__(max_workers=max_workers, **kwargs)
 
-        with patch("src.eval.eval_core.ask") as mock_ask, \
-             patch("src.eval.eval_core.get_settings_yaml") as mock_settings, \
-             patch("src.eval.eval_core.ThreadPoolExecutor", CapturingTPE):
+        with (
+            patch("src.eval.eval_core.ask") as mock_ask,
+            patch("src.eval.eval_core.get_settings_yaml") as mock_settings,
+            patch("src.eval.eval_core.ThreadPoolExecutor", CapturingTPE),
+        ):
             mock_settings.return_value = settings_return
 
             result = MagicMock()

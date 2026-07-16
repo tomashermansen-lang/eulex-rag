@@ -1,0 +1,394 @@
+{
+  "run_id": "run_c2182a6f0eeb",
+  "suite_id": "cybersikkerhedsregulering_og_ai_compliance_comparison_and_inverted_db6832a7",
+  "timestamp": "2026-02-11T21:36:04.849563+00:00",
+  "total": 10,
+  "passed": 8,
+  "failed": 2,
+  "pass_rate": 0.8,
+  "duration_seconds": 49.85131804202683,
+  "run_mode": "full",
+  "max_retries": 0,
+  "results": [
+    {
+      "case_id": "cybersikkerhed_og_regulering",
+      "prompt": "Hvordan adskiller kravene til cybersikkerhedsstyringssystemer i artikel 32 i eucs-dr-2024-1366 sig fra de tekniske og metodologiske krav nævnt i bilag 1 til nis2-cir-2024-2690, og hvordan relaterer de sig til produktsikkerhed i artikel 11 i cyberrobusthed?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": false,
+      "duration_ms": 7865.8658331260085,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.3333333333333333,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": false,
+          "score": 0.6,
+          "message": "Missing comparison targets: cyberrobusthed, eucs-dr-2024-1366"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "cybersikkerhed_kompetent_myndighed",
+      "prompt": "Hvordan adskiller kravene til udpegning af en kompetent myndighed i henholdsvis artikel 4 i forordningen om kompetente myndigheder og artikel 1 i direktivet om cybersikkerhed sig fra hinanden?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": true,
+      "duration_ms": 13304.671874968335,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.5,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": true,
+          "score": 1.0,
+          "message": "All 5 comparison targets cited"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_obligations",
+      "prompt": "Hvordan adskiller kravene til inddragelse af interessenter i artikel 10 i eucs-dr-2024-1366 sig fra de tekniske og metodologiske krav i nis2-cir-2024-2690, især i forhold til håndtering af IT-sikkerhedshændelser som beskrevet i artikel 10 i nis2-dir-2022-2555?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": true,
+      "duration_ms": 15566.592624876648,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": true,
+          "score": 1.0,
+          "message": "All 5 comparison targets cited"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "cybersikkerhedskrav",
+      "prompt": "Hvordan adskiller de cybersikkerhedsmæssige krav i forordningen om produkter med digitale elementer sig fra de specifikke netregler for cybersikkerhed i forbindelse med grænseoverskridende elektricitetsstrømme?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": true,
+      "duration_ms": 16573.236582800746,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": true,
+          "score": 1.0,
+          "message": "All 6 comparison targets cited"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "omkostninger_og_overensstemmelse",
+      "prompt": "Hvordan håndteres omkostninger i forbindelse med overensstemmelsesvurdering i forhold til kravene i cyberrobusthed og dækning af omkostninger i EU-lovgivningen?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": false,
+      "duration_ms": 16633.600667119026,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.5,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": false,
+          "score": 0.8,
+          "message": "Missing comparison targets: cyberrobusthed"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "aktiv_definitions_comparison",
+      "prompt": "Hvordan definerer forskellige EU-regler begrebet 'aktiv' i relation til net- og informationssystemer, og hvilke elementer indgår i denne definition?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": true,
+      "duration_ms": 7954.376459121704,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": true,
+          "score": 1.0,
+          "message": "All 4 comparison targets cited"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_scope",
+      "prompt": "Hvordan adskiller anvendelsesområdet for produkter med digitale elementer sig mellem forordningen om cyberrobusthed og direktivet om net- og informationssikkerhed (NIS2)?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": true,
+      "duration_ms": 14875.211667036638,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": true,
+          "score": 1.0,
+          "message": "All 5 comparison targets cited"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_classification",
+      "prompt": "Hvordan adskiller kravene til overvågning af kritiske produkter med digitale elementer sig fra kravene til håndtering af IT-sikkerhedshændelser i EU-lovgivningen?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": true,
+      "duration_ms": 14032.564374851063,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.3333333333333333,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": true,
+          "score": 1.0,
+          "message": "All 5 comparison targets cited"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_procedures",
+      "prompt": "Hvordan adskiller kravene til kommunikationskanaler for CSIRT'er sig fra overvågningsprocedurerne beskrevet af ACER i forhold til samarbejde med andre enheder?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": true,
+      "duration_ms": 15022.885916987434,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": true,
+          "score": 1.0,
+          "message": "All 5 comparison targets cited"
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "case_id": "auto_inverted_classification_1",
+      "prompt": "Hvordan adskiller anvendelsesområdet for produkter med digitale elementer sig mellem forordningen om cyberrobusthed og forordningen om cybersikkerhedsmæssige aspekter af elektricitetsstrømme?",
+      "synthesis_mode": "comparison",
+      "target_corpora": [
+        "cyberrobusthed",
+        "eucs-dr-2024-1366",
+        "nis2-cir-2024-2690",
+        "nis2-dir-2022-2555",
+        "rearm-europe",
+        "ai-act"
+      ],
+      "passed": true,
+      "duration_ms": 33265.19599999301,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "comparison_completeness": {
+          "passed": true,
+          "score": 1.0,
+          "message": "All 6 comparison targets cited"
+        }
+      },
+      "difficulty": "hard"
+    }
+  ]
+}

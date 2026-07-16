@@ -1,6 +1,5 @@
 """Tests for src/engine/retrieval.py - Core retrieval logic."""
 
-import pytest
 from unittest.mock import MagicMock, patch
 
 from src.engine.retrieval import (
@@ -35,7 +34,9 @@ class TestApplyScoreFloor:
             {"chunk_id": "c1", "final_score": 0.3},
             {"chunk_id": "c2", "final_score": 0.5},
         ]
-        result = apply_score_floor(candidates, [], floor_threshold=0.85, floor_boost=0.5)
+        result = apply_score_floor(
+            candidates, [], floor_threshold=0.85, floor_boost=0.5
+        )
         assert result == candidates
 
     def test_no_protected_hits_returns_unchanged(self):
@@ -446,10 +447,7 @@ class TestExecuteMultiAnchorRetrieval:
 
         def mock_query_fn(question, k, where):
             return (
-                [
-                    ("doc1", {"chunk_id": f"c{i}", "article": "6"})
-                    for i in range(5)
-                ],
+                [("doc1", {"chunk_id": f"c{i}", "article": "6"}) for i in range(5)],
                 [0.1 * i for i in range(5)],
                 [f"c{i}" for i in range(5)],
                 [{"chunk_id": f"c{i}"} for i in range(5)],

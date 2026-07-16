@@ -17,14 +17,36 @@ from __future__ import annotations
 import argparse
 import logging
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterator
 
-from ..common.corpora_inventory import default_corpora_path, load_corpora_inventory, save_corpora_inventory, upsert_corpus_inventory
-from ..common.corpus_registry import default_registry_path, derive_aliases, load_registry, save_registry, upsert_corpus
-from .html_chunks import HtmlChunkingConfig, PreflightResult, chunk_html_file, preflight_check_html, write_jsonl
-from ..common.metadata_schema import build_doc_id, build_source_path, compute_doc_version_from_file, stamp_common_metadata
+from ..common.corpora_inventory import (
+    default_corpora_path,
+    load_corpora_inventory,
+    save_corpora_inventory,
+    upsert_corpus_inventory,
+)
+from ..common.corpus_registry import (
+    default_registry_path,
+    derive_aliases,
+    load_registry,
+    save_registry,
+    upsert_corpus,
+)
+from .html_chunks import (
+    HtmlChunkingConfig,
+    PreflightResult,
+    chunk_html_file,
+    preflight_check_html,
+    write_jsonl,
+)
+from ..common.metadata_schema import (
+    build_doc_id,
+    build_source_path,
+    compute_doc_version_from_file,
+    stamp_common_metadata,
+)
 from ..common.config_loader import load_settings
 
 
@@ -50,10 +72,14 @@ class IngestionResult:
             f"  Structure coverage: {self.structure_coverage_pct:.1f}%",
         ]
         if self.preflight.handled:
-            handled = ", ".join(f"{v} {k}" for k, v in sorted(self.preflight.handled.items()))
+            handled = ", ".join(
+                f"{v} {k}" for k, v in sorted(self.preflight.handled.items())
+            )
             lines.append(f"  Handled: {handled}")
         if self.preflight.unhandled:
-            unhandled = ", ".join(f"{v} {k}" for k, v in sorted(self.preflight.unhandled.items()))
+            unhandled = ", ".join(
+                f"{v} {k}" for k, v in sorted(self.preflight.unhandled.items())
+            )
             lines.append(f"  ⚠️ Unhandled: {unhandled}")
         return "\n".join(lines)
 
@@ -70,12 +96,18 @@ def _spaced_word(word: str) -> str:
 
 
 EURLEX_HTML_REFERENCE_PATTERNS = {
-    "chapter": re.compile(rf"(?i)^\s*(?:{_spaced_word('chapter')}|{_spaced_word('kapitel')})\s+([ivxlcdm]+)\b"),
+    "chapter": re.compile(
+        rf"(?i)^\s*(?:{_spaced_word('chapter')}|{_spaced_word('kapitel')})\s+([ivxlcdm]+)\b"
+    ),
     "section": re.compile(
         rf"(?i)^\s*(?:{_spaced_word('section')}|{_spaced_word('afsnit')}|{_spaced_word('afdeling')})\s+([0-9]+|[ivxlcdm]+)\b"
     ),
-    "article": re.compile(rf"(?i)^\s*(?:{_spaced_word('article')}|{_spaced_word('artikel')})\s*(\d{{1,3}}[a-z]?)\b"),
-    "annex": re.compile(rf"(?i)^\s*(?:{_spaced_word('annex')}|{_spaced_word('bilag')})\s+([ivxlcdm]+)\b"),
+    "article": re.compile(
+        rf"(?i)^\s*(?:{_spaced_word('article')}|{_spaced_word('artikel')})\s*(\d{{1,3}}[a-z]?)\b"
+    ),
+    "annex": re.compile(
+        rf"(?i)^\s*(?:{_spaced_word('annex')}|{_spaced_word('bilag')})\s+([ivxlcdm]+)\b"
+    ),
 }
 
 
@@ -166,8 +198,7 @@ def _enrich_rows_for_embedding(
 
     with ThreadPoolExecutor(max_workers=max_concurrent) as executor:
         futures = {
-            executor.submit(_enrich_single, i, row): i
-            for i, row in enumerate(all_rows)
+            executor.submit(_enrich_single, i, row): i for i, row in enumerate(all_rows)
         }
 
         completed = 0
@@ -177,7 +208,11 @@ def _enrich_rows_for_embedding(
             completed += 1
 
             # Progress logging
-            if completed <= 3 or completed % batch_size == 0 or completed == total_count:
+            if (
+                completed <= 3
+                or completed % batch_size == 0
+                or completed == total_count
+            ):
                 logger.info(
                     "Enrichment progress: %d/%d (%.1f%%)",
                     completed,
@@ -213,7 +248,9 @@ def _enrich_rows_for_embedding(
 
 
 EURLEX_HTML_INLINE_LOCATION_PATTERNS = {
-    "paragraph": re.compile(r"(?i)^\s*(?:(?:stk\.|stykke)\s*(\d{1,3})\b|\((\d{1,3})\)\s+|(\d{1,3})\.\s+)"),
+    "paragraph": re.compile(
+        r"(?i)^\s*(?:(?:stk\.|stykke)\s*(\d{1,3})\b|\((\d{1,3})\)\s+|(\d{1,3})\.\s+)"
+    ),
     # EUR-Lex sometimes separates 'g)' into its own block; allow zero-or-more whitespace.
     "litra": re.compile(r"(?i)^\s*(?:(?:lit\.|litra)\s*([a-z])\b|([a-z])\)\s*)"),
 }
@@ -234,25 +271,58 @@ def _discover_html_files(raw_dir: Path) -> dict[str, Path]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="EUR-Lex HTML -> chunk JSONL")
-    parser.add_argument("--corpus", default="", help="Corpus id derived from filename (slug of <file>.html)")
-    parser.add_argument("--raw-dir", default="", help="Override raw HTML directory (default from settings)")
-    parser.add_argument("--out-dir", default="", help="Override processed output directory (default from settings)")
-    parser.add_argument("--language", default="da", help="Language code for metadata (default: da)")
-    parser.add_argument("--registry-path", default="", help="Path to corpus registry (default: data/processed/corpus_registry.json)")
-    parser.add_argument("--corpora-path", default="", help="Path to corpora inventory (default: data/processed/corpora.json)")
+    parser.add_argument(
+        "--corpus",
+        default="",
+        help="Corpus id derived from filename (slug of <file>.html)",
+    )
+    parser.add_argument(
+        "--raw-dir",
+        default="",
+        help="Override raw HTML directory (default from settings)",
+    )
+    parser.add_argument(
+        "--out-dir",
+        default="",
+        help="Override processed output directory (default from settings)",
+    )
+    parser.add_argument(
+        "--language", default="da", help="Language code for metadata (default: da)"
+    )
+    parser.add_argument(
+        "--registry-path",
+        default="",
+        help="Path to corpus registry (default: data/processed/corpus_registry.json)",
+    )
+    parser.add_argument(
+        "--corpora-path",
+        default="",
+        help="Path to corpora inventory (default: data/processed/corpora.json)",
+    )
     parser.add_argument(
         "--no-update-corpora-inventory",
         action="store_true",
         help="Disable automatic update of corpora.json",
     )
-    parser.add_argument("--display-name", default="", help="Display name for registry entry (default: CORPUS_ID.upper())")
-    parser.add_argument("--alias", action="append", default=[], help="Alias for registry entry (can be repeated)")
+    parser.add_argument(
+        "--display-name",
+        default="",
+        help="Display name for registry entry (default: CORPUS_ID.upper())",
+    )
+    parser.add_argument(
+        "--alias",
+        action="append",
+        default=[],
+        help="Alias for registry entry (can be repeated)",
+    )
     parser.add_argument(
         "--doc-version",
         default="",
         help="Override doc_version. If omitted, uses sha256 of the raw HTML file.",
     )
-    parser.add_argument("--log-level", default="INFO", help="Logging level (DEBUG, INFO, WARNING)")
+    parser.add_argument(
+        "--log-level", default="INFO", help="Logging level (DEBUG, INFO, WARNING)"
+    )
     return parser.parse_args()
 
 
@@ -398,11 +468,15 @@ def run_ingestion_for_file(
     write_jsonl(out_path, enriched_rows)
 
     pct = (100.0 * float(with_struct) / float(total)) if total else 0.0
-    print(f"[eurlex_ingest_report] corpus={corpus_id} chunks_total={total} chunks_with_(chapter|article|annex)={with_struct} ({pct:.1f}%)")
+    print(
+        f"[eurlex_ingest_report] corpus={corpus_id} chunks_total={total} chunks_with_(chapter|article|annex)={with_struct} ({pct:.1f}%)"
+    )
     if examples:
         print("[eurlex_ingest_report] examples_missing_citable_metadata:")
         for chunk_id, location_id, heading_path in examples:
-            print(f"- chunk_id={chunk_id} location_id={location_id} heading_path={heading_path}")
+            print(
+                f"- chunk_id={chunk_id} location_id={location_id} heading_path={heading_path}"
+            )
 
     return IngestionResult(
         output_path=out_path,
@@ -417,7 +491,9 @@ def run_ingestion() -> None:
     settings = load_settings()
 
     args = parse_args()
-    logging.basicConfig(level=getattr(logging, str(args.log_level).upper(), logging.INFO))
+    logging.basicConfig(
+        level=getattr(logging, str(args.log_level).upper(), logging.INFO)
+    )
 
     project_root = Path(__file__).resolve().parent.parent.parent
     registry_path = (
@@ -431,14 +507,22 @@ def run_ingestion() -> None:
         else default_corpora_path(project_root)
     )
 
-    raw_dir = (settings.raw_html_dir if getattr(settings, "raw_html_dir", None) is not None else Path("data/raw"))
+    raw_dir = (
+        settings.raw_html_dir
+        if getattr(settings, "raw_html_dir", None) is not None
+        else Path("data/raw")
+    )
     if not raw_dir.is_absolute():
         raw_dir = Path(__file__).resolve().parent.parent.parent / raw_dir
 
     if args.raw_dir:
         raw_dir = Path(args.raw_dir).expanduser().resolve()
 
-    out_dir = (settings.processed_dir if getattr(settings, "processed_dir", None) is not None else Path("data/processed"))
+    out_dir = (
+        settings.processed_dir
+        if getattr(settings, "processed_dir", None) is not None
+        else Path("data/processed")
+    )
     if not out_dir.is_absolute():
         out_dir = Path(__file__).resolve().parent.parent.parent / out_dir
 
@@ -452,7 +536,9 @@ def run_ingestion() -> None:
     if wanted:
         html_path = files.get(wanted)
         if html_path is None:
-            raise SystemExit(f"Ukendt --corpus {wanted!r}. Gyldige værdier: {', '.join(sorted(files.keys()))}")
+            raise SystemExit(
+                f"Ukendt --corpus {wanted!r}. Gyldige værdier: {', '.join(sorted(files.keys()))}"
+            )
         out = run_ingestion_for_file(
             corpus_id=wanted,
             html_path=html_path,
@@ -466,10 +552,14 @@ def run_ingestion() -> None:
         logger.info(out.summary())
 
         if not out.output_path.exists() or out.output_path.stat().st_size <= 0:
-            raise SystemExit(f"Ingestion fejlede: output-fil blev ikke skrevet korrekt: {out.output_path}")
+            raise SystemExit(
+                f"Ingestion fejlede: output-fil blev ikke skrevet korrekt: {out.output_path}"
+            )
 
-        display_name = (str(args.display_name).strip() or wanted.upper())
-        aliases = list(args.alias) if args.alias else derive_aliases(wanted, display_name)
+        display_name = str(args.display_name).strip() or wanted.upper()
+        aliases = (
+            list(args.alias) if args.alias else derive_aliases(wanted, display_name)
+        )
         registry = load_registry(registry_path)
         upsert_corpus(registry, wanted, display_name, aliases)
         save_registry(registry_path, registry)
@@ -515,7 +605,9 @@ def run_ingestion() -> None:
         logger.info(out.summary())
 
         if not out.output_path.exists() or out.output_path.stat().st_size <= 0:
-            raise SystemExit(f"Ingestion fejlede: output-fil blev ikke skrevet korrekt: {out.output_path}")
+            raise SystemExit(
+                f"Ingestion fejlede: output-fil blev ikke skrevet korrekt: {out.output_path}"
+            )
 
         display_name = corpus_id.upper()
         aliases = derive_aliases(corpus_id, display_name)
@@ -535,11 +627,19 @@ def run_ingestion() -> None:
             updated_corpora.append(corpus_id)
 
     save_registry(registry_path, registry)
-    logger.info("Opdaterede corpus registry: %s (%s)", registry_path, ", ".join(sorted(files.keys())))
+    logger.info(
+        "Opdaterede corpus registry: %s (%s)",
+        registry_path,
+        ", ".join(sorted(files.keys())),
+    )
 
     if inv is not None:
         save_corpora_inventory(corpora_path, inv)
-        logger.info("Opdaterede corpora inventory: %s (%d corpora)", corpora_path, len(updated_corpora))
+        logger.info(
+            "Opdaterede corpora inventory: %s (%d corpora)",
+            corpora_path,
+            len(updated_corpora),
+        )
 
 
 if __name__ == "__main__":

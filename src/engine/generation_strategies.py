@@ -19,6 +19,151 @@ if TYPE_CHECKING:
 
 
 # ---------------------------------------------------------------------------
+# Metadata sync: JSON mode generation result → run_meta
+# ---------------------------------------------------------------------------
+
+
+def sync_json_mode_results_to_run_meta(
+    gen_result: StructuredGenerationResult,
+    run_meta: dict[str, Any],
+    allowed_idxs: set[int],
+    contract_min_citations: int | None,
+    answer_policy: Any | None = None,
+) -> None:
+    """Sync JSON mode generation result to run_meta for backwards compatibility.
+
+    This function consolidates the metadata bookkeeping that was previously
+    inline in answer_structured().
+
+    Args:
+        gen_result: The structured generation result.
+        run_meta: The run metadata dict to update (mutated in-place).
+        allowed_idxs: Set of allowed citation indices.
+        contract_min_citations: Minimum citations required by contract.
+        answer_policy: Optional answer policy with min_section3_bullets etc.
+    """
+    # Common fields for all modes
+    run_meta["llm_calls_count"] = gen_result.debug.get("llm_calls_count", 0)
+    run_meta["citations_source"] = gen_result.debug.get(
+        "citations_source", "text_parse"
+    )
+
+    # Initialize engineering_json block
+    run_meta.setdefault(
+        "engineering_json",
+        {
+            "enabled": True,
+            "json_parse_ok": None,
+            "repair_retry_performed": False,
+            "enrich_retry_performed": False,
+            "allowed_idxs": [],
+            "cited_idxs": [],
+            "valid_cited": [],
+            "min_citations": contract_min_citations or 0,
+            "fail_reason": None,
+        },
+    )
+
+    # Sync allowed indices
+    sorted_allowed = sorted(allowed_idxs)
+    run_meta["allowed_idxs"] = sorted_allowed
+    run_meta["engineering_json"]["allowed_idxs"] = sorted_allowed
+    run_meta["allowed_idxs_count"] = len(sorted_allowed)
+    run_meta["engineering_json"]["allowed_idxs_count"] = len(sorted_allowed)
+
+    # Sync parse/repair/enrich status
+    run_meta["json_parse_ok"] = gen_result.debug.get("json_parse_ok")
+    run_meta["engineering_json"]["json_parse_ok"] = gen_result.debug.get(
+        "json_parse_ok"
+    )
+
+    run_meta["repair_retry_performed"] = gen_result.repair_attempts > 0
+    run_meta["engineering_json"]["repair_retry_performed"] = (
+        gen_result.repair_attempts > 0
+    )
+
+    run_meta["enrich_retry_performed"] = gen_result.enrich_attempts > 0
+    run_meta["engineering_json"]["enrich_retry_performed"] = (
+        gen_result.enrich_attempts > 0
+    )
+
+    run_meta["enrich_success"] = gen_result.debug.get("enrich_success")
+
+    # Sync citation indices
+    run_meta["cited_idxs"] = gen_result.cited_idxs
+    run_meta["engineering_json"]["cited_idxs"] = gen_result.cited_idxs
+    run_meta["cited_idxs_json"] = list(gen_result.cited_idxs)
+
+    run_meta["valid_cited"] = gen_result.valid_cited_idxs
+    run_meta["engineering_json"]["valid_cited"] = gen_result.valid_cited_idxs
+
+    # Sync failure reasons
+    run_meta["min_citations"] = contract_min_citations or 0
+    run_meta["fail_reason"] = gen_result.fail_reason
+    run_meta["final_fail_reason"] = gen_result.debug.get("final_fail_reason")
+    run_meta["engineering_json"]["fail_reason"] = gen_result.fail_reason
+
+    run_meta["strict_validation_failed_code"] = gen_result.debug.get(
+        "strict_validation_failed_code"
+    )
+    run_meta["schema_only_fallback_used"] = gen_result.debug.get(
+        "schema_only_fallback_used", False
+    )
+
+    run_meta["json_policy_enforced"] = True
+    run_meta["engineering_json"]["json_policy_enforced"] = True
+
+    # Surface policy knobs
+    try:
+        run_meta["policy_min_section3_bullets"] = (
+            getattr(answer_policy, "min_section3_bullets", None)
+            if answer_policy is not None
+            else None
+        )
+        run_meta["policy_include_audit_evidence"] = (
+            bool(getattr(answer_policy, "include_audit_evidence", False))
+            if answer_policy is not None
+            else False
+        )
+    except Exception:  # noqa: BLE001
+        run_meta["policy_min_section3_bullets"] = None
+        run_meta["policy_include_audit_evidence"] = False
+
+    # Sync bullet counts
+    run_meta["requirements_bullet_count"] = gen_result.debug.get(
+        "requirements_bullet_count", 0
+    )
+    run_meta["audit_evidence_bullet_count"] = gen_result.debug.get(
+        "audit_evidence_bullet_count", 0
+    )
+    run_meta["engineering_json"]["requirements_bullet_count"] = gen_result.debug.get(
+        "requirements_bullet_count", 0
+    )
+    run_meta["engineering_json"]["audit_evidence_bullet_count"] = gen_result.debug.get(
+        "audit_evidence_bullet_count", 0
+    )
+
+    # Sync final gate reason if MISSING_REF
+    if gen_result.is_missing_ref:
+        run_meta["final_gate_reason"] = (
+            gen_result.fail_reason or "json_parse_or_schema_fail"
+        )
+
+    # Sync rendered text
+    if gen_result.parsed_json is not None:
+        try:
+            run_meta["engineering_json"]["rendered_text"] = str(
+                gen_result.answer_text or ""
+            )
+        except Exception:  # noqa: BLE001
+            pass
+
+
+# Backward-compat alias
+_sync_json_mode_results_to_run_meta = sync_json_mode_results_to_run_meta
+
+
+# ---------------------------------------------------------------------------
 # Strategy 1: Prose Generation (no JSON validation)
 # ---------------------------------------------------------------------------
 
@@ -503,7 +648,9 @@ def execute_engineering_json_generation(
             and len(allowed_idxs) >= enrich_required_min
         ):
             should_enrich = True
-        elif min_cit > 0 and len(allowed_idxs) >= min_cit and len(valid_cited) < min_cit:
+        elif (
+            min_cit > 0 and len(allowed_idxs) >= min_cit and len(valid_cited) < min_cit
+        ):
             should_enrich = True
 
     if should_enrich:
@@ -596,8 +743,7 @@ def execute_engineering_json_generation(
                 enrich_valid = True
                 if enrich_kind == "citations_only":
                     if any(
-                        int(after_counts.get(k) or 0)
-                        > int(baseline_counts.get(k) or 0)
+                        int(after_counts.get(k) or 0) > int(baseline_counts.get(k) or 0)
                         for k in baseline_counts
                     ):
                         _record_fail("schema_fail")
@@ -625,10 +771,7 @@ def execute_engineering_json_generation(
                         aud_max = int(
                             baseline_counts.get("audit_evidence_bullets") or 0
                         ) + max(0, missing_audit)
-                        if (
-                            int(after_counts.get("system_requirements") or 0)
-                            > sys_max
-                        ):
+                        if int(after_counts.get("system_requirements") or 0) > sys_max:
                             arr = validated_obj_2.get("system_requirements")
                             if isinstance(arr, list):
                                 validated_obj_2["system_requirements"] = list(arr)[
@@ -877,7 +1020,9 @@ def execute_citation_retry_if_needed(
         run_meta["llm_retry"]["retry_performed"] = True
         body_2 = strip_references_fn(str(answer_text or ""))
         run_meta["llm_retry"]["cited_idxs_after"] = sorted(_extract_citations(body_2))
-        run_meta["llm_retry"]["valid_cited_after"] = int(_valid_cited_count(answer_text))
+        run_meta["llm_retry"]["valid_cited_after"] = int(
+            _valid_cited_count(answer_text)
+        )
 
     return answer_text
 
@@ -935,7 +1080,9 @@ def build_engineering_answer(
         )
 
         out_parts.append("\n2. Relevante juridiske forpligtelser")
-        out_parts.append("- (utilstrækkelig citerbar evidens til at udlede forpligtelser)")
+        out_parts.append(
+            "- (utilstrækkelig citerbar evidens til at udlede forpligtelser)"
+        )
 
         out_parts.append("\n3. Konkrete systemkrav")
         out_parts.append("- (utilstrækkelig citerbar evidens til at specificere krav)")
@@ -952,3 +1099,222 @@ def build_engineering_answer(
 
     stats_line = f"\n\n(Evidens: {int(citable_count)} citerbart uddrag hentet)"
     return raw_interpretation + stats_line
+
+
+# ---------------------------------------------------------------------------
+# Step 6.6: Generation stage extracted from RAGEngine._execute_generation
+# ---------------------------------------------------------------------------
+
+
+def execute_generation_stage(
+    *,
+    question: str,
+    context: str,
+    kilder_block: str,
+    ctx: "QueryContext",
+    effective_plan: Any,
+    synthesis_context: Any | None,
+    resolved_profile: Any,
+    effective_policy: Any,
+    claim_intent_final: Any,
+    references_structured_all: list[dict[str, Any]],
+    contract_min_citations: int | None,
+    history_context: str,
+    corpus_debug_on: bool,
+    run_meta: dict[str, Any],
+    llm_fn: Callable[[str], str],
+    resolver_fn: Callable,
+) -> str:
+    """Execute LLM generation stage: build prompt, call LLM, handle retries.
+
+    Mutates run_meta with generation debug info.
+
+    Returns:
+        The generated answer text.
+    """
+    import os
+    from . import instrumentation
+    from . import text_transforms
+    from .prompt_builder import (
+        build_prompt,
+        focus_block_for_prompt,
+        build_answer_policy_suffix,
+        build_citation_requirement_suffix,
+        build_multi_corpus_prompt,
+    )
+    from .synthesis_router import SynthesisMode
+    from .planning import UserProfile
+
+    focus_block = focus_block_for_prompt(ctx.focus)
+
+    # Determine JSON mode settings per profile
+    engineering_json_mode = bool(
+        resolved_profile == UserProfile.ENGINEERING
+        and instrumentation.is_engineering_json_mode_enabled()
+    )
+    legal_json_mode = bool(
+        resolved_profile == UserProfile.LEGAL
+        and instrumentation.is_legal_json_mode_enabled()
+    )
+
+    # Build base prompt
+    if synthesis_context is not None and synthesis_context.mode != SynthesisMode.SINGLE:
+        prompt = build_multi_corpus_prompt(
+            mode=synthesis_context.mode,
+            question=question,
+            context=context,
+            kilder_block=kilder_block,
+            references_structured=list(references_structured_all or []),
+            user_profile=resolved_profile.name
+            if hasattr(resolved_profile, "name")
+            else str(resolved_profile),
+            resolver=resolver_fn(),
+        )
+    else:
+        prompt = build_prompt(
+            ctx=ctx,
+            plan=effective_plan,
+            context=context,
+            focus_block=focus_block,
+            contract_min_citations=contract_min_citations,
+            legal_json_mode=legal_json_mode,
+            history_context=history_context,
+        )
+
+    # Policy-driven answer shaping
+    answer_policy = getattr(effective_policy, "answer_policy", None)
+    if os.getenv("DISABLE_ANSWER_POLICY", "").strip().lower() in ("1", "true", "yes"):
+        answer_policy = None
+    prompt += build_answer_policy_suffix(answer_policy, resolved_profile)
+
+    # Track LLM calls
+    if "llm_calls_count" not in run_meta:
+        run_meta["llm_calls_count"] = 0
+
+    def _call_llm_counted(p: str) -> str:
+        run_meta["llm_calls_count"] = int(run_meta.get("llm_calls_count") or 0) + 1
+        return llm_fn(p)
+
+    # Citation requirement suffix
+    prompt += build_citation_requirement_suffix(
+        user_profile=resolved_profile,
+        contract_min_citations=contract_min_citations,
+        references_structured_all=references_structured_all,
+        json_mode=engineering_json_mode,
+    )
+
+    # Build allowed_idxs set
+    allowed_idxs: set[int] = set()
+    for r in list(references_structured_all or []):
+        if not isinstance(r, dict):
+            continue
+        try:
+            allowed_idxs.add(int(r.get("idx")))
+        except Exception:  # noqa: BLE001
+            continue
+
+    # Create generation config
+    profile_json_mode = (
+        engineering_json_mode
+        if resolved_profile == UserProfile.ENGINEERING
+        else legal_json_mode
+    )
+    gen_config = GenerationConfig.for_profile(
+        resolved_profile,
+        contract_min_citations=contract_min_citations,
+        json_mode_enabled=profile_json_mode,
+    )
+
+    # Execute unified generation pipeline
+    gen_result = execute_structured_generation(
+        prompt=prompt,
+        llm_fn=_call_llm_counted,
+        config=gen_config,
+        allowed_idxs=allowed_idxs,
+        references_structured_all=list(references_structured_all or []),
+        answer_policy=answer_policy,
+        claim_intent=claim_intent_final,
+    )
+
+    answer_text = gen_result.answer_text
+
+    # Update run_meta
+    run_meta["engineering_json_mode"] = bool(engineering_json_mode)
+    run_meta["legal_json_mode"] = bool(legal_json_mode)
+    run_meta["llm_calls_count"] = int(run_meta.get("llm_calls_count") or 0)
+    run_meta["citations_source"] = gen_result.debug.get(
+        "citations_source", "text_parse"
+    )
+
+    if engineering_json_mode and gen_result is not None:
+        sync_json_mode_results_to_run_meta(
+            gen_result=gen_result,
+            run_meta=run_meta,
+            allowed_idxs=allowed_idxs,
+            contract_min_citations=contract_min_citations,
+            answer_policy=answer_policy,
+        )
+
+        instrumentation._debug_dump_run_meta(
+            run_meta=run_meta,
+            stage="after_engineering_json_mode",
+            extra={
+                "answer_preview": str(answer_text or "")[:160],
+                "allowed_idxs_count": int(run_meta.get("allowed_idxs_count") or 0),
+                "cited_idxs_json": list(run_meta.get("cited_idxs") or []),
+                "valid_cited": list(run_meta.get("valid_cited") or []),
+                "llm_calls_count": int(run_meta.get("llm_calls_count") or 0),
+            },
+        )
+    else:
+        run_meta.setdefault("allowed_idxs", sorted(allowed_idxs))
+        run_meta.setdefault("allowed_idxs_count", len(allowed_idxs))
+
+    # Debug-only: force a deterministic answer body
+    forced_answer = None
+    if not engineering_json_mode and corpus_debug_on:
+        raw_forced = str(os.getenv("RAG_DEBUG_FORCE_ANSWER", "") or "").strip()
+        if raw_forced:
+            forced_answer = raw_forced
+            answer_text = forced_answer
+            run_meta.setdefault("corpus_debug", {})
+            run_meta["corpus_debug"].update({"forced_answer_used": True})
+
+    if not bool(run_meta.get("engineering_json_mode")):
+        run_meta.setdefault("allowed_idxs", [])
+        run_meta.setdefault(
+            "allowed_idxs_count", int(len(run_meta.get("allowed_idxs") or []))
+        )
+
+    # ENGINEERING: deterministic 1x retry if citations are missing
+    if (
+        resolved_profile == UserProfile.ENGINEERING
+        and contract_min_citations is not None
+        and forced_answer is None
+        and not bool(run_meta.get("engineering_json_mode"))
+    ):
+        try:
+            min_cit = int(contract_min_citations)
+        except Exception:  # noqa: BLE001
+            min_cit = 0
+
+        retry_allowed_idxs: set[int] = set()
+        for r in list(references_structured_all or []):
+            if not isinstance(r, dict):
+                continue
+            try:
+                retry_allowed_idxs.add(int(r.get("idx")))
+            except Exception:  # noqa: BLE001
+                continue
+
+        answer_text = execute_citation_retry_if_needed(
+            answer_text=str(answer_text or ""),
+            prompt=prompt,
+            llm_fn=_call_llm_counted,
+            allowed_idxs=retry_allowed_idxs,
+            min_citations=min_cit,
+            run_meta=run_meta,
+            strip_references_fn=text_transforms._strip_trailing_references_section,
+        )
+
+    return str(answer_text or "")

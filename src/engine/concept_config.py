@@ -1,20 +1,15 @@
 from __future__ import annotations
 
-import json
 import logging
 import os
 import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable
 
 from ..common.config_loader import (
     load_corpus_config,
-    get_concept_bump_hints,
-    get_concept_answer_policy,
-    get_concept_normative_guard,
-    get_default_bump_hints,
 )
 
 logger = logging.getLogger(__name__)
@@ -33,7 +28,7 @@ def _normalize_intent_key(intent_key: str) -> str:
     raw = str(intent_key or "").strip().lower()
     # Strip legacy prefixes for backwards compatibility
     if raw.startswith("legalconcept."):
-        raw = raw[len("legalconcept."):]
+        raw = raw[len("legalconcept.") :]
     raw = re.sub(r"\s+", "", raw)
     return raw
 
@@ -126,7 +121,11 @@ class AnswerPolicy:
             "intent_category": str(self.intent_category),
             "requirements_first": bool(self.requirements_first),
             "include_audit_evidence": bool(self.include_audit_evidence),
-            "min_section3_bullets": (int(self.min_section3_bullets) if self.min_section3_bullets is not None else None),
+            "min_section3_bullets": (
+                int(self.min_section3_bullets)
+                if self.min_section3_bullets is not None
+                else None
+            ),
         }
 
 
@@ -266,7 +265,9 @@ def extract_anchors_from_metadata(meta: dict[str, Any]) -> set[str]:
         if annex_point:
             if annex_section:
                 # Full path: annex:iii:a:5 (section + point)
-                anchors.add(_normalize_anchor(f"annex:{annex}:{annex_section}:{annex_point}"))
+                anchors.add(
+                    _normalize_anchor(f"annex:{annex}:{annex_section}:{annex_point}")
+                )
             else:
                 # Direct point: annex:iii:5
                 anchors.add(_normalize_anchor(f"annex:{annex}:{annex_point}"))
@@ -297,7 +298,7 @@ def load_concept_config() -> dict[str, dict[str, dict[str, Any]]]:
     """Load concept configuration from YAML files.
 
     Reads from config/concepts/*.yaml (single source of truth).
-    
+
     Format per (corpus_id, concept_name):
     {
         "bump_hints": [..],  # deprecated - use citation_expansion instead
@@ -308,39 +309,41 @@ def load_concept_config() -> dict[str, dict[str, dict[str, Any]]]:
     NOTE: cached per-process for determinism.
     """
     out: dict[str, dict[str, dict[str, Any]]] = {}
-    
+
     concepts_dir = _concepts_dir()
     if not concepts_dir.exists():
         return out
-    
+
     for yaml_file in concepts_dir.glob("*.yaml"):
         corpus_id = yaml_file.stem
         # Skip template files
         if corpus_id.startswith("_"):
             continue
-            
+
         try:
             config = load_corpus_config(corpus_id)
         except Exception:
             continue
-            
+
         concepts = config.get("concepts", {})
         if not isinstance(concepts, dict):
             continue
-            
+
         cleaned: dict[str, dict[str, Any]] = {}
-        
+
         for concept_name, concept_cfg in concepts.items():
             if not isinstance(concept_name, str) or not concept_name.strip():
                 continue
             if not isinstance(concept_cfg, dict):
                 continue
-                
+
             bump_hints = _normalize_anchor_list(concept_cfg.get("bump_hints", []))
-            normative_guard = _parse_v2_normative_guard(concept_cfg.get("normative_guard"))
+            normative_guard = _parse_v2_normative_guard(
+                concept_cfg.get("normative_guard")
+            )
             answer_policy = _parse_v2_answer_policy(concept_cfg.get("answer_policy"))
             rescue_rules = _parse_v2_rescue_rules(concept_cfg.get("rescue_rules"))
-            
+
             # Use concept name as intent key (normalized)
             intent_key = _normalize_intent_key(concept_name)
             cleaned[intent_key] = {
@@ -349,7 +352,7 @@ def load_concept_config() -> dict[str, dict[str, dict[str, Any]]]:
                 "rescue_rules": rescue_rules,
                 "answer_policy": answer_policy,
             }
-        
+
         # Add default config if present
         default_cfg = config.get("default", {})
         if isinstance(default_cfg, dict):
@@ -357,7 +360,7 @@ def load_concept_config() -> dict[str, dict[str, dict[str, Any]]]:
             default_ng = _parse_v2_normative_guard(default_cfg.get("normative_guard"))
             default_ap = _parse_v2_answer_policy(default_cfg.get("answer_policy"))
             default_rr = _parse_v2_rescue_rules(default_cfg.get("rescue_rules"))
-            
+
             # Only add default if there's something to configure
             if default_hints or default_ng or default_ap or default_rr:
                 cleaned["default"] = {
@@ -366,14 +369,17 @@ def load_concept_config() -> dict[str, dict[str, dict[str, Any]]]:
                     "rescue_rules": default_rr,
                     "answer_policy": default_ap,
                 }
-        
+
         out[corpus_id] = cleaned
 
     return out
 
 
 def anchor_hint_bumping_enabled() -> bool:
-    return str(os.getenv("ANCHOR_HINT_BUMPING", "") or "").strip().lower() in _TRUTHY_ENV_VALUES
+    return (
+        str(os.getenv("ANCHOR_HINT_BUMPING", "") or "").strip().lower()
+        in _TRUTHY_ENV_VALUES
+    )
 
 
 def get_hint_anchors(
@@ -395,7 +401,11 @@ def get_hint_anchors(
         if isinstance(entry, dict):
             anchors = entry.get("bump_hints")
             if isinstance(anchors, list):
-                out |= {_normalize_anchor(str(a)) for a in anchors if isinstance(a, str) and str(a).strip()}
+                out |= {
+                    _normalize_anchor(str(a))
+                    for a in anchors
+                    if isinstance(a, str) and str(a).strip()
+                }
     return out
 
 
@@ -411,7 +421,9 @@ def get_effective_policy(*, corpus_id: str, intent_keys: list[str]) -> Policy:
       - normative_guard.required_support: last-wins (if profile match is evaluated later)
     """
 
-    requested_raw = [str(k or "").strip() for k in list(intent_keys or []) if str(k or "").strip()]
+    requested_raw = [
+        str(k or "").strip() for k in list(intent_keys or []) if str(k or "").strip()
+    ]
     requested_norm = [_normalize_intent_key(k) for k in requested_raw]
     requested_norm = [k for k in requested_norm if k]
 
@@ -463,7 +475,9 @@ def get_effective_policy(*, corpus_id: str, intent_keys: list[str]) -> Policy:
             # Special rule: if ANY contributing policy declares REQUIREMENTS + requirements_first=true,
             # it cannot be overridden by later entries (fail-closed towards REQUIREMENTS).
             answer_policy = ap
-            answer_policy_sources.append({"intent_key": k, "answer_policy": ap.to_debug_dict()})
+            answer_policy_sources.append(
+                {"intent_key": k, "answer_policy": ap.to_debug_dict()}
+            )
             if ap.intent_category == "REQUIREMENTS" and bool(ap.requirements_first):
                 requirements_first_lock = True
                 requirements_first_source = k
@@ -491,8 +505,14 @@ def get_effective_policy(*, corpus_id: str, intent_keys: list[str]) -> Policy:
         answer_policy = AnswerPolicy(
             intent_category="REQUIREMENTS",
             requirements_first=True,
-            include_audit_evidence=(bool(getattr(src, "include_audit_evidence", False)) if src is not None else False),
-            min_section3_bullets=(getattr(src, "min_section3_bullets", None) if src is not None else None),
+            include_audit_evidence=(
+                bool(getattr(src, "include_audit_evidence", False))
+                if src is not None
+                else False
+            ),
+            min_section3_bullets=(
+                getattr(src, "min_section3_bullets", None) if src is not None else None
+            ),
         )
 
     return Policy(
@@ -533,7 +553,12 @@ def compute_anchor_hint_bump_order(
     """
 
     if not hint_anchors or bonus <= 0.0:
-        return AnchorHintBumpResult(order=list(range(min(len(metadatas), len(distances)))), applied=False, bonus=float(bonus), matched_indices=[])
+        return AnchorHintBumpResult(
+            order=list(range(min(len(metadatas), len(distances)))),
+            applied=False,
+            bonus=float(bonus),
+            matched_indices=[],
+        )
 
     n = min(len(metadatas), len(distances))
     scored: list[tuple[float, str, str, int]] = []
@@ -557,4 +582,6 @@ def compute_anchor_hint_bump_order(
     scored.sort(key=lambda t: (-t[0], t[1], t[2], t[3]))
     order = [i for _s, _a, _c, i in scored]
 
-    return AnchorHintBumpResult(order=order, applied=True, bonus=float(bonus), matched_indices=matched)
+    return AnchorHintBumpResult(
+        order=order, applied=True, bonus=float(bonus), matched_indices=matched
+    )

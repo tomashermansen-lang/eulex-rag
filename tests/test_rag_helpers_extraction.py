@@ -1,6 +1,5 @@
-import pytest
-from src.engine.rag import RAGEngine
 from src.engine import helpers
+
 
 def test_strip_trailing_references_section():
     # Case 1: No references section
@@ -18,6 +17,7 @@ def test_strip_trailing_references_section():
     # Case 4: None (defensive)
     assert helpers._strip_trailing_references_section(None) == ""
 
+
 def test_extract_anchor_mentions_from_answer():
     # Case 1: Articles with and without paragraph
     text = "See Artikel 5 and Article 6, stk. 2."
@@ -26,10 +26,10 @@ def test_extract_anchor_mentions_from_answer():
     # Note: The regex might capture "5" and None, "6" and "2"
     # Let's check if "5" is present (case insensitive normalization in method?)
     # The method upper-cases the article number/letter.
-    
+
     # "Artikel 5" -> ("5", None)
     # "Article 6, stk. 2" -> ("6", "2")
-    
+
     assert ("5", None) in articles
     assert ("6", "2") in articles
 

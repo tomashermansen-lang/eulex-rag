@@ -14,7 +14,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.engine.rag import RAGEngine, _RetrievalResult
+from src.engine.rag import RAGEngine
+from src.engine.rag_config import _RetrievalResult
 from src.engine.retrieval_pipeline import RetrievedChunk, SelectedChunk
 from src.common.config_loader import RankingWeights
 
@@ -88,8 +89,10 @@ def _setup_mock_engine():
         _last_distances=[],
     )
 
-    # Mock collection
+    # Mock collection and chroma
     engine._collection = MagicMock()
+    engine.collection = engine._collection
+    engine.chroma = MagicMock()
 
     # Mock LLM client
     engine._llm_client = MagicMock()
@@ -104,7 +107,9 @@ def _setup_mock_engine():
 class TestCrossLawOrchestration:
     """Tests for cross-law routing in answer_structured."""
 
-    def test_rcl_001_answer_structured_accepts_corpus_scope_parameter(self, monkeypatch):
+    def test_rcl_001_answer_structured_accepts_corpus_scope_parameter(
+        self, monkeypatch
+    ):
         """answer_structured should accept corpus_scope parameter."""
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
@@ -125,7 +130,9 @@ class TestCrossLawOrchestration:
                 pytest.fail("answer_structured should accept corpus_scope parameter")
             raise
 
-    def test_rcl_002_answer_structured_accepts_target_corpora_parameter(self, monkeypatch):
+    def test_rcl_002_answer_structured_accepts_target_corpora_parameter(
+        self, monkeypatch
+    ):
         """answer_structured should accept target_corpora parameter."""
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
@@ -133,7 +140,18 @@ class TestCrossLawOrchestration:
         mock_result = _make_mock_retrieval_result([])
         engine._modular_retrieval = MagicMock(return_value=mock_result)
         # Mock cross-law retrieval since we're testing with explicit scope
-        engine._execute_cross_law_retrieval = MagicMock(return_value=mock_result)
+        monkeypatch.setattr(
+            "src.engine.retrieval_orchestration.execute_cross_law_retrieval",
+            MagicMock(
+                return_value=MagicMock(
+                    fused_chunks=[],
+                    per_corpus_hits={},
+                    total_retrieved=0,
+                    laws_searched=[],
+                    run_meta_updates={"laws_searched": []},
+                )
+            ),
+        )
 
         # Should not raise when passing target_corpora
         try:
@@ -150,14 +168,30 @@ class TestCrossLawOrchestration:
             raise
 
     def test_rcl_003_single_scope_uses_modular_retrieval(self, monkeypatch):
-        """corpus_scope='single' should use _modular_retrieval."""
+        """corpus_scope='single' should use ro.modular_retrieval."""
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
         engine = _setup_mock_engine()
-        mock_result = _make_mock_retrieval_result([])
-        engine._modular_retrieval = MagicMock(return_value=mock_result)
 
-        with patch("src.engine.rag.execute_multi_corpus_retrieval") as mock_multi:
+        mock_modular = MagicMock(
+            return_value={
+                "hits": [],
+                "distances": [],
+                "retrieved_ids": [],
+                "retrieved_metas": [],
+                "run_meta_updates": {},
+                "selected_chunks": (),
+                "total_retrieved": 0,
+                "citable_count": 0,
+            }
+        )
+        monkeypatch.setattr(
+            "src.engine.retrieval_orchestration.modular_retrieval", mock_modular
+        )
+
+        with patch(
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval"
+        ) as mock_multi:
             engine.answer_structured(
                 question="What is Article 5?",
                 user_profile="LEGAL",
@@ -165,8 +199,8 @@ class TestCrossLawOrchestration:
                 dry_run=True,
             )
 
-            # Should use _modular_retrieval
-            assert engine._modular_retrieval.called
+            # Should use ro.modular_retrieval
+            assert mock_modular.called
             # Should NOT use multi_corpus_retrieval
             assert not mock_multi.called
 
@@ -175,7 +209,9 @@ class TestCrossLawOrchestration:
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
         engine = _setup_mock_engine()
-        engine._available_corpora = MagicMock(return_value=["ai-act", "gdpr", "nis2"])
+        monkeypatch.setattr(
+            "src.engine.rag.available_corpora", lambda: ["ai-act", "gdpr", "nis2"]
+        )
 
         mock_result = _make_mock_retrieval_result([])
         engine._modular_retrieval = MagicMock(return_value=mock_result)
@@ -186,7 +222,7 @@ class TestCrossLawOrchestration:
             per_corpus_hits={"ai-act": 0, "gdpr": 0, "nis2": 0},
         )
         with patch(
-            "src.engine.rag.execute_multi_corpus_retrieval",
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval",
             return_value=mock_multi_result,
         ) as mock_multi:
             engine.answer_structured(
@@ -216,7 +252,7 @@ class TestCrossLawOrchestration:
             per_corpus_hits={"gdpr": 0, "nis2": 0},
         )
         with patch(
-            "src.engine.rag.execute_multi_corpus_retrieval",
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval",
             return_value=mock_multi_result,
         ) as mock_multi:
             engine.answer_structured(
@@ -233,15 +269,33 @@ class TestCrossLawOrchestration:
             input_obj = call_args.kwargs.get("input")
             assert set(input_obj.corpus_ids) == {"gdpr", "nis2"}
 
-    def test_rcl_006_explicit_scope_without_target_uses_current_corpus(self, monkeypatch):
+    def test_rcl_006_explicit_scope_without_target_uses_current_corpus(
+        self, monkeypatch
+    ):
         """corpus_scope='explicit' without target_corpora falls back to current corpus."""
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
         engine = _setup_mock_engine()
-        mock_result = _make_mock_retrieval_result([])
-        engine._modular_retrieval = MagicMock(return_value=mock_result)
 
-        with patch("src.engine.rag.execute_multi_corpus_retrieval") as mock_multi:
+        mock_modular = MagicMock(
+            return_value={
+                "hits": [],
+                "distances": [],
+                "retrieved_ids": [],
+                "retrieved_metas": [],
+                "run_meta_updates": {},
+                "selected_chunks": (),
+                "total_retrieved": 0,
+                "citable_count": 0,
+            }
+        )
+        monkeypatch.setattr(
+            "src.engine.retrieval_orchestration.modular_retrieval", mock_modular
+        )
+
+        with patch(
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval"
+        ) as mock_multi:
             # With empty target_corpora, should fall back to single corpus mode
             engine.answer_structured(
                 question="What is Article 5?",
@@ -251,8 +305,8 @@ class TestCrossLawOrchestration:
                 dry_run=True,
             )
 
-            # Should use _modular_retrieval (single corpus fallback)
-            assert engine._modular_retrieval.called
+            # Should use ro.modular_retrieval (single corpus fallback)
+            assert mock_modular.called
             # Should NOT use multi_corpus_retrieval
             assert not mock_multi.called
 
@@ -261,7 +315,9 @@ class TestCrossLawOrchestration:
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
         engine = _setup_mock_engine()
-        engine._available_corpora = MagicMock(return_value=["ai-act", "gdpr"])
+        monkeypatch.setattr(
+            "src.engine.rag.available_corpora", lambda: ["ai-act", "gdpr"]
+        )
 
         mock_multi_result = _make_mock_multi_corpus_result(
             fused_chunks=[],
@@ -269,7 +325,7 @@ class TestCrossLawOrchestration:
         )
 
         with patch(
-            "src.engine.rag.execute_multi_corpus_retrieval",
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval",
             return_value=mock_multi_result,
         ):
             result = engine.answer_structured(
@@ -288,10 +344,26 @@ class TestCrossLawOrchestration:
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
         engine = _setup_mock_engine()
-        mock_result = _make_mock_retrieval_result([])
-        engine._modular_retrieval = MagicMock(return_value=mock_result)
 
-        with patch("src.engine.rag.execute_multi_corpus_retrieval") as mock_multi:
+        mock_modular = MagicMock(
+            return_value={
+                "hits": [],
+                "distances": [],
+                "retrieved_ids": [],
+                "retrieved_metas": [],
+                "run_meta_updates": {},
+                "selected_chunks": (),
+                "total_retrieved": 0,
+                "citable_count": 0,
+            }
+        )
+        monkeypatch.setattr(
+            "src.engine.retrieval_orchestration.modular_retrieval", mock_modular
+        )
+
+        with patch(
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval"
+        ) as mock_multi:
             # Call without corpus_scope - should default to single
             engine.answer_structured(
                 question="What is Article 5?",
@@ -299,50 +371,46 @@ class TestCrossLawOrchestration:
                 dry_run=True,
             )
 
-            # Should use _modular_retrieval (single corpus)
-            assert engine._modular_retrieval.called
+            # Should use ro.modular_retrieval (single corpus)
+            assert mock_modular.called
             assert not mock_multi.called
 
 
 class TestGetCollectionForCorpus:
-    """Tests for _get_collection_for_corpus method.
+    """Tests for ro.get_collection_for_corpus module function.
 
-    TDD: This test verifies the bug fix where _get_collection_for_corpus
+    TDD: This test verifies the bug fix where get_collection_for_corpus
     was always returning self.collection instead of the correct collection
     for each corpus_id.
     """
 
     def test_rcl_009_get_collection_returns_correct_collection_for_corpus_id(self):
-        """_get_collection_for_corpus should return collection named {corpus_id}_documents."""
-        engine = RAGEngine.__new__(RAGEngine)
-        engine.corpus_id = "ai-act"
+        """get_collection_for_corpus should return collection named {corpus_id}_documents."""
+        from src.engine import retrieval_orchestration as ro
 
         # Mock the chroma client
         mock_chroma = MagicMock()
         mock_collection = MagicMock()
         mock_collection.name = "cyberrobusthed_documents"
         mock_chroma.get_or_create_collection.return_value = mock_collection
-        engine.chroma = mock_chroma
 
-        # Set up the engine's own collection (the primary one)
-        engine.collection = MagicMock()
-        engine.collection.name = "ai-act_documents"
-
-        # Call with a DIFFERENT corpus_id
-        result = engine._get_collection_for_corpus("cyberrobusthed")
+        # Call with a corpus_id
+        result = ro.get_collection_for_corpus(mock_chroma, "cyberrobusthed")
 
         # Should call chroma.get_or_create_collection with correct name
-        mock_chroma.get_or_create_collection.assert_called_once_with("cyberrobusthed_documents")
+        mock_chroma.get_or_create_collection.assert_called_once_with(
+            "cyberrobusthed_documents"
+        )
 
-        # Should return the looked-up collection, NOT self.collection
+        # Should return the looked-up collection
         assert result == mock_collection
         assert result.name == "cyberrobusthed_documents"
-        assert result != engine.collection
 
-    def test_rcl_010_get_collection_returns_different_collections_for_different_ids(self):
-        """_get_collection_for_corpus should return different collections for different corpus_ids."""
-        engine = RAGEngine.__new__(RAGEngine)
-        engine.corpus_id = "ai-act"
+    def test_rcl_010_get_collection_returns_different_collections_for_different_ids(
+        self,
+    ):
+        """get_collection_for_corpus should return different collections for different corpus_ids."""
+        from src.engine import retrieval_orchestration as ro
 
         # Track which collections are created
         created_collections = {}
@@ -356,15 +424,11 @@ class TestGetCollectionForCorpus:
 
         mock_chroma = MagicMock()
         mock_chroma.get_or_create_collection.side_effect = mock_get_or_create
-        engine.chroma = mock_chroma
-
-        engine.collection = MagicMock()
-        engine.collection.name = "ai-act_documents"
 
         # Get collections for different corpus_ids
-        col_cyber = engine._get_collection_for_corpus("cyberrobusthed")
-        col_gdpr = engine._get_collection_for_corpus("gdpr")
-        col_aiact = engine._get_collection_for_corpus("ai-act")
+        col_cyber = ro.get_collection_for_corpus(mock_chroma, "cyberrobusthed")
+        col_gdpr = ro.get_collection_for_corpus(mock_chroma, "gdpr")
+        col_aiact = ro.get_collection_for_corpus(mock_chroma, "ai-act")
 
         # Each should have correct name
         assert col_cyber.name == "cyberrobusthed_documents"
@@ -412,7 +476,9 @@ class TestCrossLawAbstainGuardrail:
     explicitly selected multiple corpora.
     """
 
-    def test_rcl_011_should_not_abstain_when_explicit_scope_matches_mentioned_laws(self, monkeypatch):
+    def test_rcl_011_should_not_abstain_when_explicit_scope_matches_mentioned_laws(
+        self, monkeypatch
+    ):
         """When corpus_scope='explicit' and question mentions laws in target_corpora,
         the system should NOT abstain.
 
@@ -425,8 +491,14 @@ class TestCrossLawAbstainGuardrail:
 
         # Set up mock retrieval that returns hits from both corpora
         hits = [
-            ("AI transparency rules about notifying users", {"corpus_id": "ai-act", "article": "50"}),
-            ("GDPR transparency requirements for data processing", {"corpus_id": "gdpr", "article": "12"}),
+            (
+                "AI transparency rules about notifying users",
+                {"corpus_id": "ai-act", "article": "50"},
+            ),
+            (
+                "GDPR transparency requirements for data processing",
+                {"corpus_id": "gdpr", "article": "12"},
+            ),
         ]
         fused_chunks = _make_fused_chunks_for_multi_corpus(hits)
 
@@ -436,7 +508,7 @@ class TestCrossLawAbstainGuardrail:
         )
 
         with patch(
-            "src.engine.rag.execute_multi_corpus_retrieval",
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval",
             return_value=mock_multi_result,
         ):
             result = engine.answer_structured(
@@ -467,7 +539,9 @@ class TestSynthesisModeIntegration:
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
         engine = _setup_mock_engine()
-        engine._available_corpora = MagicMock(return_value=["ai-act", "gdpr"])
+        monkeypatch.setattr(
+            "src.engine.rag.available_corpora", lambda: ["ai-act", "gdpr"]
+        )
 
         # Create mock chunks with corpus_id
         hits = [
@@ -481,7 +555,7 @@ class TestSynthesisModeIntegration:
         )
 
         with patch(
-            "src.engine.rag.execute_multi_corpus_retrieval",
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval",
             return_value=mock_multi_result,
         ):
             result = engine.answer_structured(
@@ -500,7 +574,9 @@ class TestSynthesisModeIntegration:
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
         engine = _setup_mock_engine()
-        engine._available_corpora = MagicMock(return_value=["ai-act", "gdpr"])
+        monkeypatch.setattr(
+            "src.engine.rag.available_corpora", lambda: ["ai-act", "gdpr"]
+        )
 
         hits = [
             ("AI Act chunk", {"corpus_id": "ai-act", "article": "5"}),
@@ -512,7 +588,7 @@ class TestSynthesisModeIntegration:
         )
 
         with patch(
-            "src.engine.rag.execute_multi_corpus_retrieval",
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval",
             return_value=mock_multi_result,
         ):
             result = engine.answer_structured(
@@ -534,7 +610,9 @@ class TestSynthesisModeIntegration:
         monkeypatch.setenv("INTENT_ROUTER_DISABLED", "1")
 
         engine = _setup_mock_engine()
-        engine._available_corpora = MagicMock(return_value=["ai-act", "gdpr"])
+        monkeypatch.setattr(
+            "src.engine.rag.available_corpora", lambda: ["ai-act", "gdpr"]
+        )
 
         hits = [
             ("AI Act chunk", {"corpus_id": "ai-act", "article": "5"}),
@@ -547,7 +625,7 @@ class TestSynthesisModeIntegration:
         )
 
         with patch(
-            "src.engine.rag.execute_multi_corpus_retrieval",
+            "src.engine.retrieval_orchestration.execute_multi_corpus_retrieval",
             return_value=mock_multi_result,
         ):
             result = engine.answer_structured(
@@ -580,4 +658,7 @@ class TestSynthesisModeIntegration:
 
         run_meta = result.get("run", {})
         # Should NOT have synthesis_mode for single corpus
-        assert run_meta.get("synthesis_mode") is None or run_meta.get("corpus_scope") == "single"
+        assert (
+            run_meta.get("synthesis_mode") is None
+            or run_meta.get("corpus_scope") == "single"
+        )

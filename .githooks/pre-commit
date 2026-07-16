@@ -10,4 +10,42 @@ else
   PYTHON="python"
 fi
 
-"$PYTHON" -m pytest -q
+# --- Skip tests for docs-only commits ---
+staged_files="$(git diff --cached --name-only)"
+non_docs_files="$(echo "$staged_files" | grep -v '^docs/' || true)"
+
+if [[ -z "$non_docs_files" ]]; then
+  echo "pre-commit: docs-only commit, skipping tests"
+  exit 0
+fi
+
+# --- Environment fixes for Claude Code sandbox ---
+# Point tiktoken at the local cache (pre-populated offline) so it never downloads
+export TIKTOKEN_CACHE_DIR="$repo_root/.tiktoken_cache"
+
+# Strip sandbox proxy vars that break network-dependent imports
+unset ALL_PROXY HTTPS_PROXY HTTP_PROXY all_proxy https_proxy http_proxy 2>/dev/null || true
+
+# --- Run fast tests only (no network, no slow, no eval) ---
+test_output_file="$(mktemp)"
+test_exit=0
+"$PYTHON" -m pytest -q -m "not slow and not eval" 2>&1 | tee "$test_output_file" || test_exit=$?
+
+# Log environment-related failures to docs/ENV_ISSUES.md
+if [[ $test_exit -ne 0 ]]; then
+  env_errors="$(grep -iE '(SOCKS|ProxyError|ConnectionError|tiktoken|BPE|urlopen|SSLError|NetworkError)' "$test_output_file" || true)"
+  if [[ -n "$env_errors" ]]; then
+    mkdir -p docs
+    {
+      echo ""
+      echo "## Environment failures — $(date -u '+%Y-%m-%d %H:%M UTC')"
+      echo '```'
+      echo "$env_errors"
+      echo '```'
+    } >> docs/ENV_ISSUES.md
+    echo "pre-commit: environment-related test failures logged to docs/ENV_ISSUES.md"
+  fi
+fi
+
+rm -f "$test_output_file"
+exit $test_exit

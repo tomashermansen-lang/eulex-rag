@@ -7,6 +7,7 @@ all pipeline data from production code. No reimplementation of production logic.
 
 Following Braintrust/DeepEval model: Scorer = f(expected, actual) -> Score
 """
+
 from __future__ import annotations
 
 import json
@@ -24,7 +25,7 @@ from typing import Any, Callable, Optional
 # ---------------------------------------------------------------------------
 class RateLimitTracker:
     """Thread-safe tracker for OpenAI rate limit events and token usage."""
-    
+
     def __init__(self):
         self._lock = threading.Lock()
         self._events: list[dict] = []
@@ -35,43 +36,47 @@ class RateLimitTracker:
         self._total_prompt_tokens = 0
         self._total_completion_tokens = 0
         self._request_count = 0
-    
+
     def set_verbose(self, verbose: bool):
         """Enable/disable live rate limit printing."""
         with self._lock:
             self._verbose = verbose
-    
+
     @property
     def hit_count(self) -> int:
         """Get current hit count (thread-safe)."""
         with self._lock:
             return self._total_hits
-    
+
     def record_hit(self, attempt: int, wait_time: float, context: str = ""):
         """Record a rate limit hit and optionally print live progress."""
         with self._lock:
             self._total_hits += 1
             self._total_retries += 1
-            self._events.append({
-                "time": datetime.now().isoformat(),
-                "attempt": attempt,
-                "wait_time": wait_time,
-                "context": context,
-            })
+            self._events.append(
+                {
+                    "time": datetime.now().isoformat(),
+                    "attempt": attempt,
+                    "wait_time": wait_time,
+                    "context": context,
+                }
+            )
             hit_num = self._total_hits
             verbose = self._verbose
-        
+
         # Print outside lock to avoid blocking
         if verbose:
-            print(f"  ⚠️  Rate limit #{hit_num}: retry {attempt}, waiting {wait_time:.1f}s{' (' + context + ')' if context else ''}")
-    
+            print(
+                f"  ⚠️  Rate limit #{hit_num}: retry {attempt}, waiting {wait_time:.1f}s{' (' + context + ')' if context else ''}"
+            )
+
     def record_usage(self, prompt_tokens: int, completion_tokens: int):
         """Record token usage from an API call."""
         with self._lock:
             self._total_prompt_tokens += prompt_tokens
             self._total_completion_tokens += completion_tokens
             self._request_count += 1
-    
+
     def get_stats(self) -> dict:
         """Get rate limit statistics."""
         with self._lock:
@@ -81,10 +86,11 @@ class RateLimitTracker:
                 "events": self._events[-20:],  # Last 20 events
                 "total_prompt_tokens": self._total_prompt_tokens,
                 "total_completion_tokens": self._total_completion_tokens,
-                "total_tokens": self._total_prompt_tokens + self._total_completion_tokens,
+                "total_tokens": self._total_prompt_tokens
+                + self._total_completion_tokens,
                 "request_count": self._request_count,
             }
-    
+
     def reset(self):
         """Reset the tracker."""
         with self._lock:
@@ -94,23 +100,29 @@ class RateLimitTracker:
             self._total_prompt_tokens = 0
             self._total_completion_tokens = 0
             self._request_count = 0
-    
+
     def print_summary(self):
         """Print a summary of rate limit events and token usage."""
         with self._lock:
             total_tokens = self._total_prompt_tokens + self._total_completion_tokens
-            
+
             if self._total_hits == 0:
-                print(f"  📊 Rate limits: 0 hits")
+                print("  📊 Rate limits: 0 hits")
             else:
-                print(f"  ⚠️  Rate limits: {self._total_hits} hits, {self._total_retries} total retries")
+                print(
+                    f"  ⚠️  Rate limits: {self._total_hits} hits, {self._total_retries} total retries"
+                )
                 if self._events:
                     total_wait = sum(e["wait_time"] for e in self._events)
                     print(f"      └─ Total wait time: {total_wait:.1f}s")
-            
+
             if self._request_count > 0:
-                print(f"  📊 Token usage: {total_tokens:,} total ({self._total_prompt_tokens:,} prompt, {self._total_completion_tokens:,} completion)")
-                print(f"      └─ {self._request_count} API calls, avg {total_tokens // self._request_count:,} tokens/call")
+                print(
+                    f"  📊 Token usage: {total_tokens:,} total ({self._total_prompt_tokens:,} prompt, {self._total_completion_tokens:,} completion)"
+                )
+                print(
+                    f"      └─ {self._request_count} API calls, avg {total_tokens // self._request_count:,} tokens/call"
+                )
 
 
 # Global tracker instance
@@ -120,6 +132,7 @@ _rate_limit_tracker = RateLimitTracker()
 def get_rate_limit_tracker() -> RateLimitTracker:
     """Get the global rate limit tracker."""
     return _rate_limit_tracker
+
 
 from .cache import get_cache
 from .prompts import (
@@ -132,6 +145,7 @@ from .prompts import (
 @dataclass(frozen=True)
 class Score:
     """Result from a scorer."""
+
     passed: bool
     score: float  # 0.0 to 1.0
     message: str
@@ -141,6 +155,7 @@ class Score:
 @dataclass(frozen=True)
 class GoldenExpected:
     """Expected values from a golden test case."""
+
     must_include_any_of: list[str] = field(default_factory=list)
     must_include_any_of_2: list[str] = field(default_factory=list)
     must_include_all_of: list[str] = field(default_factory=list)
@@ -153,13 +168,13 @@ def _normalize_anchor(anchor: str) -> str:
 
 class Scorer(ABC):
     """Base class for all scorers."""
-    
+
     @property
     @abstractmethod
     def name(self) -> str:
         """Human-readable name for this scorer."""
         pass
-    
+
     @abstractmethod
     def score(
         self,
@@ -170,12 +185,12 @@ class Scorer(ABC):
     ) -> Score:
         """
         Evaluate the result against expected values.
-        
+
         Args:
             expected: Expected anchors from golden test case
             retrieval_metrics: From ask.AskResult.retrieval_metrics (includes run_meta)
             references_structured: From ask.AskResult.references_structured (final context)
-        
+
         Returns:
             Score with pass/fail, 0-1 score, and details
         """
@@ -185,19 +200,19 @@ class Scorer(ABC):
 class AnchorScorer(Scorer):
     """
     Scores anchor presence in final context.
-    
+
     Uses production data:
     - run_meta.anchors_in_top_k: anchors actually in final LLM context
     - references_structured: the actual final context chunks
-    
+
     CRITICAL: We check what's in the FINAL context, not raw retrieval.
     This is what the LLM actually sees.
     """
-    
+
     @property
     def name(self) -> str:
         return "anchor_presence"
-    
+
     def score(
         self,
         *,
@@ -210,10 +225,10 @@ class AnchorScorer(Scorer):
         anchors_in_context = set(
             _normalize_anchor(a) for a in (run_meta.get("anchors_in_top_k") or [])
         )
-        
+
         # ALSO add anchors from retrieved_metadatas (what LLM actually sees in context)
         # This catches annexes/articles in context that LLM didn't explicitly cite
-        for meta in (retrieval_metrics.get("retrieved_metadatas") or []):
+        for meta in retrieval_metrics.get("retrieved_metadatas") or []:
             if not isinstance(meta, dict):
                 continue
             corpus_id = meta.get("corpus_id", "")
@@ -221,16 +236,22 @@ class AnchorScorer(Scorer):
                 anchors_in_context.add(_normalize_anchor(f"article:{meta['article']}"))
                 # Corpus-qualified: enables cross-law anchor disambiguation
                 if corpus_id:
-                    anchors_in_context.add(_normalize_anchor(f"{corpus_id}:article:{meta['article']}"))
+                    anchors_in_context.add(
+                        _normalize_anchor(f"{corpus_id}:article:{meta['article']}")
+                    )
             if meta.get("recital"):
                 anchors_in_context.add(_normalize_anchor(f"recital:{meta['recital']}"))
                 if corpus_id:
-                    anchors_in_context.add(_normalize_anchor(f"{corpus_id}:recital:{meta['recital']}"))
+                    anchors_in_context.add(
+                        _normalize_anchor(f"{corpus_id}:recital:{meta['recital']}")
+                    )
             if meta.get("annex"):
                 anchors_in_context.add(_normalize_anchor(f"annex:{meta['annex']}"))
                 if corpus_id:
-                    anchors_in_context.add(_normalize_anchor(f"{corpus_id}:annex:{meta['annex']}"))
-        
+                    anchors_in_context.add(
+                        _normalize_anchor(f"{corpus_id}:annex:{meta['annex']}")
+                    )
+
         # Also add anchors from references_structured (has corpus_id for cross-law)
         for ref in references_structured:
             if not isinstance(ref, dict):
@@ -239,30 +260,44 @@ class AnchorScorer(Scorer):
             if ref.get("article"):
                 anchors_in_context.add(_normalize_anchor(f"article:{ref['article']}"))
                 if ref_corpus:
-                    anchors_in_context.add(_normalize_anchor(f"{ref_corpus}:article:{ref['article']}"))
+                    anchors_in_context.add(
+                        _normalize_anchor(f"{ref_corpus}:article:{ref['article']}")
+                    )
             if ref.get("recital"):
                 anchors_in_context.add(_normalize_anchor(f"recital:{ref['recital']}"))
                 if ref_corpus:
-                    anchors_in_context.add(_normalize_anchor(f"{ref_corpus}:recital:{ref['recital']}"))
+                    anchors_in_context.add(
+                        _normalize_anchor(f"{ref_corpus}:recital:{ref['recital']}")
+                    )
             if ref.get("annex"):
                 anchors_in_context.add(_normalize_anchor(f"annex:{ref['annex']}"))
                 if ref_corpus:
-                    anchors_in_context.add(_normalize_anchor(f"{ref_corpus}:annex:{ref['annex']}"))
+                    anchors_in_context.add(
+                        _normalize_anchor(f"{ref_corpus}:annex:{ref['annex']}")
+                    )
 
         # Use combined anchors as source of truth
         present_anchors = anchors_in_context
-        
+
         # Evaluate constraints
         expected_any_of = [_normalize_anchor(a) for a in expected.must_include_any_of]
-        expected_any_of_2 = [_normalize_anchor(a) for a in expected.must_include_any_of_2]
+        expected_any_of_2 = [
+            _normalize_anchor(a) for a in expected.must_include_any_of_2
+        ]
         expected_all_of = [_normalize_anchor(a) for a in expected.must_include_all_of]
-        
-        any_of_ok = (not expected_any_of) or any(a in present_anchors for a in expected_any_of)
-        any_of_2_ok = (not expected_any_of_2) or any(a in present_anchors for a in expected_any_of_2)
-        all_of_ok = (not expected_all_of) or all(a in present_anchors for a in expected_all_of)
-        
+
+        any_of_ok = (not expected_any_of) or any(
+            a in present_anchors for a in expected_any_of
+        )
+        any_of_2_ok = (not expected_any_of_2) or any(
+            a in present_anchors for a in expected_any_of_2
+        )
+        all_of_ok = (not expected_all_of) or all(
+            a in present_anchors for a in expected_all_of
+        )
+
         passed = any_of_ok and any_of_2_ok and all_of_ok
-        
+
         # Compute missing anchors for diagnostics
         missing: list[str] = []
         if expected_any_of and not any_of_ok:
@@ -270,22 +305,27 @@ class AnchorScorer(Scorer):
         if expected_any_of_2 and not any_of_2_ok:
             missing.append(f"missing_any_of_2={expected.must_include_any_of_2}")
         if expected_all_of:
-            missing_all = [a for a, norm in zip(expected.must_include_all_of, expected_all_of) 
-                          if norm not in present_anchors]
+            missing_all = [
+                a
+                for a, norm in zip(expected.must_include_all_of, expected_all_of)
+                if norm not in present_anchors
+            ]
             if missing_all:
                 missing.append(f"missing_all_of={missing_all}")
-        
+
         # Compute position info for diagnostics
         positions: dict[str, int | None] = {}
-        all_expected = list(dict.fromkeys([*expected_any_of, *expected_any_of_2, *expected_all_of]))
+        all_expected = list(
+            dict.fromkeys([*expected_any_of, *expected_any_of_2, *expected_all_of])
+        )
         for anchor in all_expected:
             positions[anchor] = self._find_position(anchor, references_structured)
-        
+
         # Score = fraction of expected anchors found
         total_expected = len(all_expected)
         found = sum(1 for a in all_expected if a in present_anchors)
         score_val = found / total_expected if total_expected > 0 else 1.0
-        
+
         return Score(
             passed=passed,
             score=score_val,
@@ -300,9 +340,9 @@ class AnchorScorer(Scorer):
                 "any_of_ok": any_of_ok,
                 "any_of_2_ok": any_of_2_ok,
                 "all_of_ok": all_of_ok,
-            }
+            },
         )
-    
+
     def _find_position(self, anchor: str, refs: list[dict[str, Any]]) -> int | None:
         """Find 1-based position of anchor in references_structured."""
         want = _normalize_anchor(anchor)
@@ -324,20 +364,20 @@ class AnchorScorer(Scorer):
 class ContractScorer(Scorer):
     """
     Scores ENGINEERING profile contract compliance.
-    
+
     Uses production data:
     - run_meta.contract_validation: results from contract validation
     - retrieval_metrics.references_used_in_answer: citation tracking
-    
+
     Checks:
     - Minimum citations met
     - Contract violations detected
     """
-    
+
     @property
     def name(self) -> str:
         return "contract_compliance"
-    
+
     def score(
         self,
         *,
@@ -346,18 +386,20 @@ class ContractScorer(Scorer):
         references_structured: list[dict[str, Any]],
     ) -> Score:
         run_meta = retrieval_metrics.get("run") or {}
-        
+
         # Get contract validation from production
         contract_validation = run_meta.get("contract_validation") or {}
         contract_passed = contract_validation.get("passed", True)
         violations = contract_validation.get("violations") or []
-        
+
         # Get citation info
         refs_used = retrieval_metrics.get("references_used_in_answer") or []
         citation_count = len(refs_used)
-        
-        message = "contract satisfied" if contract_passed else f"violations: {violations}"
-        
+
+        message = (
+            "contract satisfied" if contract_passed else f"violations: {violations}"
+        )
+
         return Score(
             passed=contract_passed,
             score=1.0 if contract_passed else 0.0,
@@ -366,7 +408,7 @@ class ContractScorer(Scorer):
                 "contract_validation": contract_validation,
                 "citation_count": citation_count,
                 "violations": violations,
-            }
+            },
         )
 
 
@@ -418,14 +460,16 @@ class PipelineBreakdownScorer(Scorer):
             "stages": {
                 # Stage 1: Vector Retrieval
                 "1_vector_retrieval": vec_enhanced,
-
                 # Stage 2: Citation Expansion
                 "2_citation_expansion": {
-                    "articles": modular_pipeline.get("citation_expansion_articles") or [],
+                    "articles": modular_pipeline.get("citation_expansion_articles")
+                    or [],
                     "chunks_injected": modular_pipeline.get("chunks_injected", 0),
-                    "hint_anchors": list((modular_pipeline.get("anchor_hints") or {}).get("hint_anchors") or []),
+                    "hint_anchors": list(
+                        (modular_pipeline.get("anchor_hints") or {}).get("hint_anchors")
+                        or []
+                    ),
                 },
-
                 # Stage 3: Hybrid Rerank
                 "3_hybrid_rerank": {
                     "enabled": hybrid.get("enabled", True),
@@ -433,14 +477,11 @@ class PipelineBreakdownScorer(Scorer):
                     "top_scores": top_scores,
                     "duration_ms": hybrid.get("duration_ms"),
                 },
-
                 # Stage 4: Context Selection
                 "4_context_selection": ctx_sel,
             },
-
             # Timing
             "total_duration_ms": modular_pipeline.get("total_duration_ms"),
-
             # Final results (common fields for reporter)
             "final_context_count": len(references_structured),
             "anchors_in_context": anchors_in_context,
@@ -452,13 +493,14 @@ class PipelineBreakdownScorer(Scorer):
             passed=True,  # Always passes - diagnostic only
             score=1.0,
             message="pipeline analysis complete",
-            details=breakdown
+            details=breakdown,
         )
 
 
 def _get_citation_verification_threshold() -> float:
     """Get citation verification threshold from config."""
     from ..common.config_loader import get_settings_yaml
+
     settings = get_settings_yaml()
     citation_settings = settings.get("citation_improvement", {})
     return float(citation_settings.get("similarity_threshold", 0.75))
@@ -486,7 +528,11 @@ class CitationVerificationScorer(Scorer):
         Args:
             threshold: Minimum overall_score to pass (default: from config)
         """
-        self.threshold = threshold if threshold is not None else _get_citation_verification_threshold()
+        self.threshold = (
+            threshold
+            if threshold is not None
+            else _get_citation_verification_threshold()
+        )
 
     @property
     def name(self) -> str:
@@ -521,7 +567,9 @@ class CitationVerificationScorer(Scorer):
         if suspicious_count > 0:
             message = f"{verified_count} verified, {suspicious_count} suspicious (score: {overall_score:.2f})"
         else:
-            message = f"all {verified_count} citations verified (score: {overall_score:.2f})"
+            message = (
+                f"all {verified_count} citations verified (score: {overall_score:.2f})"
+            )
 
         return Score(
             passed=passed,
@@ -548,6 +596,7 @@ ProgressCallback = Callable[[str, int, int], None]
 def _get_llm_judge_settings() -> dict:
     """Get LLM-judge settings from config."""
     from ..common.config_loader import get_settings_yaml
+
     settings = get_settings_yaml()
     eval_settings = settings.get("eval", {})
     return eval_settings.get("llm_judge", {})
@@ -562,13 +611,19 @@ def _get_judge_model() -> str:
 def _get_faithfulness_threshold() -> float:
     """Get faithfulness threshold from config."""
     llm_judge = _get_llm_judge_settings()
-    return float(os.getenv("EVAL_FAITHFULNESS_THRESHOLD", llm_judge.get("faithfulness_threshold", 0.8)))
+    return float(
+        os.getenv(
+            "EVAL_FAITHFULNESS_THRESHOLD", llm_judge.get("faithfulness_threshold", 0.8)
+        )
+    )
 
 
 def _get_relevancy_threshold() -> float:
     """Get relevancy threshold from config."""
     llm_judge = _get_llm_judge_settings()
-    return float(os.getenv("EVAL_RELEVANCY_THRESHOLD", llm_judge.get("relevancy_threshold", 0.7)))
+    return float(
+        os.getenv("EVAL_RELEVANCY_THRESHOLD", llm_judge.get("relevancy_threshold", 0.7))
+    )
 
 
 def _get_claim_batch_size() -> int:
@@ -592,17 +647,20 @@ def _get_cache_enabled() -> bool:
 def _make_llm_client():
     """Create OpenAI client for LLM-as-judge."""
     from ..engine.llm_client import make_openai_client
+
     return make_openai_client()
 
 
-def _call_llm_json(prompt: str, model: Optional[str] = None, max_retries: int = 3, context: str = "") -> dict[str, Any]:
+def _call_llm_json(
+    prompt: str, model: Optional[str] = None, max_retries: int = 3, context: str = ""
+) -> dict[str, Any]:
     """Call LLM and parse JSON response with retry for rate limits."""
     import time
-    
+
     client = _make_llm_client()
     model = model or _get_judge_model()
     tracker = get_rate_limit_tracker()
-    
+
     last_error = None
     for attempt in range(max_retries):
         try:
@@ -612,14 +670,13 @@ def _call_llm_json(prompt: str, model: Optional[str] = None, max_retries: int = 
                 temperature=0.0,  # Deterministic for evaluation
                 response_format={"type": "json_object"},
             )
-            
+
             # Track token usage
             if response.usage:
                 tracker.record_usage(
-                    response.usage.prompt_tokens,
-                    response.usage.completion_tokens
+                    response.usage.prompt_tokens, response.usage.completion_tokens
                 )
-            
+
             content = response.choices[0].message.content or "{}"
             try:
                 return json.loads(content)
@@ -629,18 +686,20 @@ def _call_llm_json(prompt: str, model: Optional[str] = None, max_retries: int = 
                 if match:
                     return json.loads(match.group())
                 return {"error": "Failed to parse JSON", "raw": content}
-                
+
         except Exception as e:
             last_error = e
             error_str = str(e)
             # Check for rate limit error
             if "429" in error_str or "rate_limit" in error_str.lower():
-                wait_time = min(2 ** attempt * 2, 30)  # Exponential backoff: 2s, 4s, 8s...
+                wait_time = min(
+                    2**attempt * 2, 30
+                )  # Exponential backoff: 2s, 4s, 8s...
                 tracker.record_hit(attempt + 1, wait_time, context)
                 time.sleep(wait_time)
                 continue
             raise  # Re-raise non-rate-limit errors
-    
+
     # All retries exhausted
     raise last_error if last_error else RuntimeError("LLM call failed after retries")
 
@@ -648,18 +707,18 @@ def _call_llm_json(prompt: str, model: Optional[str] = None, max_retries: int = 
 class FaithfulnessScorer:
     """
     Scores if the answer is faithful to the retrieved context.
-    
+
     Algorithm (Ragas-inspired):
     1. Extract claims from the answer
     2. Verify each claim against the context
     3. Score = supported_claims / total_claims
-    
+
     All settings read from config/settings.yaml -> eval.llm_judge
     Environment variables can override: EVAL_JUDGE_MODEL, EVAL_FAITHFULNESS_THRESHOLD
     """
-    
+
     name: str = "faithfulness"
-    
+
     def __init__(
         self,
         threshold: float | None = None,
@@ -667,12 +726,18 @@ class FaithfulnessScorer:
         claim_batch_size: int | None = None,
     ):
         # Read from config with optional overrides
-        self.threshold = threshold if threshold is not None else _get_faithfulness_threshold()
+        self.threshold = (
+            threshold if threshold is not None else _get_faithfulness_threshold()
+        )
         self.use_cache = use_cache if use_cache is not None else _get_cache_enabled()
-        self.claim_batch_size = claim_batch_size if claim_batch_size is not None else _get_claim_batch_size()
+        self.claim_batch_size = (
+            claim_batch_size
+            if claim_batch_size is not None
+            else _get_claim_batch_size()
+        )
         self.max_context_chars = _get_max_context_chars()
         self.cache = get_cache(enabled=self.use_cache)
-    
+
     def score(
         self,
         *,
@@ -683,13 +748,13 @@ class FaithfulnessScorer:
     ) -> Score:
         """
         Evaluate faithfulness of answer to context.
-        
+
         Args:
             question: The user's question
             answer: The LLM's answer
             context: The retrieved context (full text)
             progress_callback: Optional callback for progress updates
-        
+
         Returns:
             Score with faithfulness evaluation
         """
@@ -707,13 +772,13 @@ class FaithfulnessScorer:
                 message=cached["message"],
                 details=cached.get("details", {}),
             )
-        
+
         # Step 1: Extract claims from answer
         if progress_callback:
             progress_callback("Extracting claims...", 0, 0)
-        
+
         claims = self._extract_claims(question, answer)
-        
+
         if not claims:
             result = Score(
                 passed=True,
@@ -723,25 +788,25 @@ class FaithfulnessScorer:
             )
             self._cache_result(result, question, answer, context)
             return result
-        
+
         if progress_callback:
             progress_callback(f"Found {len(claims)} claims", len(claims), len(claims))
-        
+
         # Step 2: Verify each claim against context
         verifications = self._verify_claims(claims, context, progress_callback)
-        
+
         # Step 3: Calculate score
         supported_count = sum(1 for v in verifications if v["supported"])
         total_claims = len(claims)
         score_val = supported_count / total_claims if total_claims > 0 else 1.0
         passed = score_val >= self.threshold
-        
+
         unsupported = [v["claim"] for v in verifications if not v["supported"]]
         if unsupported:
             message = f"{supported_count}/{total_claims} claims supported"
         else:
             message = "All claims supported by context"
-        
+
         result = Score(
             passed=passed,
             score=score_val,
@@ -755,39 +820,39 @@ class FaithfulnessScorer:
                 "threshold": self.threshold,
             },
         )
-        
+
         self._cache_result(result, question, answer, context)
         return result
-    
+
     def _extract_claims(self, question: str, answer: str) -> list[str]:
         """Extract factual claims from the answer."""
         prompt = EXTRACT_CLAIMS_PROMPT.format(question=question, answer=answer)
-        
+
         try:
             # Call LLM to extract claims
             client = _make_llm_client()
             model = _get_judge_model()
-            
+
             response = client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.0,
             )
-            
+
             content = response.choices[0].message.content or "[]"
-            
+
             # Parse JSON array
             match = re.search(r"\[.*\]", content, re.DOTALL)
             if match:
                 claims = json.loads(match.group())
                 return [str(c) for c in claims if c]
-            
+
             return []
         except Exception:
             # Fallback: split answer into sentences as claims
             sentences = re.split(r"[.!?]+", answer)
             return [s.strip() for s in sentences if s.strip() and len(s.strip()) > 10]
-    
+
     def _verify_claims(
         self,
         claims: list[str],
@@ -796,53 +861,64 @@ class FaithfulnessScorer:
     ) -> list[dict[str, Any]]:
         """Verify each claim against the context."""
         verifications = []
-        
+
         # Process claims in batches
         for i in range(0, len(claims), self.claim_batch_size):
             batch = claims[i : i + self.claim_batch_size]
             batch_start = i + 1
-            
+
             if progress_callback:
                 progress_callback(
                     f"Verifying claims {batch_start}-{min(i + self.claim_batch_size, len(claims))}",
                     min(i + self.claim_batch_size, len(claims)),
                     len(claims),
                 )
-            
+
             # Format claims for prompt
-            claims_text = "\n".join(f"{j+1}. {c}" for j, c in enumerate(batch))
-            prompt = VERIFY_CLAIMS_PROMPT.format(context=context[:self.max_context_chars], claims=claims_text)
-            
+            claims_text = "\n".join(f"{j + 1}. {c}" for j, c in enumerate(batch))
+            prompt = VERIFY_CLAIMS_PROMPT.format(
+                context=context[: self.max_context_chars], claims=claims_text
+            )
+
             try:
                 result = _call_llm_json(prompt)
                 batch_verifications = result.get("verifications", [])
-                
+
                 for j, claim in enumerate(batch):
                     if j < len(batch_verifications):
                         v = batch_verifications[j]
-                        verifications.append({
-                            "claim": claim,
-                            "supported": v.get("verdict", "").upper() == "SUPPORTED",
-                            "explanation": v.get("explanation", ""),
-                        })
+                        verifications.append(
+                            {
+                                "claim": claim,
+                                "supported": v.get("verdict", "").upper()
+                                == "SUPPORTED",
+                                "explanation": v.get("explanation", ""),
+                            }
+                        )
                     else:
-                        verifications.append({
-                            "claim": claim,
-                            "supported": False,
-                            "explanation": "Verification missing from response",
-                        })
+                        verifications.append(
+                            {
+                                "claim": claim,
+                                "supported": False,
+                                "explanation": "Verification missing from response",
+                            }
+                        )
             except Exception as e:
                 # Mark all claims in batch as unverified
                 for claim in batch:
-                    verifications.append({
-                        "claim": claim,
-                        "supported": False,
-                        "explanation": f"Verification failed: {e}",
-                    })
-        
+                    verifications.append(
+                        {
+                            "claim": claim,
+                            "supported": False,
+                            "explanation": f"Verification failed: {e}",
+                        }
+                    )
+
         return verifications
-    
-    def _cache_result(self, result: Score, question: str, answer: str, context: str) -> None:
+
+    def _cache_result(
+        self, result: Score, question: str, answer: str, context: str
+    ) -> None:
         """Cache the result."""
         self.cache.set(
             self.name,
@@ -861,25 +937,27 @@ class FaithfulnessScorer:
 class AnswerRelevancyScorer:
     """
     Scores if the answer is relevant to the question.
-    
+
     Uses a single LLM call to evaluate relevancy on a 0-10 scale.
-    
+
     All settings read from config/settings.yaml -> eval.llm_judge
     Environment variables can override: EVAL_JUDGE_MODEL, EVAL_RELEVANCY_THRESHOLD
     """
-    
+
     name: str = "answer_relevancy"
-    
+
     def __init__(
         self,
         threshold: float | None = None,
         use_cache: bool | None = None,
     ):
         # Read from config with optional overrides
-        self.threshold = threshold if threshold is not None else _get_relevancy_threshold()
+        self.threshold = (
+            threshold if threshold is not None else _get_relevancy_threshold()
+        )
         self.use_cache = use_cache if use_cache is not None else _get_cache_enabled()
         self.cache = get_cache(enabled=self.use_cache)
-    
+
     def score(
         self,
         *,
@@ -889,12 +967,12 @@ class AnswerRelevancyScorer:
     ) -> Score:
         """
         Evaluate if the answer addresses the question.
-        
+
         Args:
             question: The user's question
             answer: The LLM's answer
             progress_callback: Optional callback for progress updates
-        
+
         Returns:
             Score with relevancy evaluation
         """
@@ -911,23 +989,23 @@ class AnswerRelevancyScorer:
                 message=cached["message"],
                 details=cached.get("details", {}),
             )
-        
+
         if progress_callback:
             progress_callback("Evaluating answer relevance...", 0, 0)
-        
+
         prompt = ANSWER_RELEVANCY_PROMPT.format(question=question, answer=answer)
-        
+
         try:
             result = _call_llm_json(prompt)
-            
+
             # Normalize score from 0-10 to 0-1
             raw_score = result.get("score", 5)
             score_val = max(0.0, min(1.0, raw_score / 10.0))
             critique = result.get("critique", "No critique provided")
-            
+
             passed = score_val >= self.threshold
             message = f"Relevancy: {raw_score}/10" + (" ✓" if passed else " ✗")
-            
+
             score_result = Score(
                 passed=passed,
                 score=score_val,
@@ -938,7 +1016,7 @@ class AnswerRelevancyScorer:
                     "threshold": self.threshold,
                 },
             )
-            
+
         except Exception as e:
             score_result = Score(
                 passed=False,
@@ -946,7 +1024,7 @@ class AnswerRelevancyScorer:
                 message=f"Relevancy evaluation failed: {e}",
                 details={"error": str(e)},
             )
-        
+
         # Cache result
         self.cache.set(
             self.name,

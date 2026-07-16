@@ -75,7 +75,11 @@ def remove_corpus_eval_cases(corpus_id: str) -> bool:
         True if file was removed, False if not found
     """
     # Check both underscore and hyphen variants
-    for variant in [corpus_id, corpus_id.replace("-", "_"), corpus_id.replace("_", "-")]:
+    for variant in [
+        corpus_id,
+        corpus_id.replace("-", "_"),
+        corpus_id.replace("_", "-"),
+    ]:
         eval_file = EVALS_DIR / f"golden_cases_{variant}.yaml"
         if eval_file.exists():
             eval_file.unlink()
@@ -94,7 +98,11 @@ def get_eval_cases_path(corpus_id: str) -> Path | None:
     Returns:
         Path to eval file or None if not found
     """
-    for variant in [corpus_id, corpus_id.replace("-", "_"), corpus_id.replace("_", "-")]:
+    for variant in [
+        corpus_id,
+        corpus_id.replace("-", "_"),
+        corpus_id.replace("_", "-"),
+    ]:
         eval_file = EVALS_DIR / f"golden_cases_{variant}.yaml"
         if eval_file.exists():
             return eval_file

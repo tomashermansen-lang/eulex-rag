@@ -3,7 +3,6 @@
 TDD: These tests are written BEFORE the implementation.
 """
 
-import pytest
 from unittest.mock import MagicMock
 
 from src.engine.synthesis_router import SynthesisMode
@@ -125,7 +124,6 @@ class TestBuildMultiCorpusPrompt:
     def test_pb_020_includes_grounding_rules(self):
         """Output contains COMMON_GROUNDING_RULES content."""
         from src.engine.prompt_builder import build_multi_corpus_prompt
-        from src.engine import prompt_templates as PT
 
         result = build_multi_corpus_prompt(
             mode=SynthesisMode.UNIFIED,
@@ -154,7 +152,11 @@ class TestBuildMultiCorpusPrompt:
         )
 
         # LEGAL profile should have legal format rules
-        assert "MÅLGRUPPE" in result or "Juridisk" in result.lower() or "jurist" in result.lower()
+        assert (
+            "MÅLGRUPPE" in result
+            or "Juridisk" in result.lower()
+            or "jurist" in result.lower()
+        )
 
     def test_pb_022_unified_mode_uses_unified_instructions(self):
         """UNIFIED mode includes unified-specific instructions."""
@@ -170,7 +172,11 @@ class TestBuildMultiCorpusPrompt:
         )
 
         # Should have unified mode language
-        assert "UNIFIED" in result or "unified" in result.lower() or "samlet" in result.lower()
+        assert (
+            "UNIFIED" in result
+            or "unified" in result.lower()
+            or "samlet" in result.lower()
+        )
 
     def test_pb_023_aggregation_mode_uses_aggregation_instructions(self):
         """AGGREGATION mode includes aggregation-specific instructions."""
@@ -182,14 +188,28 @@ class TestBuildMultiCorpusPrompt:
             context="Test context",
             kilder_block="KILDER: [1] Test",
             references_structured=[
-                {"corpus_id": "ai_act", "idx": 1, "chunk_text": "AI text", "article": "5"},
-                {"corpus_id": "gdpr", "idx": 2, "chunk_text": "GDPR text", "article": "6"},
+                {
+                    "corpus_id": "ai_act",
+                    "idx": 1,
+                    "chunk_text": "AI text",
+                    "article": "5",
+                },
+                {
+                    "corpus_id": "gdpr",
+                    "idx": 2,
+                    "chunk_text": "GDPR text",
+                    "article": "6",
+                },
             ],
             user_profile="LEGAL",
         )
 
         # Should have aggregation mode language
-        assert "AGGREGATION" in result or "aggreg" in result.lower() or "gruppér" in result.lower()
+        assert (
+            "AGGREGATION" in result
+            or "aggreg" in result.lower()
+            or "gruppér" in result.lower()
+        )
 
     def test_pb_024_comparison_mode_uses_comparison_instructions(self):
         """COMPARISON mode includes comparison-specific instructions."""
@@ -201,15 +221,29 @@ class TestBuildMultiCorpusPrompt:
             context="Test context",
             kilder_block="KILDER: [1] Test",
             references_structured=[
-                {"corpus_id": "ai_act", "idx": 1, "chunk_text": "AI text", "article": "5"},
-                {"corpus_id": "gdpr", "idx": 2, "chunk_text": "GDPR text", "article": "6"},
+                {
+                    "corpus_id": "ai_act",
+                    "idx": 1,
+                    "chunk_text": "AI text",
+                    "article": "5",
+                },
+                {
+                    "corpus_id": "gdpr",
+                    "idx": 2,
+                    "chunk_text": "GDPR text",
+                    "article": "6",
+                },
             ],
             user_profile="LEGAL",
             comparison_corpora=["ai_act", "gdpr"],
         )
 
         # Should have comparison mode language
-        assert "COMPARISON" in result or "comparison" in result.lower() or "sammenlign" in result.lower()
+        assert (
+            "COMPARISON" in result
+            or "comparison" in result.lower()
+            or "sammenlign" in result.lower()
+        )
 
     def test_pb_025_routing_mode_uses_routing_instructions(self):
         """ROUTING mode includes routing-specific instructions."""
@@ -225,7 +259,11 @@ class TestBuildMultiCorpusPrompt:
         )
 
         # Should have routing mode language
-        assert "ROUTING" in result or "routing" in result.lower() or "identificer" in result.lower()
+        assert (
+            "ROUTING" in result
+            or "routing" in result.lower()
+            or "identificer" in result.lower()
+        )
 
     def test_pb_026_includes_context(self):
         """Output includes provided context."""
@@ -335,7 +373,11 @@ class TestBuildSynthesisPrompts:
         # Should have distinct comparison sections
         assert "AI-Act" in result
         assert "GDPR" in result
-        assert "sammenlign" in result.lower() or "compare" in result.lower() or "forskell" in result.lower()
+        assert (
+            "sammenlign" in result.lower()
+            or "compare" in result.lower()
+            or "forskell" in result.lower()
+        )
 
     def test_pbm_005_routing_prompt_is_lightweight(self):
         """build_routing_prompt returns brief format for law identification."""
@@ -391,12 +433,12 @@ class TestBuildSynthesisPrompts:
         # Should mention comparing/contrasting
         result_lower = result.lower()
         has_comparison_language = (
-            "forskel" in result_lower or
-            "lighed" in result_lower or
-            "similar" in result_lower or
-            "differ" in result_lower or
-            "sammenlign" in result_lower or
-            "compare" in result_lower
+            "forskel" in result_lower
+            or "lighed" in result_lower
+            or "similar" in result_lower
+            or "differ" in result_lower
+            or "sammenlign" in result_lower
+            or "compare" in result_lower
         )
         assert has_comparison_language
 

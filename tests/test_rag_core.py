@@ -4,21 +4,21 @@ Focus on testable helper functions without requiring full RAGEngine setup.
 """
 
 import os
-from dataclasses import dataclass, field
 from typing import Any
 from unittest.mock import patch, MagicMock
 
-import pytest
 
-from src.engine.rag import (
+from src.engine.rag_config import (
     _get_openai_settings,
     _get_model_capabilities,
     _get_default_chat_model,
     _get_default_embedding_model,
     _get_default_temperature,
     _get_rag_settings,
-    _sync_json_mode_results_to_run_meta,
     _RetrievalResult,
+)
+from src.engine.generation_strategies import (
+    sync_json_mode_results_to_run_meta as _sync_json_mode_results_to_run_meta,
 )
 from src.engine.generation_types import StructuredGenerationResult
 
@@ -87,7 +87,9 @@ class TestGetDefaultEmbeddingModel:
         result = _get_default_embedding_model()
         assert result is None or isinstance(result, str)
 
-    @patch.dict(os.environ, {"OPENAI_EMBEDDING_MODEL": "text-embedding-test"}, clear=False)
+    @patch.dict(
+        os.environ, {"OPENAI_EMBEDDING_MODEL": "text-embedding-test"}, clear=False
+    )
     def test_env_override(self):
         """Environment variable overrides config."""
         result = _get_default_embedding_model()
@@ -298,8 +300,11 @@ class TestSyncJsonModeResultsToRunMeta:
         policy.include_audit_evidence = True
 
         _sync_json_mode_results_to_run_meta(
-            gen_result, run_meta, allowed_idxs=set(), contract_min_citations=None,
-            answer_policy=policy
+            gen_result,
+            run_meta,
+            allowed_idxs=set(),
+            contract_min_citations=None,
+            answer_policy=policy,
         )
 
         assert run_meta["policy_min_section3_bullets"] == 3
@@ -311,8 +316,11 @@ class TestSyncJsonModeResultsToRunMeta:
         run_meta: dict = {}
 
         _sync_json_mode_results_to_run_meta(
-            gen_result, run_meta, allowed_idxs=set(), contract_min_citations=None,
-            answer_policy=None
+            gen_result,
+            run_meta,
+            allowed_idxs=set(),
+            contract_min_citations=None,
+            answer_policy=None,
         )
 
         assert run_meta["policy_min_section3_bullets"] is None

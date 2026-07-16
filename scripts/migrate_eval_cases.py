@@ -18,6 +18,7 @@ Usage:
     python scripts/migrate_eval_cases.py --apply            # Apply changes
     python scripts/migrate_eval_cases.py --file golden_cases_ai_act.yaml  # Single file
 """
+
 from __future__ import annotations
 
 import argparse
@@ -52,7 +53,13 @@ def infer_test_types(case: dict) -> list[str]:
         types.append("faithfulness")
 
     # Robustness: adversarial, edge, negation cases
-    robustness_keywords = ["adversarial", "edge", "negation", "hypothetical", "ambiguous"]
+    robustness_keywords = [
+        "adversarial",
+        "edge",
+        "negation",
+        "hypothetical",
+        "ambiguous",
+    ]
     if any(kw in case_id for kw in robustness_keywords):
         types.append("robustness")
 
@@ -194,7 +201,9 @@ def main() -> int:
                 print(f"    ... and {total - 3} more")
 
     print(f"\n{'=' * 60}")
-    print(f"  TOTAL: {migrated_all}/{total_all} cases {'migrated' if args.apply else 'to migrate'}")
+    print(
+        f"  TOTAL: {migrated_all}/{total_all} cases {'migrated' if args.apply else 'to migrate'}"
+    )
     print(f"{'=' * 60}\n")
 
     if not args.apply and migrated_all > 0:

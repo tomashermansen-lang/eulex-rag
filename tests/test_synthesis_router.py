@@ -15,6 +15,7 @@ def import_module():
         SynthesisContext,
         detect_synthesis_mode,
     )
+
     return {
         "SynthesisMode": SynthesisMode,
         "SynthesisContext": SynthesisContext,
@@ -32,7 +33,9 @@ def mock_resolver():
         "nis2": MagicMock(corpus_key="nis2", display_name="NIS2"),
         "dora": MagicMock(corpus_key="dora", display_name="DORA"),
     }
-    resolver.get_all_corpus_ids = MagicMock(return_value=["ai_act", "gdpr", "nis2", "dora"])
+    resolver.get_all_corpus_ids = MagicMock(
+        return_value=["ai_act", "gdpr", "nis2", "dora"]
+    )
     resolver.mentioned_corpus_keys = MagicMock(return_value=[])
     return resolver
 
@@ -68,7 +71,9 @@ class TestDiscoveryModeEnum:
 class TestSingleMode:
     """Tests for SINGLE synthesis mode."""
 
-    def test_sr_001_single_scope_returns_single_mode(self, import_module, mock_resolver):
+    def test_sr_001_single_scope_returns_single_mode(
+        self, import_module, mock_resolver
+    ):
         """corpus_scope='single' always returns SINGLE mode."""
         detect_synthesis_mode = import_module["detect_synthesis_mode"]
         SynthesisMode = import_module["SynthesisMode"]
@@ -91,7 +96,9 @@ class TestSingleMode:
 class TestComparisonMode:
     """Tests for COMPARISON synthesis mode detection."""
 
-    def test_sr_002_compare_x_and_y_detects_comparison(self, import_module, mock_resolver):
+    def test_sr_002_compare_x_and_y_detects_comparison(
+        self, import_module, mock_resolver
+    ):
         """'Compare X and Y' pattern triggers COMPARISON mode."""
         detect_synthesis_mode = import_module["detect_synthesis_mode"]
         SynthesisMode = import_module["SynthesisMode"]
@@ -140,7 +147,9 @@ class TestComparisonMode:
 
         assert result.mode == SynthesisMode.COMPARISON
 
-    def test_sr_011_comparison_extracts_target_corpora(self, import_module, mock_resolver):
+    def test_sr_011_comparison_extracts_target_corpora(
+        self, import_module, mock_resolver
+    ):
         """COMPARISON mode extracts target corpora from question."""
         detect_synthesis_mode = import_module["detect_synthesis_mode"]
         SynthesisMode = import_module["SynthesisMode"]
@@ -233,7 +242,9 @@ class TestRoutingMode:
 class TestAggregationMode:
     """Tests for AGGREGATION synthesis mode detection."""
 
-    def test_sr_008_all_laws_say_detects_aggregation(self, import_module, mock_resolver):
+    def test_sr_008_all_laws_say_detects_aggregation(
+        self, import_module, mock_resolver
+    ):
         """'all laws say' pattern triggers AGGREGATION mode."""
         detect_synthesis_mode = import_module["detect_synthesis_mode"]
         SynthesisMode = import_module["SynthesisMode"]
@@ -298,7 +309,9 @@ class TestAggregationMode:
 class TestUnifiedMode:
     """Tests for UNIFIED synthesis mode detection."""
 
-    def test_sr_010_multi_corpus_without_keywords_is_unified(self, import_module, mock_resolver):
+    def test_sr_010_multi_corpus_without_keywords_is_unified(
+        self, import_module, mock_resolver
+    ):
         """Multi-corpus without comparison/routing/aggregation keywords → UNIFIED."""
         detect_synthesis_mode = import_module["detect_synthesis_mode"]
         SynthesisMode = import_module["SynthesisMode"]
@@ -321,7 +334,9 @@ class TestUnifiedMode:
 class TestTargetCorpora:
     """Tests for target corpora resolution."""
 
-    def test_sr_012_explicit_scope_uses_selected_corpora(self, import_module, mock_resolver):
+    def test_sr_012_explicit_scope_uses_selected_corpora(
+        self, import_module, mock_resolver
+    ):
         """explicit scope uses the provided selected_corpora list."""
         detect_synthesis_mode = import_module["detect_synthesis_mode"]
 
@@ -334,7 +349,9 @@ class TestTargetCorpora:
 
         assert set(result.target_corpora) == {"ai_act", "gdpr"}
 
-    def test_sr_013_all_scope_returns_all_corpus_ids(self, import_module, mock_resolver):
+    def test_sr_013_all_scope_returns_all_corpus_ids(
+        self, import_module, mock_resolver
+    ):
         """all scope returns all registered corpora."""
         detect_synthesis_mode = import_module["detect_synthesis_mode"]
 

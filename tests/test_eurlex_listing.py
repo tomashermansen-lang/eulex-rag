@@ -24,7 +24,9 @@ class TestValidateEurlexUrl:
 
     def test_valid_eurlex_url(self):
         """Should accept valid EUR-Lex URLs."""
-        url = "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1689"
+        url = (
+            "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1689"
+        )
         assert validate_eurlex_url(url) is True
 
     def test_valid_publications_url(self):
@@ -91,12 +93,12 @@ class TestValidateCelex:
     def test_rejects_invalid_format(self):
         """Should reject invalid CELEX formats."""
         invalid_celex = [
-            "12345",           # Too short
-            "1234567890",      # No letter
-            "ABCDE12345",      # Letters in wrong position
-            "3202XR1689",      # X instead of digit
-            "32024-1689",      # Hyphen instead of letter
-            "",                # Empty
+            "12345",  # Too short
+            "1234567890",  # No letter
+            "ABCDE12345",  # Letters in wrong position
+            "3202XR1689",  # X instead of digit
+            "32024-1689",  # Hyphen instead of letter
+            "",  # Empty
         ]
         for celex in invalid_celex:
             with pytest.raises(EurLexValidationError):
@@ -118,7 +120,9 @@ class TestExtractCelexFromUrl:
 
     def test_extract_from_standard_url(self):
         """Should extract CELEX from standard EUR-Lex URL."""
-        url = "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1689"
+        url = (
+            "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1689"
+        )
         assert extract_celex_from_url(url) == "32024R1689"
 
     def test_extract_from_encoded_url(self):
@@ -143,12 +147,18 @@ class TestBuildHtmlUrl:
     def test_build_danish_url(self):
         """Should build Danish HTML URL by default."""
         url = build_html_url("32024R1689")
-        assert url == "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1689"
+        assert (
+            url
+            == "https://eur-lex.europa.eu/legal-content/DA/TXT/HTML/?uri=CELEX:32024R1689"
+        )
 
     def test_build_english_url(self):
         """Should build English HTML URL when specified."""
         url = build_html_url("32024R1689", language="EN")
-        assert url == "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R1689"
+        assert (
+            url
+            == "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R1689"
+        )
 
     def test_validates_celex_before_building(self):
         """Should validate CELEX before building URL."""

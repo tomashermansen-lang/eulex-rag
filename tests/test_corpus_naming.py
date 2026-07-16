@@ -12,14 +12,18 @@ class TestNamingConventionsConfig:
 
     def test_config_file_exists(self):
         """naming_conventions.yaml exists in config directory."""
-        config_path = Path(__file__).parent.parent / "config" / "naming_conventions.yaml"
+        config_path = (
+            Path(__file__).parent.parent / "config" / "naming_conventions.yaml"
+        )
         assert config_path.exists(), "config/naming_conventions.yaml must exist"
 
     def test_config_has_required_keys(self):
         """Config has all required keys."""
         import yaml
 
-        config_path = Path(__file__).parent.parent / "config" / "naming_conventions.yaml"
+        config_path = (
+            Path(__file__).parent.parent / "config" / "naming_conventions.yaml"
+        )
         with open(config_path) as f:
             config = yaml.safe_load(f)
 
@@ -78,20 +82,14 @@ class TestCorpusIdGeneration:
         """Generate corpus_id for directive."""
         from src.common.corpus_naming import generate_corpus_id
 
-        result = generate_corpus_id(
-            known_name="NIS2",
-            celex_number="32022L2555"
-        )
+        result = generate_corpus_id(known_name="NIS2", celex_number="32022L2555")
         assert result == "nis2-dir-2022-2555"
 
     def test_generate_corpus_id_regulation(self):
         """Generate corpus_id for regulation."""
         from src.common.corpus_naming import generate_corpus_id
 
-        result = generate_corpus_id(
-            known_name="GDPR",
-            celex_number="32016R0679"
-        )
+        result = generate_corpus_id(known_name="GDPR", celex_number="32016R0679")
         assert result == "gdpr-reg-2016-679"
 
     def test_generate_corpus_id_implementing_regulation(self):
@@ -99,9 +97,7 @@ class TestCorpusIdGeneration:
         from src.common.corpus_naming import generate_corpus_id
 
         result = generate_corpus_id(
-            known_name="NIS2-CIR",
-            celex_number="32024R2690",
-            is_implementing=True
+            known_name="NIS2-CIR", celex_number="32024R2690", is_implementing=True
         )
         assert result == "nis2-cir-cir-2024-2690"
 
@@ -109,10 +105,7 @@ class TestCorpusIdGeneration:
         """corpus_id is always lowercase."""
         from src.common.corpus_naming import generate_corpus_id
 
-        result = generate_corpus_id(
-            known_name="AI-ACT",
-            celex_number="32024R1689"
-        )
+        result = generate_corpus_id(known_name="AI-ACT", celex_number="32024R1689")
         assert result == result.lower()
         assert result == "ai-act-reg-2024-1689"
 
@@ -122,7 +115,7 @@ class TestCorpusIdGeneration:
 
         result = generate_corpus_id(
             known_name="DATA ACT",  # Space should be converted
-            celex_number="32023R2854"
+            celex_number="32023R2854",
         )
         # Only lowercase letters, numbers, and hyphens allowed
         assert all(c.islower() or c.isdigit() or c == "-" for c in result)
@@ -142,12 +135,15 @@ class TestFullnameInCorpora:
             display_name="Test Corpus",
             extra={
                 "fullname": "Full Official Legal Title Here",
-                "celex_number": "32024R1234"
-            }
+                "celex_number": "32024R1234",
+            },
         )
 
         assert "test-corpus" in result["corpora"]
-        assert result["corpora"]["test-corpus"]["fullname"] == "Full Official Legal Title Here"
+        assert (
+            result["corpora"]["test-corpus"]["fullname"]
+            == "Full Official Legal Title Here"
+        )
 
     def test_fullname_preserved_on_update(self):
         """fullname is preserved when updating other fields."""
@@ -159,16 +155,16 @@ class TestFullnameInCorpora:
                 "test-corpus": {
                     "display_name": "Test",
                     "fullname": "Original Full Name",
-                    "enabled": True
+                    "enabled": True,
                 }
-            }
+            },
         }
 
         result = upsert_corpus_inventory(
             data,
             corpus_id="test-corpus",
             display_name="Updated Test",
-            extra={"fullname": "Original Full Name"}  # Preserve fullname
+            extra={"fullname": "Original Full Name"},  # Preserve fullname
         )
 
         assert result["corpora"]["test-corpus"]["fullname"] == "Original Full Name"
@@ -192,10 +188,12 @@ class TestSuggestNamesResponse:
         response = SuggestNamesResponse(
             corpus_id="test-reg-2024-123",
             display_name="Test Regulation",
-            fullname="Full Official Title of Test Regulation (EU) 2024/123"
+            fullname="Full Official Title of Test Regulation (EU) 2024/123",
         )
 
-        assert response.fullname == "Full Official Title of Test Regulation (EU) 2024/123"
+        assert (
+            response.fullname == "Full Official Title of Test Regulation (EU) 2024/123"
+        )
 
 
 class TestCorpusInfoResponse:

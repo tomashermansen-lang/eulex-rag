@@ -1,0 +1,374 @@
+{
+  "run_id": "run_68d03d1cbf37",
+  "suite_id": "regulering_af_digital_innovation_aggregation_and_inverted_11ceee17",
+  "timestamp": "2026-02-11T21:31:32.467066+00:00",
+  "total": 10,
+  "passed": 9,
+  "failed": 1,
+  "pass_rate": 0.9,
+  "duration_seconds": 51.06949995784089,
+  "run_mode": "full",
+  "max_retries": 0,
+  "results": [
+    {
+      "case_id": "data_management_in_regulatory_sandboxes",
+      "prompt": "Hvordan håndteres data og metadata i forbindelse med driften af reguleringsmæssige sandkasser, og hvilke specifikke opgaver har koordinatorerne i denne sammenhæng?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 18394.32254084386,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 0.8333333333333334,
+          "message": "Balanced citations across 2 corpora"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "data_management_and_reporting",
+      "prompt": "Hvordan skal finansielle enheder indberette større IKT-relaterede hændelser, og hvilke krav gælder der for anmodninger om data fra offentlige myndigheder?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 18495.224917074665,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 0.7333333333333334,
+          "message": "Balanced citations across 3 corpora"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "auto_inverted_obligations",
+      "prompt": "Hvordan skal finansielle enheder sikre detektion af anormale aktiviteter i overensstemmelse med DORA, og hvordan relaterer dette sig til kravene for højrisiko-AI-systemer og tvistbilæggelse i forbindelse med datadeling?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 19028.782457811758,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.6666666666666666,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 0.8214285714285714,
+          "message": "Balanced citations across 4 corpora"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "data_sharing_and_testing_in_AI",
+      "prompt": "Hvordan kan data, der er indhentet til videnskabelig forskning, anvendes i forbindelse med avancerede tests af IKT-værktøjer og systemer i reguleringsmæssige AI-sandkasser?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 19406.993875047192,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 1.0,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Balanced citations across 4 corpora"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "data_protection_and_resilience",
+      "prompt": "Hvordan sikrer de forskellige forordninger, at data, der anvendes i AI-systemer og finansielle enheder, er beskyttet og tilgængelige for relevante interessenter?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 21381.974667077884,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.6666666666666666,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 0.9047619047619048,
+          "message": "Balanced citations across 3 corpora"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "data_interoperability_ai_systems",
+      "prompt": "Hvordan påvirker definitionen af et AI-system i ai-act den måde, hvorpå innovative interoperabilitetsløsninger udvikles og testes i reguleringsmæssige sandkasser ifølge reg-sandkasser?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 8812.2330410406,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.5,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 0.8333333333333334,
+          "message": "Balanced citations across 2 corpora"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "auto_inverted_classification_1",
+      "prompt": "Hvordan sikrer både AI-forordningen og DORA-forordningen beskyttelse af grundlæggende rettigheder og operationel modstandsdygtighed i forbindelse med brugen af kunstig intelligens og digitale systemer?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": false,
+      "duration_ms": 10429.165583103895,
+      "scores": {
+        "anchor_presence": {
+          "passed": false,
+          "score": 0.0,
+          "message": "missing_any_of=['ai-act:article:1', 'dora:article:1']"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": false,
+          "score": 0.0,
+          "message": "Dominant corpus: reg-sandkasser (100% of citations)"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "auto_inverted_procedures",
+      "prompt": "Hvordan kan deltagere i en reguleringsmæssig sandkasse sikre, at deres tvister vedrørende datadeling bliver behandlet korrekt og i overensstemmelse med gældende procedurer for overensstemmelsesvurdering?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 17357.14904195629,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.6666666666666666,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Balanced citations across 2 corpora"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "auto_inverted_classification",
+      "prompt": "Hvordan skal finansielle enheder klassificere IKT-relaterede hændelser, og hvilke krav skal intelligente kontrakter opfylde for at sikre datadeling i forbindelse med disse hændelser?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 31035.728167044,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.5,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "Balanced citations across 3 corpora"
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "case_id": "digital_modstandsdygtighed_og_interoperabilitet",
+      "prompt": "Hvordan bidrager reguleringsmæssige sandkasser til at sikre digital operationel modstandsdygtighed og interoperabilitet i forbindelse med anvendelsen af kunstig intelligens og dataudveksling?",
+      "synthesis_mode": "aggregation",
+      "target_corpora": [
+        "ai-act",
+        "reg-sandkasser",
+        "dora",
+        "data-act"
+      ],
+      "passed": true,
+      "duration_ms": 32651.638417039067,
+      "scores": {
+        "anchor_presence": {
+          "passed": true,
+          "score": 0.25,
+          "message": "all anchors present"
+        },
+        "pipeline_breakdown": {
+          "passed": true,
+          "score": 1.0,
+          "message": "pipeline analysis complete"
+        },
+        "contract_compliance": {
+          "passed": true,
+          "score": 1.0,
+          "message": "contract satisfied"
+        },
+        "synthesis_balance": {
+          "passed": true,
+          "score": 0.8333333333333333,
+          "message": "Balanced citations across 3 corpora"
+        }
+      },
+      "difficulty": "medium"
+    }
+  ]
+}

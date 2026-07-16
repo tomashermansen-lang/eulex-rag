@@ -56,10 +56,7 @@ class TestTruncateHistory:
         assert result[0].content == "Question 1"
 
     def test_truncates_oldest_messages_when_over_limit(self):
-        history = [
-            HistoryMessage("user", f"Message {i}")
-            for i in range(15)
-        ]
+        history = [HistoryMessage("user", f"Message {i}") for i in range(15)]
         result = truncate_history(history, max_messages=10)
         assert len(result) == 10
         # Should keep the 10 most recent (messages 5-14)
@@ -67,10 +64,7 @@ class TestTruncateHistory:
         assert result[-1].content == "Message 14"
 
     def test_respects_custom_max_messages(self):
-        history = [
-            HistoryMessage("user", f"Msg {i}")
-            for i in range(10)
-        ]
+        history = [HistoryMessage("user", f"Msg {i}") for i in range(10)]
         result = truncate_history(history, max_messages=3)
         assert len(result) == 3
         assert result[0].content == "Msg 7"
@@ -175,10 +169,7 @@ class TestBuildHistorySummaryForRewrite:
         assert "Referencer:" not in result
 
     def test_limits_to_last_6_messages(self):
-        history = [
-            HistoryMessage("user", f"Spørgsmål {i}")
-            for i in range(10)
-        ]
+        history = [HistoryMessage("user", f"Spørgsmål {i}") for i in range(10)]
         result = _build_history_summary_for_rewrite(history)
         # Should only include last 6 messages (4-9)
         assert "Spørgsmål 4" in result
@@ -205,7 +196,9 @@ class TestRewriteQueryForRetrieval:
         assert result == question
 
     def test_returns_original_for_bilag_reference(self):
-        question = "Hvad indeholder bilag 1 om høj-risiko AI-systemer? Giv mig alle detaljer."
+        question = (
+            "Hvad indeholder bilag 1 om høj-risiko AI-systemer? Giv mig alle detaljer."
+        )
         history = [HistoryMessage("user", "Noget")]
         result = rewrite_query_for_retrieval(question, history)
         assert result == question

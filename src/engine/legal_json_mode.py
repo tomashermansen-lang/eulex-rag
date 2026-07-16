@@ -11,6 +11,7 @@ class LegalJSONValidationError(Exception):
     Unlike ENGINEERING, LEGAL JSON validation is 'soft' - it doesn't fail-closed
     but allows graceful degradation to prose mode.
     """
+
     code: str
     message: str
     details: dict[str, Any] | None = None
@@ -44,7 +45,9 @@ def _require_list(obj: Any, *, path: str) -> list[Any]:
 
 def _require_str(obj: Any, *, path: str) -> str:
     if not isinstance(obj, str) or not obj.strip():
-        raise LegalJSONValidationError("schema_fail", f"Expected non-empty string at {path}.")
+        raise LegalJSONValidationError(
+            "schema_fail", f"Expected non-empty string at {path}."
+        )
     return obj
 
 
@@ -78,7 +81,9 @@ def _validate_citations(value: Any, *, path: str) -> list[int]:
     for i, v in enumerate(value):
         idx = _require_int(v, path=f"{path}[{i}]")
         if idx <= 0:
-            raise LegalJSONValidationError("schema_fail", f"Citation idx must be > 0 at {path}[{i}].")
+            raise LegalJSONValidationError(
+                "schema_fail", f"Citation idx must be > 0 at {path}[{i}]."
+            )
         out.append(idx)
     return out
 
@@ -128,11 +133,17 @@ def validate_legal_answer_json(obj: Any) -> dict[str, Any]:
                 raise LegalJSONValidationError(
                     "unknown_fields",
                     f"Invalid keys at $.key_points[{i}].",
-                    details={"path": f"$.key_points[{i}]", "extra": extra, "missing": []},
+                    details={
+                        "path": f"$.key_points[{i}]",
+                        "extra": extra,
+                        "missing": [],
+                    },
                 )
             _require_str(d.get("point"), path=f"$.key_points[{i}].point")
             if "citations" in d:
-                _validate_citations(d.get("citations"), path=f"$.key_points[{i}].citations")
+                _validate_citations(
+                    d.get("citations"), path=f"$.key_points[{i}].citations"
+                )
 
     # legal_basis is optional but must be valid if present
     if "legal_basis" in root:
@@ -235,7 +246,9 @@ def render_legal_answer_text(obj: dict[str, Any]) -> str:
             cit = (item or {}).get("citations") or []
             cit_str = ""
             if isinstance(cit, list) and cit:
-                cit_str = " " + " ".join(f"[{i}]" for i in sorted(set(cit)) if isinstance(i, int))
+                cit_str = " " + " ".join(
+                    f"[{i}]" for i in sorted(set(cit)) if isinstance(i, int)
+                )
             if point:
                 lines.append(f"- {point}{cit_str}".rstrip())
 
@@ -250,7 +263,9 @@ def render_legal_answer_text(obj: dict[str, Any]) -> str:
     return "\n".join(lines).strip() + "\n"
 
 
-def validate_legal_answer_json_soft(raw_text: str) -> tuple[dict[str, Any] | None, str | None]:
+def validate_legal_answer_json_soft(
+    raw_text: str,
+) -> tuple[dict[str, Any] | None, str | None]:
     """Attempt soft JSON validation for LEGAL output.
 
     This function tries to parse and validate JSON from raw LLM output.

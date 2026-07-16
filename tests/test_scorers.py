@@ -1,7 +1,6 @@
 """Tests for src/eval/scorers.py - Evaluation scorers."""
 
-import os
-from unittest.mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, MagicMock
 
 import pytest
 
@@ -146,7 +145,7 @@ class TestScore:
             passed=False,
             score=0.5,
             message="partial match",
-            details={"missing": ["article:6"]}
+            details={"missing": ["article:6"]},
         )
         assert score.passed is False
         assert score.score == 0.5
@@ -349,9 +348,7 @@ class TestContractScorer:
         expected = GoldenExpected()
 
         retrieval_metrics = {
-            "run": {
-                "contract_validation": {"passed": True}
-            },
+            "run": {"contract_validation": {"passed": True}},
             "references_used_in_answer": ["ref1", "ref2"],
         }
 
@@ -374,7 +371,7 @@ class TestContractScorer:
             "run": {
                 "contract_validation": {
                     "passed": False,
-                    "violations": ["min_citations_not_met"]
+                    "violations": ["min_citations_not_met"],
                 }
             }
         }
@@ -814,10 +811,14 @@ class TestFaithfulnessScorer:
 
     def test_no_claims_returns_perfect_score(self, mock_cache, mock_llm_client):
         """Returns perfect score when no claims to verify."""
-        mock_llm_client.chat.completions.create.return_value.choices[0].message.content = "[]"
+        mock_llm_client.chat.completions.create.return_value.choices[
+            0
+        ].message.content = "[]"
 
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client):
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client),
+        ):
             scorer = FaithfulnessScorer()
             result = scorer.score(
                 question="Test?",
@@ -832,11 +833,15 @@ class TestFaithfulnessScorer:
     def test_all_claims_supported(self, mock_cache, mock_llm_client):
         """Returns high score when all claims supported."""
         # First call extracts claims
-        mock_llm_client.chat.completions.create.return_value.choices[0].message.content = '["Claim 1", "Claim 2"]'
+        mock_llm_client.chat.completions.create.return_value.choices[
+            0
+        ].message.content = '["Claim 1", "Claim 2"]'
 
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client), \
-             patch("src.eval.scorers._call_llm_json") as mock_call_json:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client),
+            patch("src.eval.scorers._call_llm_json") as mock_call_json,
+        ):
             # Mock verification response - all supported
             mock_call_json.return_value = {
                 "verifications": [
@@ -858,11 +863,15 @@ class TestFaithfulnessScorer:
 
     def test_some_claims_unsupported(self, mock_cache, mock_llm_client):
         """Returns partial score when some claims unsupported."""
-        mock_llm_client.chat.completions.create.return_value.choices[0].message.content = '["Claim 1", "Claim 2"]'
+        mock_llm_client.chat.completions.create.return_value.choices[
+            0
+        ].message.content = '["Claim 1", "Claim 2"]'
 
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client), \
-             patch("src.eval.scorers._call_llm_json") as mock_call_json:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client),
+            patch("src.eval.scorers._call_llm_json") as mock_call_json,
+        ):
             # One supported, one not
             mock_call_json.return_value = {
                 "verifications": [
@@ -884,10 +893,14 @@ class TestFaithfulnessScorer:
 
     def test_caches_result(self, mock_cache, mock_llm_client):
         """Caches result after evaluation."""
-        mock_llm_client.chat.completions.create.return_value.choices[0].message.content = "[]"
+        mock_llm_client.chat.completions.create.return_value.choices[
+            0
+        ].message.content = "[]"
 
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client):
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client),
+        ):
             scorer = FaithfulnessScorer()
             scorer.score(
                 question="Test?",
@@ -902,9 +915,11 @@ class TestFaithfulnessScorer:
         """Falls back to sentence splitting on LLM error."""
         mock_llm_client.chat.completions.create.side_effect = Exception("API Error")
 
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client), \
-             patch("src.eval.scorers._call_llm_json") as mock_call_json:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client),
+            patch("src.eval.scorers._call_llm_json") as mock_call_json,
+        ):
             mock_call_json.return_value = {
                 "verifications": [
                     {"verdict": "SUPPORTED", "explanation": "ok"},
@@ -923,11 +938,15 @@ class TestFaithfulnessScorer:
 
     def test_progress_callback_called(self, mock_cache, mock_llm_client):
         """Calls progress callback during evaluation."""
-        mock_llm_client.chat.completions.create.return_value.choices[0].message.content = '["Claim"]'
+        mock_llm_client.chat.completions.create.return_value.choices[
+            0
+        ].message.content = '["Claim"]'
 
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client), \
-             patch("src.eval.scorers._call_llm_json") as mock_call_json:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._make_llm_client", return_value=mock_llm_client),
+            patch("src.eval.scorers._call_llm_json") as mock_call_json,
+        ):
             mock_call_json.return_value = {
                 "verifications": [{"verdict": "SUPPORTED", "explanation": "ok"}]
             }
@@ -1000,8 +1019,10 @@ class TestAnswerRelevancyScorer:
 
     def test_high_relevancy_score(self, mock_cache):
         """Returns passing score for relevant answer."""
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._call_llm_json") as mock_call:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._call_llm_json") as mock_call,
+        ):
             mock_call.return_value = {
                 "score": 9,
                 "critique": "Very relevant answer",
@@ -1020,8 +1041,10 @@ class TestAnswerRelevancyScorer:
 
     def test_low_relevancy_score(self, mock_cache):
         """Returns failing score for irrelevant answer."""
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._call_llm_json") as mock_call:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._call_llm_json") as mock_call,
+        ):
             mock_call.return_value = {
                 "score": 3,
                 "critique": "Answer doesn't address the question",
@@ -1040,8 +1063,10 @@ class TestAnswerRelevancyScorer:
 
     def test_normalizes_score_to_0_1(self, mock_cache):
         """Normalizes 0-10 score to 0-1 range."""
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._call_llm_json") as mock_call:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._call_llm_json") as mock_call,
+        ):
             mock_call.return_value = {"score": 5, "critique": "Average"}
 
             scorer = AnswerRelevancyScorer()
@@ -1051,8 +1076,10 @@ class TestAnswerRelevancyScorer:
 
     def test_handles_out_of_range_scores(self, mock_cache):
         """Clamps scores to 0-1 range."""
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._call_llm_json") as mock_call:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._call_llm_json") as mock_call,
+        ):
             # Score > 10
             mock_call.return_value = {"score": 15, "critique": "..."}
             scorer = AnswerRelevancyScorer()
@@ -1061,8 +1088,10 @@ class TestAnswerRelevancyScorer:
 
     def test_handles_llm_error(self, mock_cache):
         """Returns failing score on LLM error."""
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._call_llm_json") as mock_call:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._call_llm_json") as mock_call,
+        ):
             mock_call.side_effect = Exception("API Error")
 
             scorer = AnswerRelevancyScorer()
@@ -1074,8 +1103,10 @@ class TestAnswerRelevancyScorer:
 
     def test_caches_result(self, mock_cache):
         """Caches result after evaluation."""
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._call_llm_json") as mock_call:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._call_llm_json") as mock_call,
+        ):
             mock_call.return_value = {"score": 8, "critique": "Good"}
 
             scorer = AnswerRelevancyScorer()
@@ -1085,8 +1116,10 @@ class TestAnswerRelevancyScorer:
 
     def test_progress_callback_called(self, mock_cache):
         """Calls progress callback during evaluation."""
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._call_llm_json") as mock_call:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._call_llm_json") as mock_call,
+        ):
             mock_call.return_value = {"score": 7, "critique": "Ok"}
 
             callback = MagicMock()
@@ -1101,8 +1134,10 @@ class TestAnswerRelevancyScorer:
 
     def test_includes_critique_in_details(self, mock_cache):
         """Includes critique in score details."""
-        with patch("src.eval.scorers.get_cache", return_value=mock_cache), \
-             patch("src.eval.scorers._call_llm_json") as mock_call:
+        with (
+            patch("src.eval.scorers.get_cache", return_value=mock_cache),
+            patch("src.eval.scorers._call_llm_json") as mock_call,
+        ):
             mock_call.return_value = {
                 "score": 8,
                 "critique": "Good but could be more specific",

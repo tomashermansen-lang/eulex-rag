@@ -85,9 +85,7 @@ class TestAskResponse:
         """Test valid response."""
         response = AskResponse(
             answer="This is the answer.",
-            references=[
-                Reference(idx=1, display="Source 1", chunk_text="Text 1")
-            ],
+            references=[Reference(idx=1, display="Source 1", chunk_text="Text 1")],
             retrieval_metrics={"best_distance": 0.25},
             response_time_seconds=1.5,
         )
@@ -134,7 +132,9 @@ class TestCorporaResponse:
         """Test valid corpora response."""
         response = CorporaResponse(
             corpora=[
-                CorpusInfo(id="ai-act", name="AI Act", source_url="https://example.com"),
+                CorpusInfo(
+                    id="ai-act", name="AI Act", source_url="https://example.com"
+                ),
                 CorpusInfo(id="gdpr", name="GDPR"),
             ]
         )

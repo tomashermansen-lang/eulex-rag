@@ -88,7 +88,11 @@ def migrate_corpora(corpora_path: Path, dry_run: bool = False) -> None:
 
 def main():
     parser = argparse.ArgumentParser(description="Add fullname to existing corpora")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be changed without writing")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be changed without writing",
+    )
     args = parser.parse_args()
 
     project_root = Path(__file__).parent.parent

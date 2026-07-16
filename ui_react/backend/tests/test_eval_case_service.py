@@ -6,7 +6,6 @@ TDD: These tests are written BEFORE the implementation.
 from __future__ import annotations
 
 import pytest
-from pathlib import Path
 from unittest.mock import patch
 
 
@@ -206,7 +205,9 @@ class TestCreateCase:
 
         # ID should be generated: {law}-{nn}-{slug}
         assert created["id"].startswith("test-law-")
-        assert "requirements" in created["id"].lower() or "data" in created["id"].lower()
+        assert (
+            "requirements" in created["id"].lower() or "data" in created["id"].lower()
+        )
 
     def test_create_case_persists_to_file(self, tmp_path):
         """Created case should be saved to YAML file."""
@@ -410,7 +411,11 @@ class TestUpdateCase:
 
         with patch("services.eval_cases._get_evals_dir", return_value=evals_dir):
             with pytest.raises(NotFoundError):
-                update_case("test-law", "nonexistent", {"prompt": "This is a valid prompt that is long enough"})
+                update_case(
+                    "test-law",
+                    "nonexistent",
+                    {"prompt": "This is a valid prompt that is long enough"},
+                )
 
     def test_update_case_partial_update(self, tmp_path):
         """Should only update provided fields."""
@@ -577,7 +582,10 @@ class TestGenerateCaseId:
         """Generated ID should be unique among existing IDs."""
         from services.eval_cases import generate_case_id
 
-        existing = {"ai-act-01-requirements-for-high", "ai-act-02-requirements-for-high"}
+        existing = {
+            "ai-act-01-requirements-for-high",
+            "ai-act-02-requirements-for-high",
+        }
 
         case_id = generate_case_id(
             law="ai-act",
