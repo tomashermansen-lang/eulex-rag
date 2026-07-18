@@ -659,7 +659,7 @@ flowchart LR
   QA --> COMMIT["/commit<br>Release"]
 ```
 
-### Pipeline Roles (23 commands)
+### Pipeline Roles
 
 | Command | Role | Output |
 |---------|------|--------|
