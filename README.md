@@ -1,13 +1,13 @@
 # EuLex RAG Framework
 
-![Tests](https://img.shields.io/badge/tests-2773%20passed-green)
+![Tests](https://img.shields.io/badge/tests-3261%20passed-green)
 ![Coverage](https://img.shields.io/badge/coverage-60%25-yellow)
 ![Evals](https://img.shields.io/badge/golden%20evals-256-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 A legal Q&A system for EU legislation that **refuses to answer when evidence is insufficient** — because in regulated domains, a wrong citation has real consequences.
 
-> Hybrid retrieval (vector + BM25 + citation graph) with fail-closed citation validation, 256 golden eval cases across 13 EU regulations, and LLM-as-judge quality scoring.
+> Hybrid retrieval (vector + BM25 + citation graph), abstention when the retrieved evidence is too weak, 256 golden eval cases across 13 EU regulations, and LLM-as-judge quality scoring.
 
 > **Note:** This is a proof of concept, not production software. Outputs require human review.
 
@@ -17,7 +17,7 @@ A legal Q&A system for EU legislation that **refuses to answer when evidence is 
 
 EU compliance teams need reliable answers about legislation — which articles apply, what the obligations are, how regulations interact. Getting this wrong has consequences: missed deadlines, incorrect filings, regulatory exposure.
 
-EuLex answers questions about EU regulations with verified article citations. It uses hybrid retrieval to find relevant legal text, validates every citation against source chunks, and abstains when evidence is insufficient rather than guessing. An evaluation pipeline with 256 golden test cases across 13 laws measures quality continuously.
+EuLex answers questions about EU regulations with article citations. It uses hybrid retrieval to find relevant legal text and abstains before generation when the evidence is insufficient rather than guessing. A strict citation check covers the engineering profile on the non-streaming path the evals use (see Known implementation gaps). An evaluation pipeline with 256 golden test cases across 13 laws measures quality continuously.
 
 This project comes from a background in process automation and efficiency improvement of complex business processes — in capital markets (derivatives trading systems, post-trade workflows) and in development processes (CI/CD adoption, release governance). The same instinct applies: when a process has high consequences for errors, you build in verification gates and measure outcomes. Here, the "process" is retrieval-augmented generation, and the "verification gates" are citation validation, abstention scoring, and automated evaluation.
 
@@ -25,13 +25,13 @@ Built over 8 weeks as a proof of concept. Production would require security hard
 
 ---
 
-![Chat Demo](docs/gifs/chat-demo.gif)
-*Cross-law query: "Hvilke love er relevante for cybersikkerhed" — AI-powered corpus discovery, multi-law retrieval, and verified citations*
+![Chat Demo](https://tomashermansen-lang.github.io/portfolio/assets/eulex/chat-demo.gif)
+*Cross-law query: "Hvilke love er relevante for cybersikkerhed" — AI-powered corpus discovery, multi-law retrieval, and an answer with article citations*
 
 ## Key Features
 
-- **Fail-closed citation design** — the retrieval-distance and citation-validation layers refuse to cite unsupported articles. Internal error handling uses permissive fallbacks (a known gap documented in the AI Act self-assessment). Correct refusals are scored separately from wrong answers.
-- **EVAL = PROD** — the evaluation runner uses production code paths. No separate "test mode" that might diverge. This caught bugs that would have shipped.
+- **Fail-closed by design** — the system abstains before generation when retrieval evidence is too weak, and the engineering profile's citation check refuses any answer that cites an article outside the retrieved set. Internal error handling uses permissive fallbacks (a known gap documented in the AI Act self-assessment). Correct refusals are scored separately from wrong answers.
+- **EVAL = PROD** — the evaluation runner calls the same function as the API's answer endpoint. No separate "test mode" that might diverge. This caught bugs that would have shipped.
 - **Cross-law retrieval with corpus discovery** — queries can span multiple EU regulations simultaneously using Reciprocal Rank Fusion. AI-powered corpus discovery auto-detects relevant laws from the question, with confidence-tiered routing (auto/suggest/abstain).
 - **Hybrid retrieval** — vector similarity + BM25 lexical matching + citation graph traversal. Each compensates for the others' blind spots.
 - **Self-service legislation ingestion** — add any EUR-Lex law through the browser UI with preflight checks, structure-aware chunking, LLM enrichment, and closed-loop verification.
@@ -39,13 +39,13 @@ Built over 8 weeks as a proof of concept. Production would require security hard
 - **Eval metrics dashboard** — three-level health monitoring (trust overview → quality/performance/ingestion breakdown → drill-down) with trend detection, per-mode/per-difficulty analysis, and AI-powered insights streaming.
 - **User-editable eval suites** — domain experts can run evaluations, review results, and edit test cases directly in the UI, shifting quality ownership out of developer tooling.
 
-![Legislation Browser](docs/gifs/legislation-browser.gif)
+![Legislation Browser](https://tomashermansen-lang.github.io/portfolio/assets/eulex/legislation-browser.gif)
 *Admin panel: browsing EUR-Lex, running preflight checks, ingesting new legislation*
 
-![Eval Dashboard](docs/gifs/eval-dashboard.gif)
+![Eval Dashboard](https://tomashermansen-lang.github.io/portfolio/assets/eulex/eval-dashboard.gif)
 *Eval dashboard: matrix view of test results by law, expanding to see LLM-judge scores*
 
-![Eval Metrics](docs/gifs/eval-metrics.gif)
+![Eval Metrics](https://tomashermansen-lang.github.io/portfolio/assets/eulex/eval-metrics.gif)
 *Eval metrics: drilling down through quality, performance, and ingestion health — with AI-powered analysis of what to improve*
 
 ---
@@ -164,7 +164,7 @@ See [COMMANDS.md](COMMANDS.md) for full command reference.
 
 | Metric | Value | What it means |
 |--------|-------|---------------|
-| **Automated tests** | 2,773 passed | 1,708 backend (pytest) + 1,065 frontend (vitest) |
+| **Automated tests** | 3,261 passed | 2,196 backend (pytest) + 1,065 frontend (vitest) |
 | **Test coverage** | 60% | Critical paths covered; required minimum 55% |
 | **Eval cases** | 256 | Golden regression cases across 13 EU regulations (253 of 256 auto-generated) |
 | **Eval pass rate** | 99.2% | Regression detection rate after model escalation (gpt-4o-mini → gpt-5.2 for ~10% of cases) |
@@ -631,6 +631,7 @@ This system explains EU legislation — including the AI Act itself. So the natu
 | **Art. 9** (Risk management) | Documented risk assessment, foreseeable misuse analysis | Missing — fail-closed is implicit mitigation but not documented as such | Formal risk register, post-market monitoring, misuse scenarios |
 
 **Known implementation gaps:**
+- The strict citation integrity check runs only for the ENGINEERING profile on the non-streaming path. The streaming chat endpoint and the default LEGAL profile rely on the abstention before generation and the normative guard
 - Multi-turn conversations reduce the abstention safety check — the fail-closed guarantee is weaker in follow-up questions than in initial queries
 - ~99% of eval cases are auto-generated (253 of 256), creating circular validation — the eval suite validates system consistency (regression detection), not legal accuracy. Adversarial and expert-crafted cases would provide stronger quality evidence
 - Exception handling in core modules silently suppresses errors in some paths, which contradicts the fail-closed philosophy
@@ -754,7 +755,7 @@ Each feature gets its own git worktree (`../eulex-<feature>/`), sharing the virt
 
 3. **Refactoring is an investment, not a cost.** 11 numbered refactoring phases were painful. But now each module has one job, and changes to retrieval logic don't touch generation.
 
-4. **SOLID principles become essential at scale.** Early code worked but was fragile. After refactoring, the peripheral modules are well-decomposed with single responsibilities and dependency inversion. The core orchestrator is still large — knowing when to stop refactoring is itself a judgment call.
+4. **SOLID principles become essential at scale.** Early code worked but was fragile. After refactoring, the peripheral modules are well-decomposed with single responsibilities and dependency inversion. The core orchestrator is now a slim module, while some engine modules are still large — knowing when to stop refactoring is itself a judgment call.
 
 5. **Removing features is a skill.** TOC-guided routing, concept-based routing, a Streamlit UI — all built and then removed when they added complexity without improving retrieval.
 

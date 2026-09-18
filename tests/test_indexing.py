@@ -93,7 +93,13 @@ class TestEnrichDocumentForEmbedding:
         doc = f"{long_first_line}\nActual content"
         meta = {"annex_point": "1"}
 
-        result = _enrich_document_for_embedding(doc, meta)
+        # This test is about heading inference. Disable LLM term enrichment,
+        # which otherwise prepends a [Søgetermer: ...] block to the document.
+        with patch(
+            "src.ingestion.embedding_enrichment.is_enrichment_enabled",
+            return_value=False,
+        ):
+            result = _enrich_document_for_embedding(doc, meta)
 
         # The first line starts with "a)" so it should NOT be used as heading.
         # Without heading enrichment the doc is returned unchanged (no \n\n prefix).
